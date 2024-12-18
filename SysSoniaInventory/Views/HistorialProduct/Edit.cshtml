@@ -1,0 +1,106 @@
+﻿@model SysSoniaInventory.Models.ModelHistorialProduct
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<h1>Edit</h1>
+
+<h4>ModelHistorialProduct</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Id" />
+            <div class="form-group">
+                <label asp-for="NameUser" class="control-label"></label>
+                <input asp-for="NameUser" class="form-control" />
+                <span asp-validation-for="NameUser" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="IdProduct" class="control-label"></label>
+                <input asp-for="IdProduct" class="form-control" />
+                <span asp-validation-for="IdProduct" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="BeforeNameProduct" class="control-label"></label>
+                <input asp-for="BeforeNameProduct" class="form-control" />
+                <span asp-validation-for="BeforeNameProduct" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="AfterNameProduct" class="control-label"></label>
+                <input asp-for="AfterNameProduct" class="form-control" />
+                <span asp-validation-for="AfterNameProduct" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="BeforePurchasePrice" class="control-label"></label>
+                <input asp-for="BeforePurchasePrice" class="form-control" />
+                <span asp-validation-for="BeforePurchasePrice" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="AfterPurchasePrice" class="control-label"></label>
+                <input asp-for="AfterPurchasePrice" class="form-control" />
+                <span asp-validation-for="AfterPurchasePrice" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="BeforeSalePrice" class="control-label"></label>
+                <input asp-for="BeforeSalePrice" class="form-control" />
+                <span asp-validation-for="BeforeSalePrice" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="AfterSalePrice" class="control-label"></label>
+                <input asp-for="AfterSalePrice" class="form-control" />
+                <span asp-validation-for="AfterSalePrice" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="BeforeStock" class="control-label"></label>
+                <input asp-for="BeforeStock" class="form-control" />
+                <span asp-validation-for="BeforeStock" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="AfterStock" class="control-label"></label>
+                <input asp-for="AfterStock" class="form-control" />
+                <span asp-validation-for="AfterStock" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="BeforeCodigo" class="control-label"></label>
+                <input asp-for="BeforeCodigo" class="form-control" />
+                <span asp-validation-for="BeforeCodigo" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="AfterCodigo" class="control-label"></label>
+                <input asp-for="AfterCodigo" class="form-control" />
+                <span asp-validation-for="AfterCodigo" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Date" class="control-label"></label>
+                <input asp-for="Date" class="form-control" />
+                <span asp-validation-for="Date" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Time" class="control-label"></label>
+                <input asp-for="Time" class="form-control" />
+                <span asp-validation-for="Time" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="RazonCambioAuto" class="control-label"></label>
+                <input asp-for="RazonCambioAuto" class="form-control" />
+                <span asp-validation-for="RazonCambioAuto" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="DescriptionCambio" class="control-label"></label>
+                <input asp-for="DescriptionCambio" class="form-control" />
+                <span asp-validation-for="DescriptionCambio" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+

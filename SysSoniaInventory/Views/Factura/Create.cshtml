@@ -1,0 +1,136 @@
+﻿@model SysSoniaInventory.Models.ModelFactura
+
+<h2>Crear Factura</h2>
+
+<form method="post" asp-action="Create">
+    <div class="form-group">
+        <label for="NameClient">Nombre del Cliente</label>
+        <input type="text" class="form-control" id="NameClient" name="NameClient" />
+        <button type="submit" class="btn btn-success">Crear</button>
+    </div>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Producto</th>
+                <th>Código</th>
+                <th>Cantidad</th>
+                <th>Precio Unitario</th>
+                <th>Descuento (%)</th>
+                <th>Precio con Descuento</th>
+                <th>Total</th>
+                <th>Acción</th>
+            </tr>
+        </thead>
+        <tbody id="detalles-container">
+            <tr>
+                <td>
+                    <select class="form-control producto-select" name="detalles[0].IdProduct">
+                        <option value="">Seleccionar producto</option>
+                        @foreach (var producto in ViewBag.Productos)
+
+                        {
+                            <option value="@producto.Id" data-precio="@producto.SalePrice" data-codigo="@producto.Codigo" data-stock="@producto.Stock">
+                                @producto.Name
+                            </option>
+                        }
+                    </select>
+                </td>
+                <td><input class="form-control codigo-producto readonly-input" type="text" readonly /></td>
+                <td><input class="form-control cantidad-producto" type="number" min="1" value="1" name="detalles[0].CantidadProduct" /></td>
+                <td><input class="form-control precio-unitario readonly-input" type="text" readonly name="detalles[0].SalePriceUnitario" /></td>
+                <td><input class="form-control descuento-producto" type="number" min="0" step="any" max="100" value="0" name="detalles[0].ValorDescuento" /></td>
+                <td><input class="form-control precio-descuento readonly-input" type="text" readonly name="detalles[0].SalePriceDescuento" /></td>
+                <td><input class="form-control total-producto readonly-input" type="text" readonly name="detalles[0].PriceTotal" /></td>
+                <td><button type="button" class="btn btn-danger eliminar-detalle">Eliminar</button></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <button type="button" class="btn btn-primary" id="agregar-detalle">Agregar Producto</button>
+    <h4>Total Global: <span id="total-global">0</span></h4>
+ 
+</form>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const container = document.getElementById('detalles-container');
+        const agregarBtn = document.getElementById('agregar-detalle');
+        const totalGlobalEl = document.getElementById('total-global');
+
+        function calcularTotales() {
+            let totalGlobal = 0;
+            container.querySelectorAll('tr').forEach(row => {
+                const cantidad = parseFloat(row.querySelector('.cantidad-producto').value) || 1;
+                const precioUnitario = parseFloat(row.querySelector('.precio-unitario').value) || 0;
+                const descuento = parseFloat(row.querySelector('.descuento-producto').value) || 0;
+
+                const precioConDescuento = precioUnitario - (precioUnitario * descuento / 100);
+                row.querySelector('.precio-descuento').value = precioConDescuento.toFixed(2);
+
+                const totalProducto = cantidad * precioConDescuento;
+                row.querySelector('.total-producto').value = totalProducto.toFixed(2);
+
+                totalGlobal += totalProducto;
+            });
+            totalGlobalEl.textContent = totalGlobal.toFixed(2);
+        }
+
+        container.addEventListener('input', calcularTotales);
+
+        container.addEventListener('change', (e) => {
+            if (e.target.classList.contains('producto-select')) {
+                const selectedOption = e.target.options[e.target.selectedIndex];
+                const precio = selectedOption.getAttribute('data-precio') || 0;
+                const codigo = selectedOption.getAttribute('data-codigo') || '';
+                const stock = parseInt(selectedOption.getAttribute('data-stock')) || 0;
+
+                const row = e.target.closest('tr');
+                row.querySelector('.precio-unitario').value = precio;
+                row.querySelector('.codigo-producto').value = codigo;
+                row.querySelector('.cantidad-producto').setAttribute('max', stock); // Limitar cantidad
+
+                // Verificar stock disponible
+                const cantidadSeleccionada = parseInt(row.querySelector('.cantidad-producto').value) || 1;
+                if (cantidadSeleccionada > stock) {
+                    alert(`La cantidad seleccionada (${cantidadSeleccionada}) del producto '${selectedOption.text}' excede el stock actual (${stock}).`);
+
+                    row.querySelector('.cantidad-producto').value = stock; // Ajustar cantidad al máximo disponible
+                }
+
+                calcularTotales();
+            }
+        });
+
+        agregarBtn.addEventListener('click', () => {
+            const filas = container.querySelectorAll('tr');
+            const nuevaFila = filas[0].cloneNode(true);
+
+            nuevaFila.querySelectorAll('input, select').forEach((elemento) => {
+                const name = elemento.getAttribute('name');
+                if (name) {
+                    const nuevoIndice = filas.length; // Nuevo índice basado en la cantidad actual de filas
+                    const nuevoName = name.replace(/\d+/, nuevoIndice);
+                    elemento.setAttribute('name', nuevoName);
+                }
+                if (elemento.tagName === 'INPUT') {
+                    elemento.value = elemento.classList.contains('cantidad-producto') ? 1 : '';
+                }
+                if (elemento.tagName === 'SELECT') {
+                    elemento.value = '';
+                }
+            });
+
+            container.appendChild(nuevaFila);
+        });
+
+        container.addEventListener('click', (e) => {
+            if (e.target.classList.contains('eliminar-detalle')) {
+                if (container.querySelectorAll('tr').length > 1) {
+                    e.target.closest('tr').remove();
+                    calcularTotales();
+                }
+            }
+        });
+    });
+</script>

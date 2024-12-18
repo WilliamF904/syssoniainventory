@@ -1,0 +1,32 @@
+﻿@model IEnumerable<SysSoniaInventory.Models.ModelFactura>
+
+<h2>Facturas</h2>
+<table class="table">
+    <thead>
+        <tr>
+            <th>ID</th>
+     
+            <th>Usuario</th>
+            <th>Fecha</th>
+            <th>Hora</th>
+            <th>Total</th>
+            <th>Acción</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var factura in Model)
+        {
+            <tr>
+                <td>@factura.Id</td>
+               
+                <td>@factura.NameUser</td>
+                <td>@factura.Date.ToShortDateString()</td>
+                <td>@factura.Time.ToString("hh\\:mm")</td>
+                <td>@factura.DetalleFactura.Sum(d => d.PriceTotal)</td>
+                <td><a asp-action="Details" asp-route-id="@factura.Id" class="btn btn-primary">Detalles</a></td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<a href="/Factura/Create" class="btn btn-primary">Crear Nueva Factura</a>

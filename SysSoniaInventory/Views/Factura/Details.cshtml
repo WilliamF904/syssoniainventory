@@ -1,0 +1,62 @@
+﻿@model SysSoniaInventory.Models.ModelFactura
+
+<div class="container mt-4">
+    <h2>Detalles de la Factura</h2>
+    <div class="row">
+        <!-- Información de la factura -->
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    Información de la Factura
+                </div>
+                <div class="card-body">
+                    <p><strong>Factura ID:</strong> @Model.Id</p>
+                    <p><strong>Sucursal:</strong> @Model.NameSucursal</p>
+                    <p><strong>Usuario:</strong> @Model.NameUser</p>  
+                    <p><strong>Cliente:</strong> @Model.NameClient</p>
+                    <p><strong>Fecha:</strong> @Model.Date.ToString("yyyy-MM-dd")</p>
+                    <p><strong>Hora:</strong> @Model.Time.ToString("HH:mm")</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Detalle de productos -->
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    Detalle de Productos
+                </div>
+                <div class="card-body">
+                    <table class="table table-bordered">
+                        <thead class="thead-darck">
+                            <tr>
+                                <th class="readonly-input">Código</th>
+                                
+                                <th class="readonly-input">Cantidad</th>
+                                <th class="readonly-input">Precio Unitario</th>
+                                <th class="readonly-input">Descuento</th>
+                                <th class="readonly-input">Precio descuento</th>
+                                <th class="readonly-input">Precio Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var detalle in Model.DetalleFactura)
+                            {
+                                <tr>
+                                    <td class="text-light">@detalle.CodigoProducto</td>
+                                   
+                                    <td class="text-light">@detalle.CantidadProduct</td>
+                                    <td class="text-light">@detalle.SalePriceUnitario.ToString("C")</td>
+                                    <td class="text-light">@Math.Round(detalle.ValorDescuento) %</td>
+
+                                    <td class="text-light">@detalle.SalePriceDescuento.ToString("C")</td>
+                                    <td class ="text-light"> @detalle.PriceTotal.ToString("C")</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

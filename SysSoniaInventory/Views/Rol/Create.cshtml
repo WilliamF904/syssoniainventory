@@ -1,0 +1,54 @@
+﻿@model SysSoniaInventory.Models.ModelRol
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<div class="col-12 grid-margin">
+    <div class="card">
+        <div class="card-body">
+
+            <h3 class="card-title font-weight-bold">Crear Rol</h3>
+
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label text-light" asp-for="Name" >Nombre del Rol</label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control" asp-for="Name" placeholder="Ingrese el rol" required />
+                                <span asp-validation-for="Name" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="col-md-6">
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label" asp-for="AccessTipe">Tipo de acceso</label>
+                            <div class="col-sm-9">
+                                <select class="form-control text-light" asp-for="AccessTipe" required>
+                                    <option value="" disabled selected>Seleccione un nivel de acceso</option>
+                                    <option value="Nivel 1">Nivel 1 - Acceso Total</option>
+                                    <option value="Nivel 2">Nivel 2 - Acceso Intermedio</option>
+                                    <option value="Nivel 3">Nivel 3 - Acceso Básico</option>
+                                    <option value="Nivel 4">Nivel 4 - Acceso Restringido</option>
+                                </select>
+
+                                <span asp-validation-for="AccessTipe" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+                  
+                </div>
+                <div class="d-flex justify-content-end">
+                    <button type="submit" value="Create" class="btn btn-outline-primary font-weight-bold">Guardar</button>
+                    <a asp-action="Index" class="btn btn-outline-secondary font-weight-bold ml-2">Volver a la lista</a>
+                </div>
+        </form>
+    </div>
+</div>
+
+</div>
+
