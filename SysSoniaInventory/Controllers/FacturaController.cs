@@ -146,14 +146,6 @@ namespace SysSoniaInventory.Controllers
 
 
 
-
-
-
-
-
-
-
-
         // Acción para mostrar los detalles de una factura
         public IActionResult Details(int id)
         {
@@ -170,9 +162,6 @@ namespace SysSoniaInventory.Controllers
             // Pasar los datos a la vista
             return View(factura);
         }
-
-
-
 
 
     }
