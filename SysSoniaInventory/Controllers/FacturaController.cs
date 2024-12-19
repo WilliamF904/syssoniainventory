@@ -20,8 +20,27 @@ namespace SysSoniaInventory.Controllers
             var facturas = _context.modelFactura.Include(f => f.DetalleFactura).ToList();
             return View(facturas);
         }
+        public IActionResult BuscarProducto(string query)
+        {
+            var productos = _context.modelProduct
+                                    .Where(p => p.Estatus == 1 &&
+                                                (p.Name.Contains(query) || p.Codigo.ToString().Contains(query)))
+                                    .Select(p => new
+                                    {
+                                        p.Id,
+                                        p.Name,
+                                        p.Codigo,
+                                        p.SalePrice,
+                                        p.Stock
+                                    })
+                                    .ToList();
+
+            return Json(productos);
+        }
+
 
         // Acción Create para mostrar el formulario de creación
+        [HttpGet]
         public IActionResult Create()
         {
             ViewBag.Productos = _context.modelProduct.ToList();
@@ -37,6 +56,12 @@ namespace SysSoniaInventory.Controllers
             factura.NameSucursal = "Sucursal Fija"; // Sucursal actual (dinámico en el futuro)
             factura.Date = DateOnly.FromDateTime(DateTime.Now);
             factura.Time = TimeOnly.FromDateTime(DateTime.Now);
+            // Validar que los datos son correctos
+            if (!ModelState.IsValid)
+            {
+                ViewBag.Productos = _context.modelProduct.ToList();
+                return View(factura);
+            }
 
             if (detalles == null || !detalles.Any())
             {
@@ -117,6 +142,16 @@ namespace SysSoniaInventory.Controllers
                 }
             }
         }
+
+
+
+
+
+
+
+
+
+
 
 
         // Acción para mostrar los detalles de una factura

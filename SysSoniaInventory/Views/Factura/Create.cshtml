@@ -1,136 +1,169 @@
 ﻿@model SysSoniaInventory.Models.ModelFactura
 
-<h2>Crear Factura</h2>
+@{
+    ViewData["Title"] = "Crear Factura";
+}
 
-<form method="post" asp-action="Create">
-    <div class="form-group">
-        <label for="NameClient">Nombre del Cliente</label>
-        <input type="text" class="form-control" id="NameClient" name="NameClient" />
-        <button type="submit" class="btn btn-success">Crear</button>
-    </div>
+<div class="container-fluid">
+    <form asp-action="Create" method="post">
+        <div class="row">
+            <!-- Columna izquierda -->
+            <div class="col-md-5">
+                <h1 class="display-5 font-weight-bold">Nueva Factura</h1>
+                <hr>
+                <div class="form-group">
+                    <label for="NameSucursal" class="h5 font-weight-bold">Sucursal:</label>
+                    <input asp-for="NameSucursal" class="form-control font-weight-bold form-control-lg readonly-input" id="NameSucursal" value="Sucursal Fija" readonly />
+                </div>
+                <div class="form-group">
+                    <label for="NameUser" class="h5 font-weight-bold">Usuario:</label>
+                    <input asp-for="NameUser" class="form-control font-weight-bold form-control-lg readonly-input" id="NameUser" value="Usuario Fijo" readonly />
+                </div>
+                <div class="form-group">
+                    <label for="NameClient" class="h5 font-weight-bold">Nombre del Cliente:</label>
+                    <input asp-for="NameClient" class="form-control font-weight-bold form-control-lg" id="NameClient" placeholder="Escriba el nombre del cliente" />
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="Date" class="h5 font-weight-bold">Fecha:</label>
+                            <input asp-for="Date" class="form-control font-weight-bold form-control-lg readonly-input" id="Date" type="date" value="@DateTime.Now.ToString("yyyy-MM-dd")" readonly />
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="Time" class="h5 font-weight-bold">Hora:</label>
+                            <input asp-for="Time" class="form-control font-weight-bold form-control-lg readonly-input" id="Time" type="time" value="@DateTime.Now.ToString("HH:mm")" readonly />
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Producto</th>
-                <th>Código</th>
-                <th>Cantidad</th>
-                <th>Precio Unitario</th>
-                <th>Descuento (%)</th>
-                <th>Precio con Descuento</th>
-                <th>Total</th>
-                <th>Acción</th>
-            </tr>
-        </thead>
-        <tbody id="detalles-container">
-            <tr>
-                <td>
-                    <select class="form-control producto-select" name="detalles[0].IdProduct">
-                        <option value="">Seleccionar producto</option>
-                        @foreach (var producto in ViewBag.Productos)
+            <!-- Columna derecha -->
+            <div class="col-md-7">
+                <h4 class="font-weight-bold">Productos</h4>
+                <div class="form-group">
+                    <label for="ProductSelect" class="h5 font-weight-bold">Seleccionar Productos:</label>
+                    <select id="ProductSelect" class="form-control font-weight-bold form-control-lg">
+                        @foreach (var product in ViewBag.Productos)
 
                         {
-                            <option value="@producto.Id" data-precio="@producto.SalePrice" data-codigo="@producto.Codigo" data-stock="@producto.Stock">
-                                @producto.Name
+                            <option value="@product.Id" data-name="@product.Name" data-price="@product.SalePrice" data-stock="@product.Stock" data-codigo="@product.Codigo">
+                                @product.Name - Precio: $@product.SalePrice
                             </option>
                         }
                     </select>
-                </td>
-                <td><input class="form-control codigo-producto readonly-input" type="text" readonly /></td>
-                <td><input class="form-control cantidad-producto" type="number" min="1" value="1" name="detalles[0].CantidadProduct" /></td>
-                <td><input class="form-control precio-unitario readonly-input" type="text" readonly name="detalles[0].SalePriceUnitario" /></td>
-                <td><input class="form-control descuento-producto" type="number" min="0" step="any" max="100" value="0" name="detalles[0].ValorDescuento" /></td>
-                <td><input class="form-control precio-descuento readonly-input" type="text" readonly name="detalles[0].SalePriceDescuento" /></td>
-                <td><input class="form-control total-producto readonly-input" type="text" readonly name="detalles[0].PriceTotal" /></td>
-                <td><button type="button" class="btn btn-danger eliminar-detalle">Eliminar</button></td>
-            </tr>
-        </tbody>
-    </table>
+                </div>
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Producto</th>
+                            <th>Cantidad</th>
+                            <th>Precio Unitario</th>
+                            <th>Descuento (%)</th>
+                            <th>Subtotal</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="ProductTableBody">
+                        <!-- Filas dinámicas -->
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="4" class="text-right font-weight-bold">Total General:</td>
+                            <td colspan="2" id="TotalGeneral">$0.00</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
 
-    <button type="button" class="btn btn-primary" id="agregar-detalle">Agregar Producto</button>
-    <h4>Total Global: <span id="total-global">0</span></h4>
- 
-</form>
+        <!-- Contenedor oculto para los inputs dinámicos -->
+        <div id="HiddenInputsContainer"></div>
+
+        <hr />
+        <button type="submit" class="btn btn-primary btn-lg">Guardar</button>
+        <a asp-action="Index" class="btn btn-danger btn-lg">Cancelar</a>
+    </form>
+</div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', () => {
-        const container = document.getElementById('detalles-container');
-        const agregarBtn = document.getElementById('agregar-detalle');
-        const totalGlobalEl = document.getElementById('total-global');
+    document.addEventListener('DOMContentLoaded', function () {
+        const productsSelect = document.getElementById('ProductSelect');
+        const productTableBody = document.getElementById('ProductTableBody');
+        const totalGeneral = document.getElementById('TotalGeneral');
+        const hiddenInputsContainer = document.getElementById('HiddenInputsContainer');
+        let products = [];
+        let productIndex = 0;
 
-        function calcularTotales() {
-            let totalGlobal = 0;
-            container.querySelectorAll('tr').forEach(row => {
-                const cantidad = parseFloat(row.querySelector('.cantidad-producto').value) || 1;
-                const precioUnitario = parseFloat(row.querySelector('.precio-unitario').value) || 0;
-                const descuento = parseFloat(row.querySelector('.descuento-producto').value) || 0;
-
-                const precioConDescuento = precioUnitario - (precioUnitario * descuento / 100);
-                row.querySelector('.precio-descuento').value = precioConDescuento.toFixed(2);
-
-                const totalProducto = cantidad * precioConDescuento;
-                row.querySelector('.total-producto').value = totalProducto.toFixed(2);
-
-                totalGlobal += totalProducto;
-            });
-            totalGlobalEl.textContent = totalGlobal.toFixed(2);
+        function updateTotal() {
+            let total = products.reduce((sum, product) => sum + product.subtotal, 0);
+            totalGeneral.textContent = `$${total.toFixed(2)}`;
         }
 
-        container.addEventListener('input', calcularTotales);
+        function addHiddenInputs(product) {
+            const baseName = `detalles[${productIndex}]`;
+            hiddenInputsContainer.innerHTML += `
+                    <input type="hidden" name="${baseName}.IdProduct" value="${product.id}" />
+                    <input type="hidden" name="${baseName}.CodigoProducto" value="${product.codigo}" />
+                    <input type="hidden" name="${baseName}.CantidadProduct" value="${product.quantity}" />
+                    <input type="hidden" name="${baseName}.ValorDescuento" value="${product.discount}" />
+                    <input type="hidden" name="${baseName}.SalePriceUnitario" value="${product.price}" />
+                    <input type="hidden" name="${baseName}.PriceTotal" value="${product.subtotal}" />
+                `;
+            productIndex++;
+        }
 
-        container.addEventListener('change', (e) => {
-            if (e.target.classList.contains('producto-select')) {
-                const selectedOption = e.target.options[e.target.selectedIndex];
-                const precio = selectedOption.getAttribute('data-precio') || 0;
-                const codigo = selectedOption.getAttribute('data-codigo') || '';
-                const stock = parseInt(selectedOption.getAttribute('data-stock')) || 0;
+        productsSelect.addEventListener('change', function () {
+            const selectedOption = productsSelect.options[productsSelect.selectedIndex];
+            const productId = selectedOption.value;
+            const productName = selectedOption.getAttribute('data-name');
+            const productPrice = parseFloat(selectedOption.getAttribute('data-price'));
+            const productStock = parseInt(selectedOption.getAttribute('data-stock'));
+            const productCodigo = selectedOption.getAttribute('data-codigo');
 
-                const row = e.target.closest('tr');
-                row.querySelector('.precio-unitario').value = precio;
-                row.querySelector('.codigo-producto').value = codigo;
-                row.querySelector('.cantidad-producto').setAttribute('max', stock); // Limitar cantidad
-
-                // Verificar stock disponible
-                const cantidadSeleccionada = parseInt(row.querySelector('.cantidad-producto').value) || 1;
-                if (cantidadSeleccionada > stock) {
-                    alert(`La cantidad seleccionada (${cantidadSeleccionada}) del producto '${selectedOption.text}' excede el stock actual (${stock}).`);
-
-                    row.querySelector('.cantidad-producto').value = stock; // Ajustar cantidad al máximo disponible
-                }
-
-                calcularTotales();
+            if (products.some(p => p.id === productId)) {
+                alert("Este producto ya está agregado.");
+                return;
             }
-        });
 
-        agregarBtn.addEventListener('click', () => {
-            const filas = container.querySelectorAll('tr');
-            const nuevaFila = filas[0].cloneNode(true);
-
-            nuevaFila.querySelectorAll('input, select').forEach((elemento) => {
-                const name = elemento.getAttribute('name');
-                if (name) {
-                    const nuevoIndice = filas.length; // Nuevo índice basado en la cantidad actual de filas
-                    const nuevoName = name.replace(/\d+/, nuevoIndice);
-                    elemento.setAttribute('name', nuevoName);
-                }
-                if (elemento.tagName === 'INPUT') {
-                    elemento.value = elemento.classList.contains('cantidad-producto') ? 1 : '';
-                }
-                if (elemento.tagName === 'SELECT') {
-                    elemento.value = '';
-                }
-            });
-
-            container.appendChild(nuevaFila);
-        });
-
-        container.addEventListener('click', (e) => {
-            if (e.target.classList.contains('eliminar-detalle')) {
-                if (container.querySelectorAll('tr').length > 1) {
-                    e.target.closest('tr').remove();
-                    calcularTotales();
-                }
+            const quantity = prompt(`Ingrese la cantidad para ${productName} (Máximo: ${productStock}):`, "1");
+            if (!quantity || isNaN(quantity) || quantity <= 0 || quantity > productStock) {
+                alert("Cantidad inválida.");
+                return;
             }
+
+            const discount = prompt(`Ingrese el porcentaje de descuento para ${productName}:`, "0");
+            if (!discount || isNaN(discount) || discount < 0 || discount > 100) {
+                alert("Descuento inválido.");
+                return;
+            }
+
+            const discountedPrice = productPrice - (productPrice * discount / 100);
+            const subtotal = discountedPrice * quantity;
+            const product = { id: productId, codigo: productCodigo, name: productName, quantity, price: productPrice, discount, subtotal };
+            products.push(product);
+
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                    <td>${productName}</td>
+                    <td>${quantity}</td>
+                    <td>$${productPrice.toFixed(2)}</td>
+                    <td>${discount}%</td>
+                    <td>$${subtotal.toFixed(2)}</td>
+                    <td>
+                        <button class="btn btn-danger btn-sm" onclick="removeProduct('${productId}', this)">Eliminar</button>
+                    </td>`;
+            productTableBody.appendChild(row);
+            addHiddenInputs(product);
+            updateTotal();
         });
+
+        window.removeProduct = function (productId, button) {
+            products = products.filter(p => p.id !== productId);
+            button.parentElement.parentElement.remove();
+            updateTotal();
+        };
     });
 </script>
+
