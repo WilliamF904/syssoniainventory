@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace SysSoniaInventory.Models
 {
@@ -31,7 +32,7 @@ namespace SysSoniaInventory.Models
         public decimal PriceTotal { get; set; }
 
 
-
+        [JsonIgnore]
         [ForeignKey("IdFactura")]
         public virtual ModelFactura? IdFacturaNavigation { get; set; }
 

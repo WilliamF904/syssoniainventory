@@ -20,6 +20,7 @@ namespace SysSoniaInventory.Controllers
             var facturas = _context.modelFactura.Include(f => f.DetalleFactura).ToList();
             return View(facturas);
         }
+
         public IActionResult BuscarProducto(string query)
         {
             var productos = _context.modelProduct
