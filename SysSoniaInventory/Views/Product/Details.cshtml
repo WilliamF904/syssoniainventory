@@ -2,132 +2,127 @@
 
 @{
     ViewData["Title"] = "Details Product";
-}
-
+}    <style>
+         
+</style>
 <div class="col-12 grid-margin">
     <div class="card">
         <div class="card-body">
-            <h3 class="card-title font-weight-bold">Detalles del Producto</h3>
-
+           
+         
             <div class="row">
+                
+                <!-- Columna izquierda con los detalles del producto (campos) -->
                 <div class="col-md-6">
+                    <div class="justify-content-center">
+                        <h3 class="card-title font-weight-bold">Detalles del Producto</h3>
+                    </div>
+                    <hr class="linea-blanca"/>
                     <div class="form-group row">
                         <label class="col-sm-3 col-form-label" asp-for="IdCategory">Categoría</label>
                         <div class="col-sm-9">
-
                             <input type="text" class="form-control readonly-input" asp-for="IdCategoryNavigation.Name" readonly />
                         </div>
                     </div>
-                </div>
-                <div class="col-md-6">
                     <div class="form-group row">
                         <label class="col-sm-3 col-form-label" asp-for="IdProveedor">Proveedor</label>
                         <div class="col-sm-9">
-
                             <input type="text" class="form-control readonly-input" asp-for="IdProveedorNavigation.Name" readonly />
                         </div>
                     </div>
-                </div>
-            </div>
-
-            <div class="row">
-                <div class="col-md-6">
                     <div class="form-group row">
                         <label class="col-sm-3 col-form-label" asp-for="Name">Nombre</label>
                         <div class="col-sm-9">
                             <input type="text" class="form-control readonly-input" asp-for="Name" readonly />
                         </div>
                     </div>
-                </div>
-
-                <div class="col-md-6">
                     <div class="form-group row">
                         <label class="col-sm-3 col-form-label" asp-for="Codigo">Código</label>
                         <div class="col-sm-9">
-                            <input type="text" class="form-control text-light readonly-input" asp-for="Codigo" readonly />
+                            <input type="text" class="form-control readonly-input" asp-for="Codigo" readonly />
                         </div>
                     </div>
-                </div>
-            </div>
-
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="form-group row">
-                        <label class="col-sm-3 col-form-label" asp-for="PurchasePrice">Precio Compra</label>
-                        <div class="col-sm-9">
-                            <input type="text" class="form-control readonly-input" asp-for="PurchasePrice" readonly />
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-md-6">
+                   
                     <div class="form-group row">
                         <label class="col-sm-3 col-form-label" asp-for="Stock">Stock</label>
                         <div class="col-sm-9">
-                            <input type="text" class="form-control text-light readonly-input" asp-for="Stock" readonly />
+                            <input type="text" class="form-control readonly-input" asp-for="Stock" readonly />
                         </div>
                     </div>
-                </div>
-            </div>
 
-            <div class="row">
-                <div class="col-md-6">
+
                     <div class="form-group row">
-                        <label class="col-sm-3 col-form-label" asp-for="SalePrice">Precio Venta</label>
-                        <div class="col-sm-9">
-                            <input type="text" class="form-control text-light readonly-input" asp-for="SalePrice" readonly />
+                        <!-- Precio Compra -->
+                        <div class="col-md-6 col-12">
+                            <label for="PurchasePrice" class="form-label">Precio Compra</label>
+                            <input type="text" class="form-control readonly-input" id="PurchasePrice" asp-for="PurchasePrice" readonly />
+                        </div>
+
+                        <!-- Precio Venta -->
+                        <div class="col-md-6 col-12 mt-3 mt-md-0">
+                            <label for="SalePrice" class="form-label">Precio Venta</label>
+                            <input type="text" class="form-control readonly-input" id="SalePrice" asp-for="SalePrice" readonly />
                         </div>
                     </div>
-                </div>
 
-                <div class="col-md-6">
+
                     <div class="form-group row">
-                        <label class="col-sm-3 col-form-label" asp-for="Url">URL</label>
+                        <label class="col-sm-3 col-form-label" asp-for="Estatus">Estatus</label>
                         <div class="col-sm-9">
-                            <input type="text" class="form-control text-light readonly-input" asp-for="Url" readonly />
-                            @if (!string.IsNullOrEmpty(Model.Url))
-                            {
-                                <img src="@Model.Url" alt="Imagen del producto" style="max-width: 200px; max-height: 200px;" />
-                            }
-                            else
-                            {
-                                <p>No hay ninguna imagen cargada.</p>
-                            }
-
-
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="form-group row">
-                        <label class="col-sm-3 col-form-label " asp-for="Estatus">Estatus</label>
-                        <div class="col-sm-9">
-                            <select class="form-control text-light readonly-input" asp-for="Estatus" disabled>
+                            <select class="form-control readonly-input text-white" asp-for="Estatus" disabled>
                                 <option value="1">Activo</option>
                                 <option value="0">Inactivo</option>
                             </select>
                         </div>
                     </div>
                 </div>
+
+                <!-- Columna derecha con los precios juntos en la misma fila y columna -->
+                <div class="col-md-6">
+               <br /><br />
+                    <!-- Imagen del Producto -->
+                    <div class="form-group row">
+                      
+                        <div class="col-sm-12">
+                            <div class="form-group text-center">
+                                @if (!string.IsNullOrEmpty(Model.Url))
+
+                                {
+                                    <img src="@Model.Url" alt="Imagen del producto" class="img-fluid img-thumbnail" style="max-width: 250px; max-height: 250px; object-fit: cover;" />
+                                }
+
+                                else
+
+                                {
+                                    <p>No hay ninguna imagen cargada.</p>
+                                }
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- URL del Producto -->
+                    <div class="form-group row">
+                        <label class="col-sm-3 col-form-label" asp-for="Url">URL</label>
+                        <div class="col-sm-9">
+                            <input type="text" class="form-control readonly-input" asp-for="Url" readonly />
+                        </div>
+                    </div>
+                    <br />
+                    <hr class="linea-blanca" />
+                    <!-- Botones de acción al final, alineados a la derecha -->
+                    <div class="d-flex justify-content-end">
+                        <a asp-action="Edit" asp-route-id="@Model?.Id" class="btn btn-outline-primary font-weight-bold">Editar</a>
+                        <a asp-action="Index" class="btn btn-outline-secondary font-weight-bold ml-2">Volver a la lista</a>
+                    </div>
+                </div>
+
+
+           
+
             </div>
-
-            <div class="d-flex justify-content-end">
-
-                <a asp-action="Edit" asp-route-id="@Model?.Id" class="btn btn-outline-primary font-weight-bold">Editar</a>
-                <a asp-action="Index" class="btn btn-outline-secondary font-weight-bold ml-2">Volver a la lista</a>
-               
-            </div>
-
-
-
-
-
-
-
+           
         </div>
+          
+
     </div>
 </div>
-   

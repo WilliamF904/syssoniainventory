@@ -1,187 +1,191 @@
 ﻿@model SysSoniaInventory.Models.ModelProduct
 
 @{
-    ViewData["Title"] = "Edit Product";
+    ViewData["Title"] = "Editar Producto";
 }
 
 
-    <div class="col-12 grid-margin">
-        <div class="card">
-            <div class="card-body">
-                <h3 class="card-title font-weight-bold">Editar Producto</h3>
-               
-                <form id="editProductForm" asp-action="Edit">
-                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+<div class="col-12 grid-margin">
+    <div class="card">
+        <div class="card-body">
+        
 
-                    <input type="hidden" asp-for="Id" />
+            <form id="editProductForm" asp-action="Edit">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="form-group row">
-                                <label class="col-sm-3 col-form-label" asp-for="IdCategory">Categoría</label>
-                                <div class="col-sm-9">
-                                    <select class="form-control text-light" asp-for="IdCategory" asp-items="ViewBag.IdCategory"></select>
-                                </div>
+                <input type="hidden" asp-for="Id" />
+
+                <div class="row">
+
+
+                    <!-- Columna izquierda con los campos de detalle -->
+                    <div class="col-md-6">
+                        <div class="justify-content-center">
+                            <h3 class="card-title font-weight-bold">Editar Producto</h3>
+                        </div>
+                        <hr class="linea-blanca" />
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label" asp-for="IdCategory">Categoría</label>
+                            <div class="col-sm-9">
+                                <select class="form-control text-light" asp-for="IdCategory" asp-items="ViewBag.IdCategory"></select>
                             </div>
                         </div>
-                        <div class="col-md-6">
-                            <div class="form-group row">
-                                <label class="col-sm-3 col-form-label" asp-for="IdProveedor">Proveedor</label>
-                                <div class="col-sm-9">
-                                    <select class="form-control text-light" asp-for="IdProveedor" asp-items="ViewBag.IdProveedor"></select>
-                                </div>
+
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label" asp-for="IdProveedor">Proveedor</label>
+                            <div class="col-sm-9">
+                                <select class="form-control text-light" asp-for="IdProveedor" asp-items="ViewBag.IdProveedor"></select>
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label" asp-for="Name">Nombre</label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control" asp-for="Name" placeholder="Ingrese el nombre" />
+                                <span asp-validation-for="Name" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label" asp-for="Codigo">Código</label>
+                            <div class="col-sm-9">
+                                <input type="number" class="form-control" asp-for="Codigo" placeholder="Ingrese el código" />
+                                <span asp-validation-for="Codigo" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label" asp-for="Stock">Stock</label>
+                            <div class="col-sm-9">
+                                <input type="number" class="form-control" asp-for="Stock" placeholder="Ingrese la cantidad de stock" />
+                                <span asp-validation-for="Stock" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                           
+                            <div  class="col-md-6 col-12">
+                                <label asp-for="PurchasePrice">Precio Compra</label>
+                                <input type="number" class="form-control" asp-for="PurchasePrice" placeholder="Ingrese el precio de compra" />
+                                <span asp-validation-for="PurchasePrice" class="text-danger"></span>
+                            </div>
+                    
+                           
+                            <div class="col-md-6 col-12">
+                                <label asp-for="SalePrice">Precio Venta</label>
+                                <input type="number" class="form-control" asp-for="SalePrice" placeholder="Ingrese el precio de venta" />
+                                <span asp-validation-for="SalePrice" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label" asp-for="Estatus">Estatus</label>
+                            <div class="col-sm-9">
+                                <select class="form-control text-light" asp-for="Estatus">
+                                    <option value="1" selected>Activo</option>
+                                    <option value="0">Inactivo</option>
+                                </select>
                             </div>
                         </div>
                     </div>
 
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="form-group row">
-                                <label class="col-sm-3 col-form-label text-light" asp-for="Name">Nombre</label>
-                                <div class="col-sm-9">
-                                    <input type="text" class="form-control" asp-for="Name" placeholder="Ingrese el nombre" />
-                                    <span asp-validation-for="Name" class="text-danger"></span>
+                    <!-- Columna derecha con la imagen -->
+                    <div class="col-md-6">
+                        <br /><br />
+                        <!-- Imagen del Producto -->
+                        <div class="form-group row">
+                            <div class="col-sm-12">
+                                <div class="form-group text-center">
+                                    @if (!string.IsNullOrEmpty(Model.Url))
+
+                                    {
+                                        <img src="@Model.Url" alt="Imagen del producto" class="img-fluid img-thumbnail" style="max-width: 250px; max-height: 250px; object-fit: cover;" />
+                                    }
+
+                                    else
+
+                                    {
+                                        <p>No hay ninguna imagen cargada.</p>
+                                    }
                                 </div>
                             </div>
                         </div>
 
-
-                        <div class="col-md-6">
-                            <div class="form-group row">
-                                <label class="col-sm-3 col-form-label" asp-for="Codigo">Código</label>
-                                <div class="col-sm-9">
-                                    <input type="text" class="form-control text-light" asp-for="Codigo" placeholder="Ingrese el código" />
-                                    <span asp-validation-for="Codigo" class="text-danger"></span>
-                                </div>
-                            </div>
-                        </div>
-
-
-
-                    </div>
-
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="form-group row">
-                                <label class="col-sm-3 col-form-label text-light" asp-for="PurchasePrice">Precio Compra</label>
-                                <div class="col-sm-9">
-                                    <input type="text" class="form-control" asp-for="PurchasePrice" placeholder="Ingrese el precio de compra" />
-                                    <span asp-validation-for="PurchasePrice" class="text-danger"></span>
-                                </div>
-                            </div>
-                        </div>
-
-
-                        <div class="col-md-6">
-                            <div class="form-group row">
-                                <label class="col-sm-3 col-form-label" asp-for="Stock">Stock</label>
-                                <div class="col-sm-9">
-                                    <input type="text" class="form-control text-light" asp-for="Stock" placeholder="Ingrese la cantidad de stock" />
-                                    <span asp-validation-for="Stock" class="text-danger"></span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="row">
-
-
-                        <div class="col-md-6">
-                            <div class="form-group row">
-                                <label class="col-sm-3 col-form-label" asp-for="SalePrice">Precio Venta</label>
-                                <div class="col-sm-9">
-                                    <input type="text" class="form-control text-light" asp-for="SalePrice" placeholder="Ingrese el precio de venta" />
-                                    <span asp-validation-for="SalePrice" class="text-danger"></span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="col-md-6">
-                            <div class="form-group row">
-                                <label class="col-sm-3 col-form-label" asp-for="Url">URL</label>
-                                <div class="col-sm-9">
-                                    <div class="form-group">
-                                        <input type="file" name="img[]" class="file-upload-default">
-                                        <div class="input-group col-xs-12">
-                                            <input type="text" class="form-control file-upload-info" disabled placeholder="Upload Image">
-                                            <span class="input-group-append">
-                                                <button class="file-upload-browse btn btn-primary" type="button">Upload</button>
-                                            </span>
-                                        </div>
+                        <!-- Cargar Nueva Imagen -->
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label" for="Url">Nueva Imagen</label>
+                            <div class="col-sm-9">
+                                <div class="form-group">
+                                    <input type="file" name="img[]" class="file-upload-default" />
+                                    <div class="input-group col-xs-12">
+                                        <input type="text" class="form-control file-upload-info" disabled placeholder="Subir Imagen" />
+                                        <span class="input-group-append">
+                                            <button class="file-upload-browse btn btn-primary" type="button">Subir</button>
+                                        </span>
                                     </div>
                                 </div>
-
                             </div>
                         </div>
-                    </div>
 
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="form-group row">
-                                <label class="col-sm-3 col-form-label" asp-for="Estatus">Estatus</label>
-                                <div class="col-sm-9">
-                                    <select class="form-control  text-light" asp-for="Estatus">
-                                        <option value="1" selected>Activo</option>
-                                        <option value="0">Inactivo</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="d-flex justify-content-end">
-                        <button type="button" class="btn btn-outline-primary font-weight-bold" data-toggle="modal" data-target="#descriptionModal">Guardar</button>
-                        <a asp-action="Index" class="btn btn-outline-secondary font-weight-bold ml-2">Volver a la lista</a>
-                    </div>
-                </form>
-
-                <!-- Modal para Descripción de Cambios -->
-                <div class="modal fade" id="descriptionModal" tabindex="-1" role="dialog" aria-labelledby="descriptionModalLabel" aria-hidden="true">
-                    <div class="modal-dialog" role="document">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h3 class="modal-title font-weight-bold" id="descriptionModalLabel">Confirmar Acción</h3>
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                    <span aria-hidden="true">&times;</span>
-                                </button>
-                            </div>
-                            <div class="modal-body">
-                                <div class="form-group">
-                                    <label for="DescriptionCambio" class="h4">Descripción para el registro (opcional):</label>
-                                    <textarea class="form-control" id="DescriptionCambio" name="DescriptionCambio"></textarea>
-                                </div>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancelar</button>
-                                <button type="button" class="btn btn-outline-primary" onclick="submitForm()">Guardar</button>
+                        <!-- URL del Producto -->
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label" asp-for="Url">URL</label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control" asp-for="Url" placeholder="Ingrese la URL" />
                             </div>
                         </div>
                     </div>
                 </div>
+                <hr class="linea-blanca" />
+                <div class="d-flex justify-content-end">
+                    <button type="button" class="btn btn-outline-primary font-weight-bold" data-toggle="modal" data-target="#descriptionModal">Guardar</button>
+                    <a asp-action="Index" class="btn btn-outline-secondary font-weight-bold ml-2">Volver a la lista</a>
+                </div>
+            </form>
 
-                <script>
-
-                    function submitForm() {
-                        const descriptionField = document.getElementById('DescriptionCambio');
-                        const descriptionValue = descriptionField.value.trim();
-
-                        // Si la descripción está vacía, asignar "Sin descripción"
-                        if (!descriptionValue) {
-                            descriptionField.value = "Sin descripción";
-                        }
-
-                        // Enviar el formulario
-                    const form = document.getElementById('editProductForm');
-                        const input = document.createElement('input');
-                        input.type = 'hidden';
-                        input.name = 'DescriptionCambio';
-                        input.value = descriptionField.value;
-
-                        form.appendChild(input);
-                        form.submit();
-                    }
-                </script>
+            <!-- Modal para Descripción de Cambios -->
+            <div class="modal fade" id="descriptionModal" tabindex="-1" role="dialog" aria-labelledby="descriptionModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3 class="modal-title font-weight-bold" id="descriptionModalLabel">Confirmar Acción</h3>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <label for="DescriptionCambio" class="h4">Descripción para el registro (opcional):</label>
+                                <textarea class="form-control" id="DescriptionCambio" name="DescriptionCambio"></textarea>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancelar</button>
+                            <button type="button" class="btn btn-outline-primary" onclick="submitForm()">Guardar</button>
+                        </div>
+                    </div>
+                </div>
             </div>
+
+            <script>
+                function submitForm() {
+                    const descriptionField = document.getElementById('DescriptionCambio');
+                    const descriptionValue = descriptionField.value.trim();
+
+                    if (!descriptionValue) {
+                        descriptionField.value = "Sin descripción";
+                    }
+
+                    const form = document.getElementById('editProductForm');
+                    const input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.name = 'DescriptionCambio';
+                    input.value = descriptionField.value;
+
+                    form.appendChild(input);
+                    form.submit();
+                }
+            </script>
         </div>
     </div>
-
+</div>
