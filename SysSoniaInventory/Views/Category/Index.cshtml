@@ -6,55 +6,352 @@
 
 
 <div class="row">
-     <div class="col-lg-6 grid-margin stretch-card">
-        <div class="card">
-            <div class="card-body">
-                <h1 class="card-title">Lista de Categorias</h1>
-                <a asp-action="Create" class="btn btn-outline-primary font-weight-bold ml-2"> <i class="fas fa-plus" ></i> Nueva categoria</a>
-                
+
+
+<div class="col-lg-6 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <h1 class="card-title">Lista de Categorias</h1>
+            <div class="d-flex align-items-center justify-content-start">
+                <a asp-action="Create" class="btn btn-outline-primary font-weight-bold ml-2">
+                    <i class="fas fa-plus"></i> Nueva categoria
+                </a>
+                <div class="separator mx-3"></div>
+                <div class="dropdown-container">
+                    <button id="dropdownButton" class="dropdown-button btn btn-outline-secondary">
+                        <i class="mdi mdi-download"></i> Descargar PDF
+                    </button>
+                    <ul id="dropdownMenu" class="dropdown-menu">
+                            <
+                            <li>
+                                <a asp-controller="Category" asp-action="GeneratePdfCategoria">
+                                    <i class="mdi mdi-download"></i> Descargar Todas las Categorías
+                                </a>
+                            </li>
+
+                    </ul>
+
+                </div>
             </div>
         </div>
     </div>
-    <div class="col-lg-6 grid-margin stretch-card">
-        <div class="card">
-            <div class="card-body">
-              
+</div>
 
-            </div>
+
+<div class="col-lg-6 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <h1 class="card-title">Filtrado de Categorias</h1>
+            <form>
+                <div class="form-group d-flex align-items-center">
+                    <input type="text" id="filterText" class="form-control" placeholder="Filtrar por nombre" style="width: auto;">
+                </div>
+            </form>
         </div>
     </div>
-
+</div>
 
 <div class="col-12 grid-margin">
     <div class="card">
         <div class="card-body">
 
             <div class="table-responsive">
-                <table class="table table-striped table-hover">
-                    <thead>
-                        <tr>
+                    <table id="sucursalTable" class="table table-striped table-hover">
+                        <thead>
+                            <tr>
                                 <th>Categoria</th>
                                 <th>Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var item in Model)
-                        {
-                            <tr>
-                                    <td>
-                                        @Html.DisplayFor(modelItem => item.Name)
-                                    </td>
-                                <td>
-                                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-primary">Editar</a> |
-                                    <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-primary">Detalles</a>
-                                    <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger">Eliminar</a>
-                                </td>
                             </tr>
-                        }
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td>@Html.DisplayFor(modelItem => item.Name)</td>
+                                    <td>
+                                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-primary">Editar</a> |
+                                        <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-primary">Detalles</a> |
+                                        <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger">Eliminar</a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+
+                    <div id="paginationControls" class="mt-3 d-flex justify-content-center"></div>
+
             </div>
         </div>
+
     </div>
 </div>
 </div>
+
+<style>
+    /*le da estilo a ciertas partes de la pagina*/
+    .form-group label {
+        width: 150px;
+        text-align: right;
+    }
+
+    .form-group input,
+    .form-group select {
+        flex-grow: 1;
+    }
+
+    .d-flex {
+        display: flex;
+    }
+
+    .separator {
+        width: 2px;
+        height: 30px;
+        background-color: #ddd;
+    }
+
+    .dropdown-container {
+        position: relative;
+    }
+
+        .dropdown-container .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            display: none;
+            list-style: none;
+            padding: 10px;
+            margin: 0;
+            background-color: #f8f9fa;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            width: 250px;
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            z-index: 1000;
+        }
+
+            .dropdown-container .dropdown-menu.show {
+                display: block;
+                opacity: 1;
+                transform: translateY(0);
+            }
+</style>
+
+<script>
+    //hace funcionar la barra de busqueda del filtrado
+        document.addEventListener("DOMContentLoaded", function () {
+        const filterText = document.getElementById('filterText');
+        const table = document.getElementById('sucursalTable');
+        const rows = Array.from(table.getElementsByTagName('tbody')[0].getElementsByTagName('tr'));
+        const rowsPerPage = 6;
+        let currentPage = 1;
+        let filteredRows = rows;
+
+        function filterTable() {
+            const filterValue = filterText.value.toLowerCase();
+
+            filteredRows = rows.filter(row => {
+                const cells = Array.from(row.getElementsByTagName('td'));
+                return cells.some(cell => cell.textContent.toLowerCase().includes(filterValue));
+            });
+
+            currentPage = 1; // Reset to the first page
+            displayRows();
+            setupPagination();
+        }
+
+        function displayRows() {
+            const start = (currentPage - 1) * rowsPerPage;
+            const end = start + rowsPerPage;
+
+            rows.forEach(row => (row.style.display = 'none'));
+            filteredRows.slice(start, end).forEach(row => (row.style.display = ''));
+        }
+
+        function setupPagination() {
+            const paginationControls = document.getElementById('paginationControls');
+            paginationControls.innerHTML = '';
+
+            const totalPages = Math.ceil(filteredRows.length / rowsPerPage);
+
+            for (let i = 1; i <= totalPages; i++) {
+                const button = document.createElement('button');
+                button.textContent = i;
+                button.className = 'pagination-button btn btn-outline-secondary';
+                if (i === currentPage) {
+                    button.classList.add('active');
+                }
+
+                button.addEventListener('click', () => {
+                    currentPage = i;
+                    displayRows();
+                    setupPagination();
+                });
+
+                paginationControls.appendChild(button);
+            }
+        }
+
+        filterText.addEventListener('input', filterTable);
+        displayRows();
+        setupPagination();
+    });
+
+</script>
+
+<script>
+    //codigo que hace funcionar la funcion del boton de descarga pdf
+    document.addEventListener("DOMContentLoaded", function () {
+        const dropdownButton = document.getElementById("dropdownButton");
+        const dropdownMenu = document.getElementById("dropdownMenu");
+
+        dropdownButton.addEventListener("click", function (event) {
+            event.stopPropagation();
+            dropdownMenu.classList.toggle("show");
+        });
+
+        document.addEventListener("click", function (event) {
+            if (!dropdownMenu.contains(event.target)) {
+                dropdownMenu.classList.remove("show");
+            }
+        });
+
+        const filterText = document.getElementById('filterText');
+        const filterAccessType = document.getElementById('filterAccessType');
+        const roleTable = document.getElementById('roleTable');
+        const rows = Array.from(roleTable.getElementsByTagName('tbody')[0].getElementsByTagName('tr'));
+        const rowsPerPage = 6;
+        let currentPage = 1;
+        let filteredRows = rows;
+
+        function filterTable() {
+            const filterValue = filterText.value.toLowerCase();
+            const accessTypeValue = filterAccessType.value;
+
+            filteredRows = rows.filter(row => {
+                const cells = Array.from(row.getElementsByTagName('td'));
+                const matchesText = !filterValue || cells.some(cell => cell.textContent.toLowerCase().includes(filterValue));
+                const matchesAccessType = !accessTypeValue || cells[1].textContent.trim() === accessTypeValue;
+                return matchesText && matchesAccessType;
+            });
+
+            currentPage = 1; // Reset to first page
+            displayRows();
+            setupPagination();
+        }
+
+        function displayRows() {
+            const start = (currentPage - 1) * rowsPerPage;
+            const end = start + rowsPerPage;
+
+            rows.forEach(row => (row.style.display = 'none'));
+            filteredRows.slice(start, end).forEach(row => (row.style.display = ''));
+        }
+
+        function setupPagination() {
+            const totalPages = Math.ceil(filteredRows.length / rowsPerPage);
+            const paginationControls = document.getElementById('paginationControls');
+            paginationControls.innerHTML = '';
+
+            for (let i = 1; i <= totalPages; i++) {
+                const button = document.createElement('button');
+                button.textContent = i;
+                button.className = 'pagination-button';
+                if (i === currentPage) {
+                    button.classList.add('active');
+                }
+
+                button.addEventListener('click', () => {
+                    currentPage = i;
+                    displayRows();
+                    setupPagination();
+                });
+
+                paginationControls.appendChild(button);
+            }
+        }
+
+        filterText.addEventListener('input', filterTable);
+        filterAccessType.addEventListener('change', filterTable);
+        displayRows();
+        setupPagination();
+    });
+</script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const filterText = document.getElementById('filterText');
+        const table = document.getElementById('sucursalTable');
+        const rows = Array.from(table.getElementsByTagName('tbody')[0].getElementsByTagName('tr'));
+        const rowsPerPage = 6;
+        let currentPage = 1;
+        let filteredRows = rows;
+
+        function filterTable() {
+            const filterValue = filterText.value.toLowerCase();
+
+            filteredRows = rows.filter(row => {
+                const cells = Array.from(row.getElementsByTagName('td'));
+                return cells.some(cell => cell.textContent.toLowerCase().includes(filterValue));
+            });
+
+            currentPage = 1; // Reset to the first page
+            displayRows();
+            setupPagination();
+        }
+
+        function displayRows() {
+            const start = (currentPage - 1) * rowsPerPage;
+            const end = start + rowsPerPage;
+
+            rows.forEach(row => (row.style.display = 'none'));
+            filteredRows.slice(start, end).forEach(row => (row.style.display = ''));
+        }
+
+        function setupPagination() {
+            const paginationControls = document.getElementById('paginationControls');
+            paginationControls.innerHTML = '';
+
+            const totalPages = Math.ceil(filteredRows.length / rowsPerPage);
+
+            for (let i = 1; i <= totalPages; i++) {
+                const button = document.createElement('button');
+                button.textContent = i;
+                button.className = 'pagination-button btn btn-outline-secondary';
+                if (i === currentPage) {
+                    button.classList.add('active');
+                }
+
+                button.addEventListener('click', () => {
+                    currentPage = i;
+                    displayRows();
+                    setupPagination();
+                });
+
+                paginationControls.appendChild(button);
+            }
+        }
+
+        filterText.addEventListener('input', filterTable);
+        displayRows();
+        setupPagination();
+    });
+</script>
+
+<div id="paginationControls" class="mt-3 d-flex justify-content-center"></div>
+
+<style>
+    .pagination-button {
+        margin: 0 5px;
+        padding: 5px 10px;
+        border: 1px solid #ddd;
+        cursor: pointer;
+    }
+
+        .pagination-button.active {
+            background-color: #007bff;
+            color: #fff;
+            border-color: #007bff;
+        }
+</style>
