@@ -45,15 +45,16 @@ namespace SysSoniaInventory.DataAccess
             {
                 entity.HasKey(e => e.Id).HasName("PK__ModelUser__3214EC078152B9BB");
 
+                entity.Property(e => e.Tel);
                 entity.Property(e => e.Password).IsFixedLength();
 
                 entity.HasOne(d => d.IdRolNavigation).WithMany(p => p.User)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK1_Rol_Usuario");
+                    .HasConstraintName("FK_User_Rol");
 
                 entity.HasOne(d => d.IdSucursalNavigation).WithMany(p => p.User)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK1_Sucursal_Usuario");
+                    .HasConstraintName("FK_User_Sucursal");
             });
 
             modelBuilder.Entity<ModelSucursal>(entity =>
@@ -72,8 +73,9 @@ namespace SysSoniaInventory.DataAccess
             modelBuilder.Entity<ModelProveedor>(entity =>
             {
                 entity.HasKey(e => e.Id).HasName("PK__ModelProveedor__3214EC0773A63FF4");
-                entity.Property(e => e.Name).IsRequired().HasMaxLength(60).IsUnicode(false);
+                entity.Property(e => e.Name).IsRequired().HasMaxLength(75).IsUnicode(false);
                 entity.Property(e => e.Description).HasMaxLength(250).IsUnicode(false);
+                entity.Property(e => e.Tel);
                 entity.Property(e => e.Email).HasMaxLength(75).IsUnicode(false);
             });
 
@@ -83,14 +85,18 @@ namespace SysSoniaInventory.DataAccess
                 entity.Property(e => e.Name).IsRequired().HasMaxLength(100).IsUnicode(false);
                 entity.Property(e => e.PurchasePrice).HasColumnType("decimal(18, 2)").IsRequired();
                 entity.Property(e => e.SalePrice).HasColumnType("decimal(18, 2)").IsRequired();
+                entity.Property(e => e.Stock).IsRequired();
+                entity.Property(e => e.Codigo).HasMaxLength(25).IsUnicode(false);
+                entity.Property(e => e.Url).HasMaxLength(100).IsUnicode(false);
+                entity.Property(e => e.Estatus).IsRequired();
 
                 entity.HasOne(d => d.IdCategoryNavigation).WithMany(p => p.Product)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK1_Category_Product");
+                    .HasConstraintName("FK_Product_Category");
 
                 entity.HasOne(d => d.IdProveedorNavigation).WithMany(p => p.Product)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK1_Proveedor_Product");
+                    .HasConstraintName("FK_Product_Proveedor");
             });
 
             modelBuilder.Entity<ModelHistorialProduct>(entity =>
@@ -99,14 +105,15 @@ namespace SysSoniaInventory.DataAccess
                 entity.Property(e => e.NameUser).IsRequired().HasMaxLength(100).IsUnicode(false);
                 entity.Property(e => e.Date).HasColumnType("date").IsRequired();
                 entity.Property(e => e.Time).HasColumnType("time").IsRequired();
-
+                entity.Property(e => e.DescriptionCambio).HasMaxLength(250).IsUnicode(false);
             });
 
             modelBuilder.Entity<ModelFactura>(entity =>
             {
                 entity.HasKey(e => e.Id).HasName("PK__ModelFactura__3214EC0773A64237");
                 entity.Property(e => e.NameSucursal).IsRequired().HasMaxLength(75).IsUnicode(false);
-                entity.Property(e => e.NameUser).IsRequired().HasMaxLength(75).IsUnicode(false);
+                entity.Property(e => e.NameUser).IsRequired().HasMaxLength(100).IsUnicode(false);
+                entity.Property(e => e.NameClient).HasMaxLength(75).IsUnicode(false);
                 entity.Property(e => e.Date).HasColumnType("date").IsRequired();
                 entity.Property(e => e.Time).HasColumnType("time").IsRequired();
             });
@@ -115,45 +122,20 @@ namespace SysSoniaInventory.DataAccess
             {
                 entity.HasKey(e => e.Id).HasName("PK__ModelDetalleFactura__3214EC0773A64348");
                 entity.Property(e => e.SalePriceUnitario).HasColumnType("decimal(18, 2)").IsRequired();
+                entity.Property(e => e.ValorDescuento).HasColumnType("decimal(18, 2)").HasDefaultValue(0);
                 entity.Property(e => e.SalePriceDescuento).HasColumnType("decimal(18, 2)").IsRequired();
                 entity.Property(e => e.PriceTotal).HasColumnType("decimal(18, 2)").IsRequired();
-
                 entity.HasOne(d => d.IdFacturaNavigation).WithMany(p => p.DetalleFactura)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK1_Factura_DetalleFactura");
+                  .OnDelete(DeleteBehavior.ClientSetNull)
+                  .HasConstraintName("FK1_Factura_DetalleFactura");
 
-                
             });
 
-            modelBuilder.Entity<ModelDevolucion>(entity =>
-            {
-                entity.HasKey(e => e.Id).HasName("PK__ModelDevolucion__3214EC0773A64459");
-                entity.Property(e => e.NameSucursal).IsRequired().HasMaxLength(50).IsUnicode(false);
-                entity.Property(e => e.NameUser).IsRequired().HasMaxLength(50).IsUnicode(false);
-                entity.Property(e => e.Date).HasColumnType("date").IsRequired();
-                entity.Property(e => e.Time).HasColumnType("time").IsRequired();
 
-                entity.HasOne(d => d.IdFacturaNavigation).WithMany()
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK1_Factura_Devolucion");
-            });
 
-            modelBuilder.Entity<ModelDetalleDevolucion>(entity =>
-            {
-                entity.HasKey(e => e.Id).HasName("PK__ModelDetalleDevolucion__3214EC0773A6456A");
-                entity.Property(e => e.NameProduct).IsRequired().HasMaxLength(100).IsUnicode(false);
-                entity.Property(e => e.PurchasePrice).HasColumnType("decimal(18, 2)").IsRequired();
-                entity.Property(e => e.SalePriceUnitario).HasColumnType("decimal(18, 2)").IsRequired();
-                entity.Property(e => e.PriceReembolso).HasColumnType("decimal(18, 2)").IsRequired();
-                entity.Property(e => e.PriceTotalReembolso).HasColumnType("decimal(18, 2)").IsRequired();
 
-                entity.HasOne(d => d.IdDevolucionNavigation).WithMany(p => p.DetalleDevolucion)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK1_Devolucion_DetalleDevolucion");
-
-             
-            });
-
+   
+            // Ajustes restantes similares.
             OnModelCreatingPartial(modelBuilder);
         }
 

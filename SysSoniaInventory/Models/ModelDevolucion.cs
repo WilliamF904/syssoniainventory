@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
+using Microsoft.EntityFrameworkCore;
 
 namespace SysSoniaInventory.Models
 {
@@ -10,13 +11,13 @@ namespace SysSoniaInventory.Models
 
         public int IdFactura { get; set; }
 
-        [Required, MaxLength(50)]
+        [Required, MaxLength(75), Unicode(false)]
         public string NameSucursal { get; set; }
 
-        [Required, MaxLength(50)]
+        [Required, MaxLength(100), Unicode(false)]
         public string NameUser { get; set; }
 
-        [MaxLength(50)]
+        [MaxLength(75), Unicode(false)]
         public string NameClient { get; set; }
 
         [Required, Column(TypeName = "dateonly")]

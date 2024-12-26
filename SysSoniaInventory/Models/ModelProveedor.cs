@@ -8,7 +8,7 @@ namespace SysSoniaInventory.Models
         [Key]
         public int Id { get; set; }
 
-        [Required, StringLength(60), Unicode(false)]
+        [Required, StringLength(75), Unicode(false)]
         public string Name { get; set; }
 
         [StringLength(250), Unicode(false)]

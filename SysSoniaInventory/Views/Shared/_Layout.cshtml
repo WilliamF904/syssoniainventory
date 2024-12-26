@@ -15,7 +15,7 @@
     <link rel="stylesheet" href="~/assets/vendors/owl-carousel-2/owl.carousel.min.css">
     <link rel="stylesheet" href="~/assets/vendors/owl-carousel-2/owl.theme.default.min.css">
 
-    <link rel="stylesheet" href="~/css/all.min.css">
+    <link rel="stylesheet" href="~/vendor/fontawesome-free/css/all.min.css">
     <link rel="stylesheet" href="~/css/site.css">
     <!-- End plugin css for this page -->
     <!-- inject:css -->
@@ -24,10 +24,9 @@
     <link rel="stylesheet" href="~/assets/css/style.css">
     <!-- End layout styles -->
     <link rel="shortcut icon" href="~/assets/images/favicon.png" />
-  
 
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="~/js/chart.js"></script>
+    <script src="~/js/jqueryjs"></script>
 
 </head>
 <body class="sidebar-icon-only">
@@ -50,8 +49,23 @@
                             </div>
                             
                             <div class="profile-name">
-                                <h5 class="mb-0 font-weight-normal">Henry Klein</h5> <!-- -----------------nombre de usuario--------------------- -->
-                                <span>Gold Member</span>
+                             @if (User.Identity.IsAuthenticated)
+{
+    var userName = User.FindFirst(System.Security.Claims.ClaimTypes.Name)?.Value;
+    var nameParts = userName.Split(' ');
+
+    // Tomar solo los primeros dos nombres
+    var firstTwoNames = string.Join(" ", nameParts.Take(2));
+
+    <h5 class="mb-0 font-weight-normal">@firstTwoNames</h5>
+}
+else
+{
+    <h5 class="mb-0 font-weight-normal">¡No autenticado!</h5>
+}
+
+                           <!-- -----------------nombre de usuario--------------------- -->
+                             
                             </div>
                         </div>
                         <a href="#" id="profile-dropdown" data-toggle="dropdown"><i class="mdi mdi-dots-vertical"></i></a>
@@ -74,7 +88,12 @@
                                     </div>
                                 </div>
                                 <div class="preview-item-content">
-                                    <p class="preview-subject ellipsis mb-1 text-small">Cambiar Contraseña</p>
+                                    <p class="preview-subject ellipsis mb-1 text-small">
+                                        <a class="nav-link" asp-controller="Auth" asp-action="ChangePassword">
+                                       
+                                        Usuario
+                                    </a>
+                                    </p>
                                 </div>
                             </a>
                             <div class="dropdown-divider"></div>
@@ -104,8 +123,10 @@
                 </li>
 
                 <!---->
+                @if (User.HasClaim("AccessTipe", "Nivel 4"))
 
-              
+                {
+
                     <li class="nav-item menu-items">
                         <a class="nav-link" asp-controller="Rol" asp-action="Index">
                             <span class="menu-icon">
@@ -114,6 +135,9 @@
                             <span class="menu-title">Rol</span>
                         </a>
                     </li>
+                }
+                @if (User.HasClaim("AccessTipe", "Nivel 4"))
+                {
                     <li class="nav-item menu-items">
                         <a class="nav-link" asp-controller="Sucursal" asp-action="Index">
                             <span class="menu-icon">
@@ -122,6 +146,10 @@
                             <span class="menu-title">Sucursal</span>
                         </a>
                     </li>
+                }
+                @if (User.HasClaim("AccessTipe", "Nivel 4") || User.HasClaim("AccessTipe", "Nivel 3"))
+
+                {
                     <li class="nav-item menu-items">
                         <a class="nav-link" asp-controller="User" asp-action="Index">
                             <span class="menu-icon">
@@ -130,6 +158,9 @@
                             <span class="menu-title">Usuario</span>
                         </a>
                     </li>
+                }
+                @if (User.HasClaim("AccessTipe", "Nivel 4") || User.HasClaim("AccessTipe", "Nivel 3"))
+                {
                     <li class="nav-item menu-items">
                         <a class="nav-link" asp-controller="Category" asp-action="Index">
                             <span class="menu-icon">
@@ -138,14 +169,20 @@
                             <span class="menu-title">Categoría</span>
                         </a>
                     </li>
-                <li class="nav-item menu-items">
-                    <a class="nav-link" asp-controller="HistorialProduct" asp-action="Index">
-                        <span class="menu-icon">
-                            <i class="mdi mdi-history"></i>
-                        </span>
-                        <span class="menu-title">Registros</span>
-                    </a>
-                </li>
+                }
+                @if (User.HasClaim("AccessTipe", "Nivel 4"))
+
+                {
+                    <li class="nav-item menu-items">
+                        <a class="nav-link" asp-controller="HistorialProduct" asp-action="Index">
+                            <span class="menu-icon">
+                                <i class="mdi mdi-history"></i>
+                            </span>
+                            <span class="menu-title">Registros</span>
+                        </a>
+                    </li>
+                }   @if (User.HasClaim("AccessTipe", "Nivel 4") || User.HasClaim("AccessTipe", "Nivel 3"))
+                {
                     <li class="nav-item menu-items">
                         <a class="nav-link" asp-controller="Proveedor" asp-action="Index">
                             <span class="menu-icon">
@@ -154,6 +191,9 @@
                             <span class="menu-title">Proveedor</span>
                         </a>
                     </li>
+                }
+                @if (User.HasClaim("AccessTipe", "Nivel 4") || User.HasClaim("AccessTipe", "Nivel 3"))
+                {
                     <li class="nav-item menu-items">
                         <a class="nav-link" asp-controller="Product" asp-action="Index">
                             <span class="menu-icon">
@@ -162,15 +202,19 @@
                             <span class="menu-title">Producto</span>
                         </a>
                     </li>
-                <li class="nav-item menu-items">
-                    <a class="nav-link" asp-controller="Factura" asp-action="Index">
-                        <span class="menu-icon">
-                            <i class="mdi mdi-cart"></i>
-                        </span>
-                        <span class="menu-title">Pago</span>
-                    </a>
-                </li>
-             
+                }
+                @if (User.HasClaim("AccessTipe", "Nivel 4") || User.HasClaim("AccessTipe", "Nivel 3") || User.HasClaim("AccessTipe", "Nivel 2"))
+
+                {
+                    <li class="nav-item menu-items">
+                        <a class="nav-link" asp-controller="Factura" asp-action="Index">
+                            <span class="menu-icon">
+                                <i class="mdi mdi-cart"></i>
+                            </span>
+                            <span class="menu-title">Pago</span>
+                        </a>
+                    </li>
+                }
 
 
                 <!---->
@@ -206,53 +250,60 @@
 
                     <ul class="navbar-nav navbar-nav-right">
                         <!---->
-                        <li class="nav-item dropdown d-none d-lg-block">
-                            <a class="nav-link btn btn-success create-new-button font-weight-bold" id="createbuttonDropdown" data-toggle="dropdown" aria-expanded="false" href="#"><i class="fas fa-plus"></i> Creación rápida</a>
-                            <div class="dropdown-menu dropdown-menu-right navbar-dropdown preview-list" aria-labelledby="createbuttonDropdown">
-                                <h6 class="p-3 mb-0">Opciones de Creación</h6>
+                        @if (User.HasClaim("AccessTipe", "Nivel 4") || User.HasClaim("AccessTipe", "Nivel 3"))
+                        {
 
-                                <div class="dropdown-divider"></div>
-                                <a class="dropdown-item preview-item" asp-area="" asp-controller="Product" asp-action="Create">
-                                    <div class="preview-thumbnail">
-                                        <div class="preview-icon bg-dark rounded-circle">
-                                            <i class="mdi mdi-cube-outline text-primary"></i>
+                            <li class="nav-item dropdown d-none d-lg-block">
+                                <a class="nav-link btn btn-success create-new-button font-weight-bold" id="createbuttonDropdown" data-toggle="dropdown" aria-expanded="false" href="#"><i class="fas fa-plus"></i> Creación rápida</a>
+                                <div class="dropdown-menu dropdown-menu-right navbar-dropdown preview-list" aria-labelledby="createbuttonDropdown">
+                                    <h6 class="p-3 mb-0">Opciones de Creación</h6>
+
+                                    <div class="dropdown-divider"></div>
+                                    <a class="dropdown-item preview-item" asp-area="" asp-controller="Product" asp-action="Create">
+                                        <div class="preview-thumbnail">
+                                            <div class="preview-icon bg-dark rounded-circle">
+                                                <i class="mdi mdi-cube-outline text-primary"></i>
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div class="preview-item-content">
-                                        <p class="preview-subject ellipsis mb-1">Crear Producto</p>
-                                    </div>
-                                </a>
-
-                                <div class="dropdown-divider"></div>
-                                <a class="dropdown-item preview-item" asp-area="" asp-controller="Proveedor" asp-action="Create">
-                                    <div class="preview-thumbnail">
-                                        <div class="preview-icon bg-dark rounded-circle">
-                                            <i class="mdi mdi-truck text-success"></i>
+                                        <div class="preview-item-content">
+                                            <p class="preview-subject ellipsis mb-1">Crear Producto</p>
                                         </div>
-                                    </div>
-                                    <div class="preview-item-content">
-                                        <p class="preview-subject ellipsis mb-1">Crear Proveedor</p>
-                                    </div>
-                                </a>
+                                    </a>
 
-                                <div class="dropdown-divider"></div>
-                                <a class="dropdown-item preview-item" asp-area="" asp-controller="User" asp-action="Create">
-                                    <div class="preview-thumbnail">
-                                        <div class="preview-icon bg-dark rounded-circle">
-                                            <i class="mdi mdi-account-plus text-info"></i>
+                                    <div class="dropdown-divider"></div>
+                                    <a class="dropdown-item preview-item" asp-area="" asp-controller="Proveedor" asp-action="Create">
+                                        <div class="preview-thumbnail">
+                                            <div class="preview-icon bg-dark rounded-circle">
+                                                <i class="mdi mdi-truck text-success"></i>
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div class="preview-item-content">
-                                        <p class="preview-subject ellipsis mb-1">Crear Usuario</p>
-                                    </div>
-                                </a>
+                                        <div class="preview-item-content">
+                                            <p class="preview-subject ellipsis mb-1">Crear Proveedor</p>
+                                        </div>
+                                    </a>
 
-                               
+                                    <div class="dropdown-divider"></div>
+                                    <a class="dropdown-item preview-item" asp-area="" asp-controller="User" asp-action="Create">
+                                        <div class="preview-thumbnail">
+                                            <div class="preview-icon bg-dark rounded-circle">
+                                                <i class="mdi mdi-account-plus text-info"></i>
+                                            </div>
+                                        </div>
+                                        <div class="preview-item-content">
+                                            <p class="preview-subject ellipsis mb-1">Crear Usuario</p>
+                                        </div>
+                                    </a>
 
-                                <div class="dropdown-divider"></div>
-                                <p class="p-3 mb-0 text-center">Ver todas las opciones</p>
-                            </div>
-                        </li>
+
+
+                                    <div class="dropdown-divider"></div>
+                                    <p class="p-3 mb-0 text-center">Ver todas las opciones</p>
+                                </div>
+                            </li>
+
+
+                        }
+
                         <!---->
 
                       
@@ -348,7 +399,24 @@
                             <a class="nav-link" id="profileDropdown" href="#" data-toggle="dropdown">
                                 <div class="navbar-profile">
                                     <img class="img-xs rounded-circle" src="~/assets/images/faces/face15.jpg" alt="">
-                                    <p class="mb-0 d-none d-sm-block navbar-profile-name">Henry Klein</p><!-- -----------------nombre de usuario--------------------- -->
+                                                                      
+                                    @if (User.Identity.IsAuthenticated)
+                                    {
+                                        var userName = User.FindFirst(System.Security.Claims.ClaimTypes.Name)?.Value;
+                                        var nameParts = userName.Split(' ');
+
+                                        // Tomar solo los primeros dos nombres
+                                        var firstTwoNames = string.Join(" ", nameParts.Take(2));
+
+                                        <p class="mb-0 d-none d-sm-block navbar-profile-name">@firstTwoNames</p>
+                                    }
+                                    else
+                                    {
+                                        <p class="mb-0 d-none d-sm-block navbar-profile-name">¡No autenticado!</p>
+                                    }
+
+                                   
+                                   <!-- -----------------nombre de usuario--------------------- -->
                                     <i class="mdi mdi-menu-down d-none d-sm-block"></i>
                                 </div>
                             </a>
@@ -373,7 +441,11 @@
                                         </div>
                                     </div>
                                     <div class="preview-item-content">
-                                        <p class="preview-subject mb-1">Log out</p>
+                                        <form asp-controller="Auth" asp-action="Logout" method="post">
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit" class="btn btn-link text-light">Log out</button>
+                                        </form>
+
                                     </div>
                                 </a>
                                 <div class="dropdown-divider"></div>
@@ -395,7 +467,39 @@
                 <div class="content-wrapper">
                     <div class="container">
                         <main role="main" class="pb-3">
+                            @if (ViewBag.ErrorMessage != null)
+                            {
+                                <div class="alert alert-danger">
+                                    <strong>Error:</strong> @ViewBag.ErrorMessage
+                                </div>
+
+                            }
+                            @if (TempData["Message"] != null)
+                            {
+                                <div class="alert alert-success">
+                                    @TempData["Message"]
+                                </div>
+                            }     
+                            @if (TempData["Error"] != null)
+                            {
+                                <div class="alert alert-danger">
+                                    @TempData["Error"]
+                                </div>
+                            }  
+                            @if (TempData["Success"] != null)
+
+
+
+                            {
+                                <div class="alert alert-success">
+                                    @TempData["Success"]
+                                </div>
+                            }
+
                             @RenderBody()
+                           
+
+
                         </main>
 
                     </div>
@@ -434,57 +538,18 @@
     <script src="~/assets/js/misc.js"></script>
     <script src="~/assets/js/settings.js"></script>
     <script src="~/assets/js/todolist.js"></script>
-    <script src="~/js/SearchProduct.js"></script>
-        <script src="~/assets/js/file-upload.js"></script>
+
+       
     <!-- endinject -->
     <!-- Custom js for this page -->
+    <script src="~/assets/js/file-upload.js"></script>
     <script src="~/assets/js/dashboard.js"></script>
 
-    <script>
-
-        document.addEventListener("DOMContentLoaded", function () {
-            const toggleThemeButton = document.getElementById("toggle-theme");
-            const body = document.body;
-
-            // Determinar el estado inicial (oscuro por defecto)
-            let isDarkMode = true;
-
-            toggleThemeButton.addEventListener("click", () => {
-                if (isDarkMode) {
-                    body.classList.remove("dark-theme");
-                    body.classList.add("light-theme");
-                    toggleThemeButton.textContent = "Cambiar a Tema Oscuro";
-                    toggleThemeButton.classList.remove("btn-dark");
-                    toggleThemeButton.classList.add("btn-light");
-                } else {
-                    body.classList.remove("light-theme");
-                    body.classList.add("dark-theme");
-                    toggleThemeButton.textContent = "Cambiar a Tema Claro";
-                    toggleThemeButton.classList.remove("btn-light");
-                    toggleThemeButton.classList.add("btn-dark");
-                }
-                isDarkMode = !isDarkMode;
-            });
-        });
+    <script src="~/js/SearchProduct.js"></script>
+    <!--  -->
+    
 
 
-        document.addEventListener("DOMContentLoaded", function () {
-            const darkModeButton = document.getElementById("sidebar-dark-theme");
-            const lightModeButton = document.getElementById("sidebar-default-theme");
-            const body = document.body;
-
-            darkModeButton.addEventListener("click", () => {
-                body.classList.remove("light-theme");
-                body.classList.add("dark-theme");
-            });
-
-            lightModeButton.addEventListener("click", () => {
-                body.classList.remove("dark-theme");
-                body.classList.add("light-theme");
-            });
-        });
-
-    </script>
     <!-- End custom js for this page -->
     @await RenderSectionAsync("Scripts", required: false)
 </body>

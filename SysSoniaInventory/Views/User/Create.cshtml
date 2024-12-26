@@ -12,7 +12,7 @@
                 <div class="row">
                     <div class="col-md-6">
                         <div class="form-group row">
-                            <label class="col-sm-3 col-form-label" asp-for="IdRol">Rol</label>
+                            <label class="col-sm-3 col-form-label" asp-for="IdRol">Rol: </label>
                             <div class="col-sm-9">
                                 <select class="form-control" asp-for="IdRol" asp-items="ViewBag.IdRol" required></select>
                             </div>
@@ -20,7 +20,7 @@
                     </div>
                     <div class="col-md-6">
                         <div class="form-group row">
-                            <label class="col-sm-3 col-form-label" asp-for="IdSucursal">Sucursal</label>
+                            <label class="col-sm-3 col-form-label" asp-for="IdSucursal">Sucursal: </label>
                             <div class="col-sm-9">
                                 <select class="form-control" asp-for="IdSucursal" asp-items="ViewBag.IdSucursal" required></select>
                             </div>
@@ -31,7 +31,7 @@
                 <div class="row">
                     <div class="col-md-6">
                         <div class="form-group row">
-                            <label class="col-sm-3 col-form-label" asp-for="Name">Nombre</label>
+                            <label class="col-sm-3 col-form-label" asp-for="Name">Nombre: </label>
                             <div class="col-sm-9">
                                 <input type="text" class="form-control" asp-for="Name" placeholder="Ingrese el nombre" required />
                                 <span asp-validation-for="Name" class="text-danger"></span>
@@ -40,7 +40,7 @@
                     </div>
                     <div class="col-md-6">
                         <div class="form-group row">
-                            <label class="col-sm-3 col-form-label" asp-for="LastName">Apellido</label>
+                            <label class="col-sm-3 col-form-label" asp-for="LastName">Apellido: </label>
                             <div class="col-sm-9">
                                 <input type="text" class="form-control" asp-for="LastName" placeholder="Ingrese el apellido" required />
                                 <span asp-validation-for="LastName" class="text-danger"></span>
@@ -52,7 +52,7 @@
                 <div class="row">
                     <div class="col-md-6">
                         <div class="form-group row">
-                            <label class="col-sm-3 col-form-label" asp-for="Email">Correo</label>
+                            <label class="col-sm-3 col-form-label" asp-for="Email">Correo: </label>
                             <div class="col-sm-9">
                                 <input type="email" class="form-control" asp-for="Email" placeholder="Ingrese el correo" required />
                                 <span asp-validation-for="Email" class="text-danger"></span>
@@ -61,9 +61,9 @@
                     </div>
                     <div class="col-md-6">
                         <div class="form-group row">
-                            <label class="col-sm-3 col-form-label" asp-for="Tel">Teléfono</label>
+                            <label class="col-sm-3 col-form-label" asp-for="Tel">Teléfono: </label>
                             <div class="col-sm-9">
-                                <input type="tel" class="form-control" asp-for="Tel" placeholder="Ingrese el teléfono" required />
+                                <input type="tel" class="form-control" asp-for="Tel" placeholder="Ingrese el teléfono" />
                                 <span asp-validation-for="Tel" class="text-danger"></span>
                             </div>
                         </div>
@@ -73,7 +73,7 @@
                 <div class="row">
                     <div class="col-md-6">
                         <div class="form-group row">
-                            <label class="col-sm-3 col-form-label" asp-for="Password">Contraseña</label>
+                            <label class="col-sm-3 col-form-label" asp-for="Password">Contraseña: </label>
                             <div class="col-sm-9">
                                 <input type="password" class="form-control" asp-for="Password" placeholder="Ingrese la contraseña" required />
                                 <span asp-validation-for="Password" class="text-danger"></span>
@@ -82,7 +82,7 @@
                     </div>
                     <div class="col-md-6">
                         <div class="form-group row">
-                            <label class="col-sm-3 col-form-label" asp-for="Estatus">Estatus</label>
+                            <label class="col-sm-3 col-form-label" asp-for="Estatus">Estatus: </label>
                             <div class="col-sm-9">
                                 <select class="form-control" asp-for="Estatus">
                                     <option value="1" selected>Activo</option>
@@ -96,7 +96,7 @@
                 <div class="row">
                     <div class="col-md-6">
                         <div class="form-group row">
-                            <label class="col-sm-3 col-form-label" asp-for="RegistrationDate">Fecha de Registro</label>
+                            <label class="col-sm-3 col-form-label" asp-for="RegistrationDate">Fecha de Registro: </label>
                             <div class="col-sm-9">
                                 <input type="date" class="form-control" asp-for="RegistrationDate" />
                                 <span asp-validation-for="RegistrationDate" class="text-danger"></span>

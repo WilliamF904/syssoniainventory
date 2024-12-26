@@ -11,7 +11,7 @@
     }
     public class DetalleFacturaViewModel
     {
-        public int? CodigoProducto { get; set; }
+        public string? CodigoProducto { get; set; }
         public int CantidadProduct { get; set; }
     }
 }

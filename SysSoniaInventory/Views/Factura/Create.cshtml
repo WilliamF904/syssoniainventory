@@ -49,7 +49,7 @@
 
                         {
                             <option value="@product.Id" data-name="@product.Name" data-price="@product.SalePrice" data-stock="@product.Stock" data-codigo="@product.Codigo">
-                                @product.Name - Precio: $@product.SalePrice
+                                @product.Name - Precio: $@product.SalePrice - @product.Codigo
                             </option>
                         }
                     </select>
@@ -110,6 +110,7 @@
                     <input type="hidden" name="${baseName}.ValorDescuento" value="${product.discount}" />
                     <input type="hidden" name="${baseName}.SalePriceUnitario" value="${product.price}" />
                     <input type="hidden" name="${baseName}.PriceTotal" value="${product.subtotal}" />
+                        <input type="hidden" name="${baseName}.NameProducto" value="${product.name}" />
                 `;
             productIndex++;
         }

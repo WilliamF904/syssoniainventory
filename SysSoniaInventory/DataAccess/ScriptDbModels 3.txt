@@ -1,0 +1,167 @@
+﻿-- Crear la base de datos
+CREATE DATABASE DbSoniaInventory3;
+GO
+
+-- Usar la base de datos creada
+USE DbSoniaInventory3;
+GO
+
+-- Tabla ModelRol
+CREATE TABLE ModelRol (
+    Id INT PRIMARY KEY IDENTITY(1,1),
+    Name VARCHAR(30) NOT NULL,
+    AccessTipe VARCHAR(30) NOT NULL
+);
+
+-- Tabla ModelSucursal
+CREATE TABLE ModelSucursal (
+    Id INT PRIMARY KEY IDENTITY(1,1),
+    Name VARCHAR(75) NOT NULL,
+    Address VARCHAR(100)
+);
+
+-- Tabla ModelUser
+CREATE TABLE ModelUser (
+    Id INT PRIMARY KEY IDENTITY(1,1),
+    IdRol INT NOT NULL,
+    IdSucursal INT NOT NULL,
+    Tel INT,
+    Name VARCHAR(50) NOT NULL,
+    LastName VARCHAR(50) NOT NULL,
+    Email VARCHAR(75) NOT NULL,
+    Password VARCHAR(64) NOT NULL,
+    Estatus TINYINT NOT NULL,
+    RegistrationDate DATE NOT NULL,
+    CONSTRAINT FK_User_Rol FOREIGN KEY (IdRol) REFERENCES ModelRol(Id),
+    CONSTRAINT FK_User_Sucursal FOREIGN KEY (IdSucursal) REFERENCES ModelSucursal(Id)
+);
+
+-- Tabla ModelCategory
+CREATE TABLE ModelCategory (
+    Id INT PRIMARY KEY IDENTITY(1,1),
+    Name VARCHAR(60) NOT NULL
+);
+
+-- Tabla ModelProveedor
+CREATE TABLE ModelProveedor (
+    Id INT PRIMARY KEY IDENTITY(1,1),
+    Name VARCHAR(75) NOT NULL,
+    Description VARCHAR(250),
+    Tel INT,
+    Email VARCHAR(75)
+);
+
+-- Tabla ModelProduct
+CREATE TABLE ModelProduct (
+    Id INT PRIMARY KEY IDENTITY(1,1),
+    IdCategory INT NOT NULL,
+    IdProveedor INT NOT NULL,
+    Name VARCHAR(100) NOT NULL,
+    PurchasePrice DECIMAL(18,2) NOT NULL,
+    SalePrice DECIMAL(18,2) NOT NULL,
+    Stock INT NOT NULL,
+    Codigo VARCHAR(25),
+    Url VARCHAR(100),
+    Estatus TINYINT NOT NULL,
+    CONSTRAINT FK_Product_Category FOREIGN KEY (IdCategory) REFERENCES ModelCategory(Id),
+    CONSTRAINT FK_Product_Proveedor FOREIGN KEY (IdProveedor) REFERENCES ModelProveedor(Id)
+);
+
+-- Tabla ModelHistorialProduct
+CREATE TABLE ModelHistorialProduct (
+    Id INT PRIMARY KEY IDENTITY(1,1),
+    NameUser VARCHAR(100) NOT NULL,
+    IdProduct INT NOT NULL,
+    BeforeNameProduct VARCHAR(100),
+    AfterNameProduct VARCHAR(100),
+    BeforePurchasePrice DECIMAL(18,2),
+    AfterPurchasePrice DECIMAL(18,2),
+    BeforeSalePrice DECIMAL(18,2),
+    AfterSalePrice DECIMAL(18,2),
+    BeforeStock INT,
+    AfterStock INT,
+    BeforeCodigo VARCHAR(25),
+    AfterCodigo VARCHAR(25),
+    Date DATE NOT NULL,
+    Time TIME NOT NULL,
+    RazonCambioAuto VARCHAR(50),
+    DescriptionCambio VARCHAR(250),
+
+);
+
+-- Tabla ModelFactura
+CREATE TABLE ModelFactura (
+    Id INT PRIMARY KEY IDENTITY(1,1),
+    NameSucursal VARCHAR(75) NOT NULL,
+    NameUser VARCHAR(100) NOT NULL,
+    NameClient VARCHAR(75),
+    Date DATE NOT NULL,
+    Time TIME NOT NULL
+);
+
+-- Tabla ModelDetalleFactura
+CREATE TABLE ModelDetalleFactura (
+    Id INT PRIMARY KEY IDENTITY(1,1),
+    IdFactura INT NOT NULL,
+    IdProduct INT NOT NULL,
+    NameProducto VARCHAR(100) NOT NULL,
+    CodigoProducto VARCHAR(25),
+    CantidadProduct INT NOT NULL,
+    SalePriceUnitario DECIMAL(18,2) NOT NULL,
+    ValorDescuento DECIMAL(18,2) DEFAULT 0,
+    SalePriceDescuento DECIMAL(18,2) NOT NULL,
+    PriceTotal DECIMAL(18,2) NOT NULL,
+    CONSTRAINT FK_DetalleFactura_Factura FOREIGN KEY (IdFactura) REFERENCES ModelFactura(Id)
+);
+
+-- Tabla ModelDevolucion
+CREATE TABLE ModelDevolucion (
+    Id INT PRIMARY KEY IDENTITY(1,1),
+    IdFactura INT NOT NULL,
+    NameSucursal VARCHAR(75) NOT NULL,
+    NameUser VARCHAR(100) NOT NULL,
+    NameClient VARCHAR(75),
+    Date DATE NOT NULL,
+    Time TIME NOT NULL,
+    CONSTRAINT FK_Devolucion_Factura FOREIGN KEY (IdFactura) REFERENCES ModelFactura(Id)
+);
+
+-- Tabla ModelDetalleDevolucion
+CREATE TABLE ModelDetalleDevolucion (
+    Id INT PRIMARY KEY IDENTITY(1,1),
+    IdDevolucion INT NOT NULL,
+    IdProduct INT NOT NULL,
+    NameProduct VARCHAR(100) NOT NULL,
+    CodigoProducto VARCHAR(25),
+    PurchasePrice DECIMAL(18,2) NOT NULL,
+    SalePriceUnitario DECIMAL(18,2) NOT NULL,
+    CantidadProduct INT NOT NULL,
+    PriceReembolso DECIMAL(18,2) NOT NULL,
+    PriceTotalReembolso DECIMAL(18,2) NOT NULL,
+    CONSTRAINT FK_DetalleDevolucion_Devolucion FOREIGN KEY (IdDevolucion) REFERENCES ModelDevolucion(Id)
+);
+
+
+
+
+
+
+
+
+
+
+
+-- Insertar datos en la tabla ModelRol
+INSERT INTO ModelRol (Name, AccessTipe) VALUES ('Administrador', 'Nivel 4');
+INSERT INTO ModelRol (Name, AccessTipe) VALUES ('Supervisor', 'Nivel 3');
+INSERT INTO ModelRol (Name, AccessTipe) VALUES ('Empleado', 'Nivel 2');
+INSERT INTO ModelRol (Name, AccessTipe) VALUES ('Interno', 'Nivel 1');
+
+-- Insertar datos en la tabla ModelSucursal
+INSERT INTO ModelSucursal (Name, Address) VALUES ('Sucursal Central', 'Av. Principal 123');
+
+
+-- Insertar datos en la tabla ModelUser  contraseña :  brytani
+INSERT INTO ModelUser (IdRol, IdSucursal, Tel, Name, LastName, Email, Password, Estatus, RegistrationDate) 
+VALUES (1, 1, 12345678, 'Bryan Alexander', 'Portillo Moran', 'Bryan2004@gmail.com', '189a616412c5ead039747eb98bd4e4b9d49146a4226dbfc3c0af859c7026e3dc', 1, '2024-12-26');
+

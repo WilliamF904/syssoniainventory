@@ -1,8 +1,11 @@
-using Microsoft.AspNetCore.WebSockets;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 using SysSoniaInventory.DataAccess;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Cargar configuración del archivo appsettings.json
+builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
@@ -11,29 +14,37 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<DBContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-builder.Services.AddWebSockets(options =>
-{
-    options.KeepAliveInterval = TimeSpan.FromSeconds(120);  // Puedes configurar el tiempo de espera aquí
-    options.ReceiveBufferSize = 4096;  // Tamaño del búfer de recepción
-});
-
-
+// Configurar autenticación con cookies
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
+    {
+        options.LoginPath = "/Auth/Login"; // Ruta al formulario de inicio de sesión
+       
+    });
 
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
+// Manejo de excepciones en entorno de producción
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
 }
+
+// Middleware para servir archivos estáticos (CSS, JS, imágenes)
 app.UseStaticFiles();
 
+// Configuración de ruteo
 app.UseRouting();
 
+// Middleware para autenticación y autorización
+app.UseAuthentication(); // Este debe ir antes de UseAuthorization
 app.UseAuthorization();
 
+// Configuración de rutas de controlador
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
+// Ejecutar la aplicación
 app.Run();

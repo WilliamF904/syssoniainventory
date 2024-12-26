@@ -25,7 +25,8 @@ namespace SysSoniaInventory.Models
         [Required]
         public int Stock { get; set; }
 
-        public int? Codigo { get; set; }
+        [MaxLength(25), Unicode(false)]
+        public string? Codigo { get; set; }
 
         [StringLength(100), Unicode(false)]
         public string? Url { get; set; }

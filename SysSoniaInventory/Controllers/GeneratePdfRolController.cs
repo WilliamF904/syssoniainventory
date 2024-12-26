@@ -3,9 +3,11 @@ using iText.Kernel.Pdf;
 using iText.Layout;
 using iText.Layout.Element;
 using iText.Layout.Properties;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SysSoniaInventory.DataAccess;
 
+[Authorize]
 public class RolController : Controller
 {
     private readonly DBContext _context;
@@ -18,6 +20,19 @@ public class RolController : Controller
     // Método para generar PDF
     public IActionResult GeneratePdf(bool? active = null)
     {
+
+        // Verificar niveles de acceso
+        if (User.HasClaim("AccessTipe", "Nivel 4"))
+        { // Nivel 4 tiene acceso
+
+        }
+        else
+        {
+            // Redirigir con mensaje de error si el usuario no tiene acceso
+            TempData["Error"] = "No tienes acceso a esta sección. Requerido: Nivel 4.";
+            return RedirectToAction("Index", "Home");
+        }
+
         // Obtener datos de roles (filtrar por estado si se especifica)
         var roles = _context.modelRol.AsQueryable();
 
@@ -65,4 +80,6 @@ public class RolController : Controller
             return File(stream.ToArray(), "application/pdf", "Roles.pdf");
         }
     }
+
+
 }

@@ -37,9 +37,11 @@ namespace SysSoniaInventory.Models
 
         public int? AfterStock { get; set; }
 
-        public int? BeforeCodigo { get; set; }
+        [MaxLength(25), Unicode(false)]
+        public string? BeforeCodigo { get; set; }
 
-        public int? AfterCodigo { get; set; }
+        [MaxLength(25), Unicode(false)]
+        public string? AfterCodigo { get; set; }
 
         [Required, Column(TypeName = "dateonly")]
         public DateOnly Date { get; set; }

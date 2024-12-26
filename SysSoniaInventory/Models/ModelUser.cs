@@ -24,7 +24,7 @@ namespace SysSoniaInventory.Models
         [Required, StringLength(75), Unicode(false)]
         public string? Email { get; set; }
 
-        [Required, StringLength(32), Unicode(false)]
+        [Required, StringLength(64), Unicode(false)]
         public string? Password { get; set; }
 
         public byte Estatus { get; set; }

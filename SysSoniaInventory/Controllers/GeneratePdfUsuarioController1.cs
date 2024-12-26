@@ -3,9 +3,11 @@ using iText.Kernel.Pdf;
 using iText.Layout;
 using iText.Layout.Element;
 using iText.Layout.Properties;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SysSoniaInventory.DataAccess;
 
+[Authorize]
 public class UserController : Controller
 {
     private readonly DBContext _context;
@@ -18,6 +20,18 @@ public class UserController : Controller
     // Método para generar PDF
     public IActionResult GeneratePdf(bool? active = null)
     {
+        // Verificar niveles de acceso
+        if (User.HasClaim("AccessTipe", "Nivel 4"))
+        { // Nivel 4 tiene acceso
+
+        }
+        else
+        {
+            // Redirigir con mensaje de error si el usuario no tiene acceso
+            TempData["Error"] = "No tienes acceso a esta sección. Requerido: Nivel 4.";
+            return RedirectToAction("Index", "Home");
+        }
+
         // Obtener datos de usuarios (filtrar por estado si se especifica)
         var users = _context.modelUser.AsQueryable();
         if (active.HasValue)
@@ -67,4 +81,5 @@ public class UserController : Controller
             return File(stream.ToArray(), "application/pdf", "Usuarios.pdf");
         }
     }
+
 }

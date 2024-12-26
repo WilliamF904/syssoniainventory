@@ -1,10 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SysSoniaInventory.DataAccess;
 using SysSoniaInventory.Models;
 
 namespace SysSoniaInventory.Controllers
 {
+    [Authorize]
     public class FacturaController : Controller
     {
         private readonly DBContext _context;
@@ -17,12 +19,64 @@ namespace SysSoniaInventory.Controllers
         // Acción Index para listar facturas
         public IActionResult Index()
         {
+            // Verificar niveles de acceso
+            if (User.HasClaim("AccessTipe", "Nivel 4"))
+            { // Nivel 4 tiene acceso
+
+            }
+            else if (User.HasClaim("AccessTipe", "Nivel 3"))
+            {
+                // Nivel 3 tiene acceso
+
+            }
+            else if (User.HasClaim("AccessTipe", "Nivel 2"))
+            {
+                // Nivel 2 tiene acceso
+
+            }
+            else
+            {
+                // Redirigir con mensaje de error si el usuario no tiene acceso
+                TempData["Error"] = "No tienes acceso a esta sección. Requerido: Nivel 2 o superior.";
+                return RedirectToAction("Index", "Home");
+            }
+
+            // Obtener el nivel de acceso del token
+            var accessLevel = User.Claims.FirstOrDefault(c => c.Type == "AccessLevel")?.Value;
+
+            if (accessLevel == "Nivel 1")
+            {
+                return Forbid("No tienes permisos para acceder a esta funcionalidad.");
+            }
             var facturas = _context.modelFactura.Include(f => f.DetalleFactura).ToList();
             return View(facturas);
         }
 
         public IActionResult BuscarProducto(string query)
         {
+            // Verificar niveles de acceso
+            if (User.HasClaim("AccessTipe", "Nivel 4"))
+            { // Nivel 4 tiene acceso
+
+            }
+            else if (User.HasClaim("AccessTipe", "Nivel 3"))
+            {
+                // Nivel 3 tiene acceso
+
+            }
+            else if (User.HasClaim("AccessTipe", "Nivel 2"))
+            {
+                // Nivel 2 tiene acceso
+
+            }
+           
+            else
+            {
+                // Redirigir con mensaje de error si el usuario no tiene acceso
+                TempData["Error"] = "No tienes acceso a esta sección. Requerido: Nivel 2 o superior.";
+                return RedirectToAction("Index", "Home");
+            }
+
             var productos = _context.modelProduct
                                     .Where(p => p.Estatus == 1 &&
                                                 (p.Name.Contains(query) || p.Codigo.ToString().Contains(query)))
@@ -44,6 +98,29 @@ namespace SysSoniaInventory.Controllers
         [HttpGet]
         public IActionResult Create()
         {
+            // Verificar niveles de acceso
+            if (User.HasClaim("AccessTipe", "Nivel 4"))
+            { // Nivel 4 tiene acceso
+
+            }
+            else if (User.HasClaim("AccessTipe", "Nivel 3"))
+            {
+                // Nivel 3 tiene acceso
+
+            }
+            else if (User.HasClaim("AccessTipe", "Nivel 2"))
+            {
+                // Nivel 2 tiene acceso
+
+            }
+         
+            else
+            {
+                // Redirigir con mensaje de error si el usuario no tiene acceso
+                TempData["Error"] = "No tienes acceso a esta sección. Requerido: Nivel 2 o superior.";
+                return RedirectToAction("Index", "Home");
+            }
+
             ViewBag.Productos = _context.modelProduct.ToList();
             return View();
         }
@@ -52,6 +129,28 @@ namespace SysSoniaInventory.Controllers
         [HttpPost]
         public IActionResult Create(ModelFactura factura, List<ModelDetalleFactura> detalles)
         {
+            // Verificar niveles de acceso
+            if (User.HasClaim("AccessTipe", "Nivel 4"))
+            { // Nivel 4 tiene acceso
+
+            }
+            else if (User.HasClaim("AccessTipe", "Nivel 3"))
+            {
+                // Nivel 3 tiene acceso
+
+            }
+            else if (User.HasClaim("AccessTipe", "Nivel 2"))
+            {
+                // Nivel 2 tiene acceso
+
+            }
+            else
+            {
+                // Redirigir con mensaje de error si el usuario no tiene acceso
+                TempData["Error"] = "No tienes acceso a esta sección. Requerido: Nivel 2 o superior.";
+                return RedirectToAction("Index", "Home");
+            }
+
             // Asignar valores automáticos para la factura
             factura.NameUser = "Usuario Fijo"; // Usuario actual (dinámico en el futuro)
             factura.NameSucursal = "Sucursal Fija"; // Sucursal actual (dinámico en el futuro)
@@ -119,6 +218,7 @@ namespace SysSoniaInventory.Controllers
                         // Asignar valores al detalle de factura
                         detalle.IdFactura = factura.Id;
                         detalle.CodigoProducto = producto.Codigo;
+                        detalle.NameProducto = producto.Name;
                         detalle.SalePriceUnitario = producto.SalePrice;
                         detalle.SalePriceDescuento = producto.SalePrice - (producto.SalePrice * detalle.ValorDescuento / 100);
                         detalle.PriceTotal = detalle.SalePriceDescuento * detalle.CantidadProduct;
@@ -135,9 +235,12 @@ namespace SysSoniaInventory.Controllers
                 }
                 catch (Exception ex)
                 {
-                    // Manejo de errores en caso de fallo
-                    transaction.Rollback();
-                    ModelState.AddModelError("", "Ocurrió un error al procesar la factura. Inténtelo de nuevo.");
+                    if (ex.InnerException != null)
+                    {
+                        Console.WriteLine($"Inner Exception: {ex.InnerException.Message}");
+                    }
+                    Console.WriteLine($"Stack Trace: {ex.StackTrace}");
+                    ModelState.AddModelError("", "Ocurrió un error al guardar los cambios en la base de datos.");
                     ViewBag.Productos = _context.modelProduct.ToList();
                     return View(factura);
                 }
@@ -150,6 +253,28 @@ namespace SysSoniaInventory.Controllers
         // Acción para mostrar los detalles de una factura
         public IActionResult Details(int id)
         {
+            // Verificar niveles de acceso
+            if (User.HasClaim("AccessTipe", "Nivel 4"))
+            { // Nivel 4 tiene acceso
+
+            }
+            else if (User.HasClaim("AccessTipe", "Nivel 3"))
+            {
+                // Nivel 3 tiene acceso
+
+            }
+            else if (User.HasClaim("AccessTipe", "Nivel 2"))
+            {
+                // Nivel 2 tiene acceso
+
+            }
+            else
+            {
+                // Redirigir con mensaje de error si el usuario no tiene acceso
+                TempData["Error"] = "No tienes acceso a esta sección. Requerido: Nivel 2 o superior.";
+                return RedirectToAction("Index", "Home");
+            }
+
             // Obtener la factura y sus detalles
             var factura = _context.modelFactura
                 .Include(f => f.DetalleFactura) // Incluir los detalles de la factura

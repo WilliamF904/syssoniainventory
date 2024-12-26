@@ -30,10 +30,10 @@
                             <div class="col-sm-9">
                                 <select class="form-control text-light" asp-for="AccessTipe" required>
                                     <option value="" disabled selected>Seleccione un nivel de acceso</option>
-                                    <option value="Nivel 1">Nivel 1 - Acceso Total</option>
-                                    <option value="Nivel 2">Nivel 2 - Acceso Intermedio</option>
-                                    <option value="Nivel 3">Nivel 3 - Acceso Básico</option>
-                                    <option value="Nivel 4">Nivel 4 - Acceso Restringido</option>
+                                    <option value="Nivel 4">Nivel 4 - Acceso Total (Todo permitido)</option>
+                                    <option value="Nivel 3">Nivel 3 - Acceso Intermedio (Acceso a registros y reportes, sin edición de facturación)</option>
+                                    <option value="Nivel 2">Nivel 2 - Acceso Básico (Solo visualización de datos y reportes básicos)</option>
+                                    <option value="Nivel 1">Nivel 1 - Acceso Restringido (Solo lectura de información)</option>
                                 </select>
 
                                 <span asp-validation-for="AccessTipe" class="text-danger"></span>

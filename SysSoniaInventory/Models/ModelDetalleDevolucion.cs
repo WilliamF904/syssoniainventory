@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
+using Microsoft.EntityFrameworkCore;
 
 namespace SysSoniaInventory.Models
 {
@@ -12,11 +13,11 @@ namespace SysSoniaInventory.Models
      
         public int IdProduct { get; set; }
 
-        [Required, MaxLength(100)]
+        [Required, MaxLength(100), Unicode(false)]
         public string NameProduct { get; set; }
 
-        [Required]
-        public int CodigoProducto { get; set; }
+        [MaxLength(25), Unicode(false)]
+        public string? CodigoProducto { get; set; }
 
         [Required, Column(TypeName = "decimal(18, 2)")]
         public decimal PurchasePrice { get; set; }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -12,6 +13,7 @@ using SysSoniaInventory.Task;
 
 namespace SysSoniaInventory.Controllers
 {
+    [Authorize]
     public class ProductController : Controller
     {
         private readonly DBContext _context;
@@ -25,6 +27,23 @@ namespace SysSoniaInventory.Controllers
         [HttpGet]
         public async Task<IActionResult> Index()
         {
+            // Verificar niveles de acceso
+            if (User.HasClaim("AccessTipe", "Nivel 4"))
+            { // Nivel 4 tiene acceso
+
+            }
+            else if (User.HasClaim("AccessTipe", "Nivel 3"))
+            {
+                // Nivel 3 tiene acceso
+
+            }
+
+            else
+            {
+                // Redirigir con mensaje de error si el usuario no tiene acceso
+                TempData["Error"] = "No tienes acceso a esta sección. Requerido: Nivel 3 o superior.";
+                return RedirectToAction("Index", "Home");
+            }
             var dBContext = _context.modelProduct.Include(m => m.IdCategoryNavigation).Include(m => m.IdProveedorNavigation);
             return View(await dBContext.ToListAsync());
         }
@@ -34,6 +53,23 @@ namespace SysSoniaInventory.Controllers
         [HttpGet]
         public async Task<IActionResult> SearchProducts(string term)
         {
+            // Verificar niveles de acceso
+            if (User.HasClaim("AccessTipe", "Nivel 4"))
+            { // Nivel 4 tiene acceso
+
+            }
+            else if (User.HasClaim("AccessTipe", "Nivel 3"))
+            {
+                // Nivel 3 tiene acceso
+
+            }
+
+            else
+            {
+                // Redirigir con mensaje de error si el usuario no tiene acceso
+                TempData["Error"] = "No tienes acceso a esta sección. Requerido: Nivel 3 o superior.";
+                return RedirectToAction("Index", "Home");
+            }
             if (string.IsNullOrEmpty(term))
             {
                 return Json(new { results = new List<object>() });
@@ -53,6 +89,23 @@ namespace SysSoniaInventory.Controllers
         [HttpGet]
         public async Task<IActionResult> Details(int? id)
         {
+            // Verificar niveles de acceso
+            if (User.HasClaim("AccessTipe", "Nivel 4"))
+            { // Nivel 4 tiene acceso
+
+            }
+            else if (User.HasClaim("AccessTipe", "Nivel 3"))
+            {
+                // Nivel 3 tiene acceso
+
+            }
+
+            else
+            {
+                // Redirigir con mensaje de error si el usuario no tiene acceso
+                TempData["Error"] = "No tienes acceso a esta sección. Requerido: Nivel 3 o superior.";
+                return RedirectToAction("Index", "Home");
+            }
             if (id == null)
             {
                 return NotFound();
@@ -74,6 +127,23 @@ namespace SysSoniaInventory.Controllers
         [HttpGet]
         public IActionResult Create()
         {
+            // Verificar niveles de acceso
+            if (User.HasClaim("AccessTipe", "Nivel 4"))
+            { // Nivel 4 tiene acceso
+
+            }
+            else if (User.HasClaim("AccessTipe", "Nivel 3"))
+            {
+                // Nivel 3 tiene acceso
+
+            }
+
+            else
+            {
+                // Redirigir con mensaje de error si el usuario no tiene acceso
+                TempData["Error"] = "No tienes acceso a esta sección. Requerido: Nivel 3 o superior.";
+                return RedirectToAction("Index", "Home");
+            }
             ViewData["IdCategory"] = new SelectList(_context.modelCategory, "Id", "Name");
             ViewData["IdProveedor"] = new SelectList(_context.modelProveedor, "Id", "Name");
             return View();
@@ -81,17 +151,36 @@ namespace SysSoniaInventory.Controllers
 
 
         // POST: Product/Create 
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,IdCategory,IdProveedor,Name,PurchasePrice,SalePrice,Stock,Codigo,Url,Estatus")] ModelProduct modelProduct, string DescriptionCambio, IFormFile imagen)
         {
+            // Verificar niveles de acceso
+            if (User.HasClaim("AccessTipe", "Nivel 4"))
+            { // Nivel 4 tiene acceso
+
+            }
+            else if (User.HasClaim("AccessTipe", "Nivel 3"))
+            {
+                // Nivel 3 tiene acceso
+
+            }
+
+            else
+            {
+                // Redirigir con mensaje de error si el usuario no tiene acceso
+                TempData["Error"] = "No tienes acceso a esta sección. Requerido: Nivel 3 o superior.";
+                return RedirectToAction("Index", "Home");
+            }
             if (ModelState.IsValid)
             {
                 try
                 {
-                    // Si hay una imagen en el campo Url, procesarla
+                    // Agregar el producto inicial a la base de datos sin la URL de la imagen
+                    _context.Add(modelProduct);
+                    await _context.SaveChangesAsync();
+
+                    // Si hay una imagen, procesarla usando el ID generado
                     if (imagen != null && imagen.Length > 0)
                     {
                         var imgSave = new ImgSave();
@@ -99,13 +188,11 @@ namespace SysSoniaInventory.Controllers
                         // Llamar a la función GuardarImagen y obtener la ruta
                         string rutaImagen = imgSave.GuardarImagen(imagen, modelProduct.Id, modelProduct.Name);
 
-                        // Asignar la ruta al campo Url del modelo
+                        // Actualizar el producto con la URL de la imagen
                         modelProduct.Url = rutaImagen;
+                        _context.Update(modelProduct);
+                        await _context.SaveChangesAsync();
                     }
-
-                    // Agregar el producto a la base de datos
-                    _context.Add(modelProduct);
-                    await _context.SaveChangesAsync();
 
                     // Asignar "Sin descripción" si el campo está vacío o es nulo
                     DescriptionCambio ??= "Sin descripción";
@@ -142,11 +229,27 @@ namespace SysSoniaInventory.Controllers
             return View(modelProduct);
         }
 
-
         // GET: Product/Edit/5
         [HttpGet]
         public async Task<IActionResult> Edit(int? id)
         {
+            // Verificar niveles de acceso
+            if (User.HasClaim("AccessTipe", "Nivel 4"))
+            { // Nivel 4 tiene acceso
+
+            }
+            else if (User.HasClaim("AccessTipe", "Nivel 3"))
+            {
+                // Nivel 3 tiene acceso
+
+            }
+
+            else
+            {
+                // Redirigir con mensaje de error si el usuario no tiene acceso
+                TempData["Error"] = "No tienes acceso a esta sección. Requerido: Nivel 3 o superior.";
+                return RedirectToAction("Index", "Home");
+            }
             if (id == null)
             {
                 return NotFound();
@@ -167,6 +270,23 @@ namespace SysSoniaInventory.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,IdCategory,IdProveedor,Name,PurchasePrice,SalePrice,Stock,Codigo,Url,Estatus")] ModelProduct modelProduct, string DescriptionCambio)
         {
+            // Verificar niveles de acceso
+            if (User.HasClaim("AccessTipe", "Nivel 4"))
+            { // Nivel 4 tiene acceso
+
+            }
+            else if (User.HasClaim("AccessTipe", "Nivel 3"))
+            {
+                // Nivel 3 tiene acceso
+
+            }
+
+            else
+            {
+                // Redirigir con mensaje de error si el usuario no tiene acceso
+                TempData["Error"] = "No tienes acceso a esta sección. Requerido: Nivel 3 o superior.";
+                return RedirectToAction("Index", "Home");
+            }
             if (id != modelProduct.Id)
             {
                 return NotFound();
@@ -250,6 +370,18 @@ namespace SysSoniaInventory.Controllers
         // GET: Product/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
+            // Verificar niveles de acceso
+            if (User.HasClaim("AccessTipe", "Nivel 4"))
+            { // Nivel 4 tiene acceso
+
+            }
+
+            else
+            {
+                // Redirigir con mensaje de error si el usuario no tiene acceso
+                TempData["Error"] = "No tienes acceso a esta sección. Requerido: Nivel 4.";
+                return RedirectToAction("Index", "Home");
+            }
             if (id == null)
             {
                 return NotFound();
@@ -272,6 +404,17 @@ namespace SysSoniaInventory.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id, string DescriptionCambio)
         {
+            // Verificar niveles de acceso
+            if (User.HasClaim("AccessTipe", "Nivel 4"))
+            { // Nivel 4 tiene acceso
+
+            }
+              else
+            {
+                // Redirigir con mensaje de error si el usuario no tiene acceso
+                TempData["Error"] = "No tienes acceso a esta sección. Requerido: Nivel 4.";
+                return RedirectToAction("Index", "Home");
+            }
             var modelProduct = await _context.modelProduct.FindAsync(id);
             if (modelProduct != null)
             {

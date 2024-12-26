@@ -12,7 +12,7 @@ namespace SysSoniaInventory.Models
         [Required, StringLength(75), Unicode(false)]
         public string NameSucursal { get; set; }
 
-        [Required, StringLength(75), Unicode(false)]
+        [Required, StringLength(100), Unicode(false)]
         public string NameUser { get; set; }
 
         [StringLength(75), Unicode(false)]

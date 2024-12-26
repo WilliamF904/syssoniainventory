@@ -7,7 +7,9 @@ using Microsoft.AspNetCore.Mvc;
 using SysSoniaInventory.DataAccess;
 using SysSoniaInventory.Models;
 using System.Linq;
+using Microsoft.AspNetCore.Authorization;
 
+[Authorize]
 public class SucursalController : Controller
 {
     private readonly DBContext _context;
@@ -20,6 +22,19 @@ public class SucursalController : Controller
     // Método para generar PDF de todas las sucursales
     public IActionResult GeneratePdf()
     {
+
+        // Verificar niveles de acceso
+        if (User.HasClaim("AccessTipe", "Nivel 4"))
+        { // Nivel 4 tiene acceso
+
+        }
+        else
+        {
+            // Redirigir con mensaje de error si el usuario no tiene acceso
+            TempData["Error"] = "No tienes acceso a esta sección. Requerido: Nivel 4.";
+            return RedirectToAction("Index", "Home");
+        }
+
         // Obtener la lista de sucursales
         var sucursales = _context.Set<ModelSucursal>().ToList();
 
@@ -58,4 +73,6 @@ public class SucursalController : Controller
             return File(stream.ToArray(), "application/pdf", "Sucursales.pdf");
         }
     }
+
+
 }

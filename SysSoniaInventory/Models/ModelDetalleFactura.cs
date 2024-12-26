@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
+using Microsoft.EntityFrameworkCore;
 
 namespace SysSoniaInventory.Models
 {
@@ -13,8 +14,11 @@ namespace SysSoniaInventory.Models
 
         public int IdProduct { get; set; }
 
-        [Required]
-        public int? CodigoProducto { get; set; }
+        [Required, MaxLength(100), Unicode(false)]
+        public string NameProducto { get; set; }
+
+        [MaxLength(25), Unicode(false)]
+        public string? CodigoProducto { get; set; }
 
         [Required]
         public int CantidadProduct { get; set; }
