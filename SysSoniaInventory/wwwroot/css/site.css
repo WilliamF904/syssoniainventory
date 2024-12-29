@@ -103,3 +103,10 @@ body {
 .linea-blanca {
     background-color: white; /* Color de la línea */
 }
+
+.dropdown-itemPer:hover {
+    color: #ffffff;
+    text-decoration: none;
+    background-color: #13151b;
+   
+}

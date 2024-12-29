@@ -1,4 +1,6 @@
 using iText.Commons.Actions.Contexts;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -23,9 +25,31 @@ namespace SysSoniaInventory.Controllers
             _configuration = configuration;
         }
 
-        public IActionResult Index()
+
+        public async Task<IActionResult> IndexAsync()
         {
             // Verificar niveles de acceso
+            if (User.HasClaim("AccessTipe", "Nivel 5"))
+            { // Nivel 4 tiene acceso
+                var facturas = _context.modelFactura
+                .Include(f => f.DetalleFactura)
+                .Select(f => new FacturaViewModel
+                {
+                    Id = f.Id,
+                    NameUser = f.NameUser,
+                    Date = f.Date,
+                    Time = f.Time,
+                    TotalFactura = f.DetalleFactura.Sum(d => d.PriceTotal),
+                    Detalles = f.DetalleFactura.Select(d => new DetalleFacturaViewModel
+                    {
+                        CodigoProducto = d.CodigoProducto,
+                        CantidadProduct = d.CantidadProduct
+                    }).ToList()
+                })
+                .ToList();
+                ViewBag.ErrorMessage = TempData["ErrorMessage"] as string;
+                return View(facturas);
+            }
             if (User.HasClaim("AccessTipe", "Nivel 4"))
             { // Nivel 4 tiene acceso
                 var facturas = _context.modelFactura
@@ -82,9 +106,11 @@ namespace SysSoniaInventory.Controllers
             }
             else
             {
+                await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
                 // Redirigir con mensaje de error si el usuario no tiene acceso
                 TempData["Error"] = "No tienes acceso a esta sección. Requerido: Nivel 1 o superior.";
-                return RedirectToAction("Index", "Home");
+
+                return RedirectToAction("Login", "Auth");
             }
 
 

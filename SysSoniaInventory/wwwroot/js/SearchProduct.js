@@ -15,7 +15,7 @@
                     suggestions.style.display = "block";
                     data.results.forEach(product => {
                         const li = document.createElement("li");
-                        li.classList.add("dropdown-item");
+                        li.classList.add("dropdown");
                         li.textContent = product.name;
                         li.dataset.id = product.id;
 

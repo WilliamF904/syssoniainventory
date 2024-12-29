@@ -1,0 +1,64 @@
+﻿@model SysSoniaInventory.Models.ModelUser
+
+@{
+    var accessTipe = User.FindFirst("AccessTipe")?.Value;
+}
+
+<form asp-action="EditUser" method="post">
+    <input type="hidden" asp-for="Id" />
+
+    <div class="form-group">
+        <label asp-for="Name">Nombre</label>
+        <input type="text" class="form-control" asp-for="Name" required />
+    </div>
+
+    <div class="form-group">
+        <label asp-for="LastName">Apellido</label>
+        <input type="text" class="form-control" asp-for="LastName" required />
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Tel">Teléfono</label>
+        <input type="text" class="form-control" asp-for="Tel" />
+    </div>
+
+    @if (accessTipe == "4")
+    {
+        <div class="form-group">
+            <label asp-for="Email">Correo</label>
+            <input type="email" class="form-control" asp-for="Email" />
+        </div>
+    }
+
+    @if (accessTipe == "4")
+    {
+        <div class="form-group">
+            <label>Nueva Contraseña</label>
+            <input type="password" class="form-control" name="newPassword" />
+        </div>
+    }
+
+    <div class="form-group">
+        <label asp-for="IdRol">Rol</label>
+        <select class="form-control" asp-for="IdRol" asp-items="ViewBag.Roles" required>
+            <!-- Opciones de roles -->
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="IdSucursal">Sucursal</label>
+        <select class="form-control" asp-for="IdSucursal" asp-items="ViewBag.Sucursales" required>
+            <!-- Opciones de sucursales -->
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Estatus">Estatus</label>
+        <select class="form-control" asp-for="Estatus">
+            <option value="1">Activo</option>
+            <option value="0">Inactivo</option>
+        </select>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+</form>

@@ -108,7 +108,6 @@
                                 <th scope="col">@Html.DisplayNameFor(model => model.Name)</th>
                                 <th scope="col">@Html.DisplayNameFor(model => model.LastName)</th>
                                 <th scope="col">@Html.DisplayNameFor(model => model.Email)</th>
-                                <th scope="col">@Html.DisplayNameFor(model => model.Password)</th>
                                 <th scope="col">@Html.DisplayNameFor(model => model.Estatus)</th>
                                 <th scope="col">Acciones</th>
                             </tr>
@@ -120,11 +119,20 @@
                                     <td>@Html.DisplayFor(modelItem => item.Name)</td>
                                     <td>@Html.DisplayFor(modelItem => item.LastName)</td>
                                     <td>@Html.DisplayFor(modelItem => item.Email)</td>
-                                    <td>@Html.DisplayFor(modelItem => item.Password)</td>
                                     <td>@Html.DisplayFor(modelItem => item.Estatus)</td>
                                     <td>
-                                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-primary">Editar</a> |
-                                        <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-primary">Detalles</a> |
+                                        @if (User.HasClaim("AccessTipe", "Nivel 5"))
+                                        {
+                                            <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-primary">Modificar</a>
+ 
+                                        }
+                                        @if (User.HasClaim("AccessTipe", "Nivel 4") || User.HasClaim("AccessTipe", "Nivel 3"))
+                                        {
+                                            <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-primary">Modificar</a>
+                                            <a asp-action="EditUser" asp-route-id="@item.Id" class="btn btn-primary">Editar(No funcional)</a>
+
+                                        }
+                                        |  <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-primary">Detalles</a> |
                                         <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger">Eliminar</a>
                                     </td>
                                 </tr>

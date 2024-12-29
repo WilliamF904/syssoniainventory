@@ -1,0 +1,2224 @@
+/* Sidebar */
+
+.sidebar {
+  min-height: calc(100vh - #{$navbar-height});
+  background: $sidebar-dark-bg;
+  font-weight: normal;
+  padding: 0;
+  width: $sidebar-width-lg;
+  z-index: 11;
+  transition: width $action-transition-duration $action-transition-timing-function, background $action-transition-duration $action-transition-timing-function;
+  -webkit-transition: width $action-transition-duration $action-transition-timing-function, background $action-transition-duration $action-transition-timing-function;
+  -moz-transition: width $action-transition-duration $action-transition-timing-function, background $action-transition-duration $action-transition-timing-function;
+  -ms-transition: width $action-transition-duration $action-transition-timing-function, background $action-transition-duration $action-transition-timing-function;
+
+  .sidebar-brand-wrapper {
+    transition: width $action-transition-duration $action-transition-timing-function, background $action-transition-duration $action-transition-timing-function;
+    -webkit-transition: width $action-transition-duration $action-transition-timing-function, background $action-transition-duration $action-transition-timing-function;
+    -moz-transition: width $action-transition-duration $action-transition-timing-function, background $action-transition-duration $action-transition-timing-function;
+    -ms-transition: width $action-transition-duration $action-transition-timing-function, background $action-transition-duration $action-transition-timing-function;
+    background: $sidebar-dark-bg;
+    width: $sidebar-width-lg;
+    height: $navbar-height;
+    @media (max-width: 991px) {
+      width: 55px;
+    }
+    .sidebar-brand {
+      color: lighten(color(gray-dark), 20%);
+      font-size: 1.5rem;
+      line-height: 48px;
+      margin-right: 0;
+      padding: 0rem 0rem 0rem 1.3rem;
+      width: 100%;
+
+      &:active,
+      &:focus,
+      &:hover {
+        color: lighten(color(gray-dark), 10%);
+      }
+
+      img {
+        width: calc(#{$sidebar-width-lg} - 120px );
+        max-width: 100%;
+        height: 28px;
+        margin: auto;
+        vertical-align: middle;
+      }
+      &.brand-logo-mini {
+        display: none;
+        img {
+          width: calc(#{$sidebar-width-icon} - 50px );
+          max-width: 100%;
+          height: 28px;
+          margin: auto;
+        }
+      }
+    }
+  }
+
+  .nav {
+    overflow: hidden;
+    flex-wrap: nowrap;
+    flex-direction: column;
+    margin-bottom: 60px;
+    padding-top: $navbar-height;
+    @media (max-width:992px) {
+      padding-top: 0;
+    }
+
+    .nav-item {
+      @include transition-duration(0.25s);
+      transition-property: background;
+      -webkit-transition-property: background;
+      padding-right: 20px;
+      .collapse {
+        z-index: 999;
+      }
+
+      .nav-link {
+        @include display-flex;
+        @include align-items(center);
+        white-space: nowrap;
+        padding: $sidebar-menu-padding-y 10px $sidebar-menu-padding-y $sidebar-menu-padding-x;
+        color: $sidebar-dark-menu-color;
+        @include transition-duration(0.45s);
+        transition-property: color;
+        -webkit-transition-property: color;
+        height: 46px;
+        border-radius: 0px 100px 100px 0px;
+        
+        i {
+          color: inherit;
+          &.menu-icon {
+            font-size: $sidebar-icon-font-size;
+            line-height: 1;
+            margin-left: auto;
+            .rtl & {
+              margin-left: 0;
+              margin-right: auto;
+            }
+            color: $sidebar-dark-menu-icon-color;
+            &:before {
+              vertical-align: middle;
+            }
+          }
+          &.menu-arrow {
+            font: normal normal normal 24px/1 "Material Design Icons";
+            line-height: 1;
+            font-size: $sidebar-icon-font-size;
+            margin-left: auto;
+            .rtl & {
+              margin-left: 0;
+              margin-right: auto;
+            }
+            color: $sidebar-dark-menu-arrow-color;
+            &:before{
+              content: "\f140";
+              font-size: inherit;
+              color: inherit;
+            }
+          }
+        }
+        .menu-title {
+          color: inherit;
+          display: inline-block;
+          font-size: $sidebar-menu-font-size;
+          line-height: 1;
+          vertical-align: middle;
+        }
+        .badge {
+          margin-right: auto;
+          margin-left: 1rem;
+        }
+      }
+
+      &.active {
+        > .nav-link {
+          background: $sidebar-dark-menu-active-bg;
+          position: relative;
+          &:before {
+            content: "";
+            width: 3px;
+            height: 100%;
+            background: theme-color(primary);
+            display: inline-block;
+            position: absolute;
+            left: 0;
+            top: 0;
+          }
+          .menu-title {
+            color: $sidebar-dark-menu-active-color;        
+          }
+          i {
+            color: #ffffff;
+          }
+        }
+      }
+      &.nav-profile {
+        .nav-link {
+          height: auto;
+          line-height: 1;
+          border-top: 0;
+          padding: 1.25rem 0;
+          .nav-profile-image {
+            width: 44px;
+            height: 44px;
+            img {
+              width: 44px;
+              height: 44px;
+              border-radius: 100%;
+            }
+          }
+          .nav-profile-text {
+            margin-left: 1rem;
+            .rtl & {
+              margin-left: auto;
+              margin-right: 1rem;
+            }
+          }
+          .nav-profile-badge {
+            font-size: 1.125rem;
+            margin-left: auto;
+            .rtl & {
+              margin-left: 0;
+              margin-right: auto;
+            }
+          }
+        }
+      }
+      &.sidebar-actions {
+        margin-top: 1rem;
+        .nav-link {
+          border-top: 0;
+          display: block;
+          height: auto;
+        }
+        &:hover {
+          background: initial;
+          .nav-link {
+            color: initial;
+          }
+        }
+      }
+      &.profile {
+        padding-right: 0px;
+        .rtl & {
+          padding-right: 10px;
+        }
+        .profile-desc {
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          justify-content: space-between;
+          padding: 0.6rem 1.17rem;
+          line-height: 1.25;
+          .profile-name {
+            margin-left: 1rem;
+            .rtl & {
+              margin-left: 0;
+              margin-right: 1rem;
+            }
+            span {
+              font-size: 12px;
+              color: $text-muted;
+              white-space: nowrap;
+            }
+            h5 {
+              white-space: nowrap;
+            }
+          } 
+          .profile-pic {
+            display: flex;
+            align-items: center;
+            .count-indicator {
+              position: relative;
+              .count-symbol,
+              .count-number {
+                position: absolute;
+                border-radius: 100%;
+                border: 2px solid $navbar-bg;
+              }
+              .count-symbol {
+                top: 17px;
+                right: -3px;
+                width: 10px;
+                height: 10px;
+              }
+              .count-number {
+                min-width: 14px;
+                height: 14px;
+                font-size: .5rem;
+                color: $white;
+                bottom: 16px;
+                right: -5px;
+                line-height: 1;
+                text-align: center;
+              }
+              &:after {
+                display: none;
+              }
+              .count {
+                position: absolute;
+                left: 66%;
+                width: 10px;
+                height: 10px;
+                color: $white;
+                border-radius: 100%;
+                text-align: center;
+                font-size: .625rem;
+                line-height: 1.5;
+                top: 26px;
+                border: 2px solid $border-color;
+              }
+            }
+          }
+          .mdi-dots-vertical {
+            font-size: 20px;
+            color: $text-muted;
+          }
+          .dropdown-menu {
+            padding: 0;
+            margin-top: 1.25rem;
+            .dropdown-item {
+              padding: 11px 13px;
+              &.preview-item {
+                align-items: center;
+                .preview-thumbnail {
+                  .preview-icon {
+                    width: 30px;
+                    height: 30px;
+                    i {
+                      font-size: 0.875rem;
+                    }
+                  }
+                }
+              }
+              &:hover {
+                color: inherit;
+              }
+            }
+            .dropdown-divider {
+              margin: 0;
+            }
+          }
+        }
+      }
+      &.nav-category {
+        padding: 0.5rem 1.188rem;
+        line-height: 1;
+        .nav-link {
+          color: $text-muted;
+          font-weight: $font-weight-medium;
+          font-size: 14px;
+          font-weight: 500;
+          height: auto;
+          padding-left: 0;
+        }
+      }
+      .menu-icon {
+        margin-right: 0.5rem;
+        font-size: 0.8125rem;
+        line-height: 1;
+        background: rgba($text-muted, 0.2);
+        width: 31px;
+        height: 31px;
+        border-radius: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #ffffff;
+        i {
+          font-size: 0.875rem;
+        }
+      }
+    }
+    &.sub-menu {
+      margin-bottom: 0;
+      margin-top:0;
+      padding: 0 0 0 3.25rem;
+      list-style: none;
+
+      .nav-item {
+        padding: 0;
+        .nav-link {
+          color: $sidebar-dark-submenu-color;
+          padding: $sidebar-submenu-item-padding;
+          position: relative;
+          font-size: $sidebar-submenu-font-size;
+          line-height: 1;
+          height: auto;
+          border-top: 0;
+          &.active {
+            color: $sidebar-dark-menu-active-color;
+            background: transparent;
+          }
+          &:hover {
+            color: $sidebar-dark-submenu-hover-color;
+          }
+        }
+        &:hover {
+          background: transparent;
+        }
+      }
+    }
+    &:not(.sub-menu) {
+      >.nav-item {
+        &:hover {
+          &:not(.nav-category):not(.account-dropdown) {
+            >.nav-link {
+              background: $sidebar-dark-menu-hover-bg;
+              color: $sidebar-dark-menu-hover-color;
+            }
+          }
+        }
+      }
+    }
+      .menu-items {
+        &:nth-child(5n+1) {
+          .nav-link {
+            .menu-icon {
+              i {
+                color: theme-color(primary);
+              }
+            }
+          }
+        }
+  
+        &:nth-child(5n+2) {
+          .nav-link {
+            .menu-icon {
+              i {
+                color: theme-color(success);
+              }
+            }
+          }
+        }
+  
+        &:nth-child(5n+3) {
+          .nav-link {
+            .menu-icon {
+              i {
+                color: theme-color(info);
+              }
+            }
+          }
+        }
+  
+        &:nth-child(5n+4) {
+          .nav-link {
+            .menu-icon {
+              i {
+                color: theme-color(warning);
+              }
+            }
+          }
+        }
+  
+        &:nth-child(5n+5) {
+          .nav-link {
+            .menu-icon {
+              i {
+                color: theme-color(danger);
+              }
+            }
+          }
+        }
+      }
+    
+      
+    
+    
+  }
+}
+
+/* style for off-canvas menu*/
+@media screen and (max-width: 991px) {
+  .sidebar-offcanvas {
+    position: fixed;
+    max-height: calc(100vh - #{$navbar-height});
+    top: $navbar-height;
+    bottom: 0;
+    overflow: auto;
+    right: -$sidebar-width-lg;
+    -webkit-transition: all 0.25s ease-out;
+    -o-transition: all 0.25s ease-out;
+    transition: all 0.25s ease-out;
+    &.active {
+      right: 0;
+    }
+  }
+}
+
+.sidebar-tinted {
+  .sidebar {
+    background: $sidebar-tinted-bg;
+    .sidebar-brand-wrapper {
+      background: $sidebar-tinted-bg;
+    }
+    .nav {
+      .nav-item {
+        .nav-link {
+          color: $sidebar-tinted-menu-color;
+          .menu-icon {
+            i {
+              color: white;
+            }
+          }
+          i {
+            &.menu-arrow {
+              color: $sidebar-tinted-menu-arrow-color;
+            }
+          }
+        }
+        &.active {
+          > .nav-link {
+            background: $sidebar-tinted-menu-active-bg;
+          }
+          &:before {
+            background: $sidebar-tinted-menu-color; 
+          }
+        }
+        &.profile {
+          .profile-desc {
+            .profile-name {
+              span {
+                color: $sidebar-tinted-menu-color;
+              }
+            }
+            .mdi-dots-vertical {
+              color: $sidebar-tinted-menu-color;
+            }
+          }
+          
+          .profile-pic {
+            .count-indicator {
+              .count {
+                border: 2px solid #fa424a;
+              }
+            }
+          }
+        }
+      }
+      &.sub-menu {
+        .nav-item {
+          .nav-link {
+            &:hover {
+              font-weight: $font-weight-medium;
+            }
+          }
+        }
+      }
+      &:not(.sub-menu) {
+        >.nav-item {
+          &:hover {
+            &:not(.nav-category):not(.account-dropdown) {
+              >.nav-link {
+                background: $sidebar-tinted-menu-hover-bg;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+/* Layouts */
+
+.navbar {
+  &.fixed-top {
+    + .page-body-wrapper {
+      padding-top: $navbar-height;
+    }
+  }
+}
+
+// Sidebar Icon Only
+.sidebar-icon-only {
+  @media (min-width: 992px) {
+    .navbar {
+      left: $sidebar-width-icon;
+      .navbar-menu-wrapper {
+        width: 100%;
+      }
+    }
+    .sidebar {
+      width: $sidebar-width-icon;
+      .sidebar-brand-wrapper {
+        width: $sidebar-width-icon;
+        .brand-logo {
+          display: none;
+        }
+        .brand-logo-mini {
+          display: inline-block;
+        }
+      }
+      .nav {
+        overflow: visible;
+        .nav-item {
+          position: relative;
+          padding: 0;
+          .profile-name {
+            display: none;
+          }
+          .mdi-dots-vertical {
+            display: none;
+          }
+          &.account-dropdown {
+            display: none;
+          }
+          .nav-link {
+            text-align: center;
+            .menu-title,
+            .badge,.menu-sub-title {
+              display: none;
+            }
+            .menu-title {
+              @include border-radius(0 5px 5px 0px);
+              @at-root #{selector-append(".rtl", &)} {
+                @include border-radius(5px 0 0 5px);
+              }
+            }
+            i {
+              &.menu-icon {
+                margin-right: 0;
+                margin-left: 0;
+              }
+              &.menu-arrow {
+                display: none;
+              }
+            }
+            &[aria-expanded] {
+              .menu-title{
+                @include border-radius(0 5px 0 0px);
+                @at-root #{selector-append(".rtl", &)} {
+                  @include border-radius(5px 0 0 0);
+                }
+              }
+            }
+          }
+          &.nav-profile {
+            display: none;
+          }
+          &.nav-category {
+            display: none;
+          }
+          &.nav-doc {
+            margin: 0;
+            i {
+              display: block;
+            }
+          }
+          .collapse {
+            display: none;
+          }
+          &.hover-open {
+            .nav-link {
+              .menu-title {
+                @include display-flex;
+                @include align-items(center);
+                background: $icon-only-menu-bg-light;
+                @at-root #{selector-append(".sidebar-dark", &)} {
+                    background: $sidebar-dark-menu-active-bg;
+                }
+                padding: 0.5rem 1.4rem;
+                left: $sidebar-width-icon;
+                position: absolute;
+                text-align: left;
+                top: 0;
+                bottom: 0;
+                width: $icon-only-collapse-width;
+                z-index: 1;
+                line-height: 1.8;
+                @at-root #{selector-append(".rtl", &)} {
+                  left: auto;
+                  right: $sidebar-width-icon;
+                  text-align: left;
+                }
+                &:after {
+                  display: none;
+                }
+              }
+            }
+            .collapse,
+            .collapsing {
+              display: block;
+              padding: .5rem 0;
+              background: $icon-only-menu-bg-light;
+              @include border-radius(0 0 5px 0);
+              @at-root #{selector-append(".sidebar-dark", &)} {
+                  background: $sidebar-dark-bg;
+              }
+              position: absolute;
+              left: $sidebar-width-icon;
+              width: $icon-only-collapse-width;
+              @at-root #{selector-append(".rtl", &)} {
+                  left: auto;
+                  right:$sidebar-width-icon;
+                  @include border-radius(0 0 0 5px);
+              }
+            }
+          }
+        }
+        &.sub-menu {
+          padding: $sidebar-icon-only-submenu-padding;
+          .nav-item {
+            .nav-link {
+              text-align: left;
+              padding-left: 20px;
+              &:before {
+                content: "";
+                display: inline-block;
+                width: 5px;
+                height: 5px;
+                border-radius: 50%;
+                background-color: $sidebar-dark-submenu-color;
+                position: absolute;
+                left: 0;
+            }
+            &:hover {
+              &:before {
+                background-color: white;
+              }
+            }
+            }
+          }
+          @at-root #{selector-append(".rtl", &)} {
+            .nav-item {
+              margin-left: 0;
+              .nav-link {
+                text-align: right;
+                &:before{
+                  left: 0;
+                  right: unset;
+                }
+              }
+            }
+          }
+        }
+      }
+      .sidebar-actions {
+        display: none;
+      }
+    }
+    &.rtl {
+      .sidebar {
+        .nav {
+          .nav-item {
+            &.profile {
+              padding-right: 0;
+            }
+          }
+        }
+      }
+    }
+    .page-body-wrapper {
+      width: calc(100% - #{$sidebar-width-icon});
+      transition: all $action-transition-duration $action-transition-timing-function;
+      -webkit-transition: all $action-transition-duration $action-transition-timing-function;
+      -moz-transition: all $action-transition-duration $action-transition-timing-function;
+      -ms-transition: all $action-transition-duration $action-transition-timing-function;
+    }
+  }
+}/* Navbar */
+
+.navbar {
+  font-weight: normal;
+  background: $navbar-bg;
+  left: $sidebar-width-lg;
+  transition:left $action-transition-duration $action-transition-timing-function;
+  -webkit-transition:left $action-transition-duration $action-transition-timing-function;
+  -moz-transition:left $action-transition-duration $action-transition-timing-function;
+  -ms-transition:left $action-transition-duration $action-transition-timing-function;
+  @media (max-width:992px) {
+    left: 0;
+  }
+  .navbar-brand-wrapper {
+    transition: width $action-transition-duration $action-transition-timing-function, background $action-transition-duration $action-transition-timing-function;
+    -webkit-transition: width $action-transition-duration $action-transition-timing-function, background $action-transition-duration $action-transition-timing-function;
+    -moz-transition: width $action-transition-duration $action-transition-timing-function, background $action-transition-duration $action-transition-timing-function;
+    -ms-transition: width $action-transition-duration $action-transition-timing-function, background $action-transition-duration $action-transition-timing-function;
+    background: $navbar-bg;
+    width: $sidebar-width-lg;
+    height: $navbar-height;
+    @media (max-width: 991px) {
+      width: 55px;
+    }
+    .navbar-brand {
+      color: lighten(color(gray-dark), 20%);
+      font-size: 1.5rem;
+      line-height: 48px;
+      margin-right: 0;
+      padding: 0rem 0rem 0rem 1.3rem;
+      width: 100%;
+
+      &:active,
+      &:focus,
+      &:hover {
+        color: lighten(color(gray-dark), 10%);
+      }
+
+      img {
+        width: calc(#{$sidebar-width-lg} - 120px );
+        max-width: 100%;
+        height: 28px;
+        margin: auto;
+        vertical-align: middle;
+      }
+      &.brand-logo-mini {
+        display: none;
+        img {
+          width: calc(#{$sidebar-width-icon} - 50px );
+          max-width: 100%;
+          height: 28px;
+          margin: auto;
+        }
+      }
+    }
+  }
+  .navbar-menu-wrapper {
+    transition: width $action-transition-duration $action-transition-timing-function;
+    -webkit-transition: width $action-transition-duration $action-transition-timing-function;
+    -moz-transition: width $action-transition-duration $action-transition-timing-function;
+    -ms-transition: width $action-transition-duration $action-transition-timing-function;
+    box-shadow: $navbar-box-shadow;
+    -webkit-box-shadow: $navbar-box-shadow;
+    -moz-box-shadow: $navbar-box-shadow;  
+    color: $navbar-menu-color;
+    padding-left: 15px;
+    padding-right: 15px;
+    width: 100%;
+    height: $navbar-height;
+    .rtl & {
+      box-shadow: $navbar-box-shadow-rtl;
+    -webkit-box-shadow: $navbar-box-shadow-rtl;
+    -moz-box-shadow: $navbar-box-shadow-rtl;  
+    }
+    @media (max-width: 991px) {
+      width: auto;
+      padding-left: 15px;
+      padding-right: 15px;
+    }
+    .navbar-toggler {
+      border: 0;
+      color: $text-muted;
+      height: $navbar-height;
+      @include border-radius(0px);
+      &:not(.navbar-toggler-right) {
+        font-size: 0.875rem;
+        @media (max-width: 991px) {
+          display: none;
+        }
+      }
+      &.navbar-toggler-right{
+        @media (max-width:991px){
+          padding-left: 15px;
+          padding-right: 11px;
+          border-right: none;
+        }
+      }
+    }
+    .search-field {
+      .input-group {
+        input {
+          font-size: $default-font-size;
+          padding: .5rem;
+          @include input-placeholder {
+            font-size: $navbar-font-size;
+            color: $navbar-menu-color;
+            font-weight: $font-weight-light;
+          }
+        }
+        i {
+          font-size: 17px;
+          margin-right: 0;
+          color: $navbar-menu-color;
+        }
+        .input-group-text {
+          background: transparent;
+        }
+      }
+      .rtl & {
+        @extend .ml-0;
+        @extend .mr-4;
+      }
+    }
+    .count-indicator {
+      position: relative;
+
+      .count-symbol,
+      .count-number {
+        position: absolute;
+        border-radius: 100%;
+        border: 2px solid $navbar-bg;
+      }
+      .count-symbol {
+        top: 17px;
+        right: -3px;
+        width: 10px;
+        height: 10px;
+      }
+      .count-number {
+        min-width: 14px;
+        height: 14px;
+        font-size: .5rem;
+        color: $white;
+        bottom: 16px;
+        right: -5px;
+        line-height: 1;
+        text-align: center;
+      }
+      &:after {
+        display: none;
+      }
+      .count {
+        position: absolute;
+        left: 66%;
+        width: 7px;
+        height: 7px;
+        color: $white;
+        border-radius: 100%;
+        text-align: center;
+        font-size: .625rem;
+        line-height: 1.5;
+        top: 7px;
+      }
+    }
+    .navbar-nav {
+      flex-direction: row;
+      align-items: center;
+      .nav-item {
+        .nav-link {
+          color: inherit;
+          font-size: $navbar-font-size;
+          margin-left: 1rem;
+          margin-right: 1rem;
+          white-space: nowrap;
+          @media (max-width: 767px) {
+            margin-left: .8rem;
+            margin-right: .8rem;
+          }
+          i {
+            font-size: $navbar-icon-font-size;
+          }
+          .navbar-profile {
+            display: flex;
+            font-weight: normal;
+            align-items: center;
+            .navbar-profile-name {
+              white-space: nowrap;
+              margin-left: 1rem;
+            }
+            i {
+              color: #a7afb7;
+            }
+          }
+          &.create-new-button {
+            padding: 0.375rem 0.75rem;
+          }
+        }
+        &.dropdown {
+          line-height: 1rem;
+          .dropdown-toggle {
+            &:after {
+              color: theme-color(primary);
+              font-size: 1rem;
+            }
+          }
+          .dropdown-menu {
+            @extend .dropdownAnimation;
+            border: none;
+            @include border-radius(4px);
+            &.navbar-dropdown {
+              position: absolute;            
+              font-size: 0.9rem;
+              margin-top: 0;
+              top: 48px;
+              right: 0;
+              left: auto;
+              -webkit-box-shadow: 0px 0px 35px -3px rgb(0, 0, 0);
+              -moz-box-shadow: 0px 0px 35px -3px rgb(0, 0, 0);
+              box-shadow: 0px 0px 35px -3px rgb(0, 0, 0);
+              .rtl & {
+                right: auto;
+                left: 0;
+              }
+              padding: 0;
+
+              .dropdown-item {
+                @extend .d-flex;
+                @extend .align-items-center;
+                margin-bottom: 0;
+                padding: 11px 13px;
+                cursor: pointer;
+                &:hover {
+                  color: #fff;
+                }
+                i {
+                  font-size: 17px;
+                }
+                .ellipsis {
+                  max-width: 200px;
+                  overflow: hidden;
+                  text-overflow: ellipsis;
+                }
+                .rtl & {
+                  i{
+                    @extend .mr-0;
+                    margin-left: 10px;
+                  }
+                }
+              }
+              .dropdown-divider {
+                margin: 0;
+              }
+            }
+          }
+          @media (max-width: 991px) {
+            position: static;
+            .navbar-dropdown {
+              left: 20px;
+              right: 20px;
+              top: $navbar-height;
+              width: calc(100% - 40px);
+            }
+          }
+        }
+        &.nav-profile {
+          .nav-link {
+            @extend .d-flex;
+            .nav-profile-img {
+              position: relative;
+              width: 32px;
+              height: 32px;
+              img {
+                width: 32px;
+                height: 32px;
+                border-radius: 100%;
+              }
+              .availability-status {
+                position: absolute;
+                width: 10px;
+                height: 10px;
+                border-radius: 100%;
+                border: 2px solid #ffffff;
+                bottom: 5px;
+                right: -5px;
+                &.online {
+                  background: theme-color(success);
+                }
+                &.offline {
+                  background: theme-color(danger);
+                }
+                &.busy {
+                  background: theme-color(warning);
+                }
+              }
+            }
+            .nav-profile-text {
+              margin-left: 1.25rem;
+              .rtl & {
+                margin-left: 0;
+                margin-right: 1.25rem;
+              }
+              p {
+                line-height: 1;
+              }
+              @media (max-width: 767px) {
+                display: none;
+              }
+            }
+            &.dropdown-toggle {
+              &:after {
+                line-height: 2;
+              }
+            }
+          }
+        }
+      }
+      &.navbar-nav-right {
+        @media (min-width: 992px) {
+          margin-left: auto;
+          .rtl & {
+            margin-left: 0;
+            margin-right: auto;
+          }
+        }
+      }
+    }
+    .search {
+      input {
+        background: $card-bg;
+        padding: 13px 20px 11px 20px;
+        border: 1px solid #2c2e33;
+        &::placeholder {
+          color: $text-muted;
+          font-size: $input-placeholder-font-size;
+        }
+      }
+    }
+  }
+}
+@media (max-width:991px) {
+  .navbar {
+    flex-direction: row;
+    .navbar-brand-wrapper {
+      width: 75px;
+      .navbar-brand {
+        &.brand-logo {
+          display: none;
+        }
+        &.brand-logo-mini {
+          display: inline-block;
+        }
+      }
+    }
+  }
+  .navbar-collapse {
+    display: flex;
+    margin-top: 0.5rem;
+  }
+}
+@media (max-width:480px) {
+  .navbar {
+    .navbar-brand-wrapper {
+      width: 55px;
+      .brand-logo-mini{
+        padding-top: 0px;
+      }
+    }
+  }
+}
+
+.sidebar-tinted {
+  .navbar {
+    .navbar-brand-wrapper {
+      background: $navbar-brand-wrapper-tinted-bg;
+    }
+  }
+}////////// COLOR SYSTEM //////////
+
+$blue: #5E50F9;
+$indigo: #6610f2;
+$purple: #6a008a;
+$pink: #E91E63;
+$red: #f96868;
+$orange: #f2a654;
+$yellow: #f6e84e;
+$green: #46c35f;
+$teal: #58d8a3;
+$cyan: #57c7d4;
+$black: #000;
+$white: #ffffff;
+$white-smoke: #f2f7f8;
+$violet: #41478a;
+$darkslategray : #2e383e;
+$dodger-blue : #3498db;
+
+
+$colors: (blue: $blue,
+indigo: $indigo,
+purple: $purple,
+pink: $pink,
+red: $red,
+orange: $orange,
+yellow: $yellow,
+green: $green,
+teal: $teal,
+cyan: $cyan,
+white: $white,
+gray: #434a54,
+gray-light: #aab2bd,
+gray-lighter: #e8eff4,
+gray-lightest: #e6e9ed,
+gray-dark: #12151e,
+black: #000000);
+
+
+$theme-colors: (primary: #0090e7,
+secondary: #e4eaec,
+success: #00d25b,
+info:  #8f5fe8,
+warning: #ffab00,
+danger: #fc424a,
+light: $white,
+dark: #0d0d0d);
+
+
+
+////////// COLOR SYSTEM //////////
+
+////////// COLOR VARIABLES //////////
+$content-bg: #000000;
+$footer-bg: $content-bg;
+$footer-color: color(dark);
+$border-color: #2c2e33;
+////////// COLOR VARIABLES //////////
+
+////////// SOCIAL COLORS //////////
+
+$social-colors: (twitter: #2caae1,
+facebook: #3b579d,
+google: #dc4a38,
+linkedin: #0177b5,
+pinterest: #cc2127,
+youtube: #e52d27,
+github: #333333,
+behance: #1769ff,
+dribbble: #ea4c89,
+reddit: #ff4500);
+
+////////// SOCIAL COLORS //////////
+
+////////// FONTS//
+
+$type1:     'Rubik', sans-serif;
+
+////////// FONT-WEIGHT/////////
+
+$font-weight-light: 300;
+$font-weight-medium: 500;
+$font-weight-bold: 700;
+
+$default-font-size: .875rem; // 14px as base font size
+
+$text-muted: #6c7293;
+$body-color: #ffffff;
+
+////////// FONT VARIABLES //////////
+
+
+///////// CARD ////////
+$card-bg: #191c24;
+$card-description-color: #bfbfbf;
+$card-title-color: #ffffff;
+///////// CARD ////////
+
+
+//////// TABLES ////////
+$table-color: $body-color;
+$table-accent-bg: $content-bg;
+$table-hover-bg: $content-bg;
+$table-cell-padding: .9375rem;
+$table-border-color: $border-color;
+$table-inverse-bg: #2a2b32;
+$table-inverse-color: color(white);
+$table-dark-bg: #212529;
+$table-bg-level: 1;
+//////// TABLES ////////
+
+////////// MODALS VARIABLES //////////
+$modal-content-bg: $content-bg;
+////////// MODALS VARIABLES //////////
+
+///////// NAVBAR ////////
+$navbar-bg: #191c24;
+$navbar-brand-wrapper-tinted-bg: #fa424a;
+$navbar-height: 70px;
+$navbar-menu-color: #ffffff;
+$navbar-font-size: .9375rem;
+$navbar-icon-font-size: 1.125rem;
+
+///////// NAVBAR ////////
+
+////////// SIDEBAR ////////
+$sidebar-width-lg: 244px;
+$sidebar-width-mini: 185px;
+$sidebar-width-icon: 70px;
+
+$sidebar-dark-bg: #191c24;
+$sidebar-dark-menu-color: $text-muted;
+$sidebar-dark-menu-active-bg: darken($sidebar-dark-bg, 5%);
+$sidebar-dark-menu-active-color: #ffffff;
+$sidebar-dark-menu-hover-bg: darken($sidebar-dark-bg, 5%);
+$sidebar-dark-menu-hover-color: color(white);
+$sidebar-dark-submenu-color: $sidebar-dark-menu-color;
+$sidebar-dark-submenu-hover-bg: initial;
+$sidebar-dark-submenu-hover-color: #ffffff;
+$sidebar-dark-menu-icon-color: #bba8bff5;
+$sidebar-dark-menu-arrow-color: rgba($text-muted, 0.36);
+
+$sidebar-tinted-bg: #fa424a;
+$sidebar-tinted-menu-color: #ffffff;
+$sidebar-tinted-menu-active-bg: rgba(12, 14, 14, 0.1);
+$sidebar-tinted-menu-hover-bg: rgba(12, 14, 14, 0.1);
+$sidebar-tinted-menu-arrow-color: rgba($sidebar-tinted-menu-color, 0.36);
+
+$sidebar-menu-font-size: 0.9375rem;
+$sidebar-menu-padding-y: 0.8rem;
+$sidebar-menu-padding-x: 1.188rem;
+
+$sidebar-submenu-font-size: 0.855rem;
+$sidebar-submenu-item-padding: 0.5rem 0.35rem;
+
+$sidebar-icon-font-size: 1rem;
+$sidebar-arrow-font-size: .625rem;
+
+$sidebar-profile-bg: transparent;
+$sidebar-profile-padding: .75rem 1.625rem .75rem 1.188rem;
+
+$sidebar-mini-menu-padding: 0.8125rem 1rem 0.8125rem 1rem;
+
+$sidebar-icon-only-menu-padding: .5rem 1.625rem .5rem 1.188rem;
+$sidebar-icon-only-submenu-padding: 0 0 0 1.5rem;
+
+$rtl-sidebar-submenu-padding: 0 1.5rem 0 0;
+
+$icon-only-collapse-width: 190px;
+$icon-only-menu-bg-light: $sidebar-dark-menu-hover-bg;
+$icon-only-menu-bg-dark: $sidebar-dark-menu-hover-bg;
+
+$navbar-box-shadow: 20px 19px 34px -15px rgba(0,0,0,0.5);
+$navbar-box-shadow-rtl: -34px 19px 34px -15px $content-bg;
+
+///////// SIDEBAR ////////
+
+
+
+///////// BUTTONS ////////
+
+$button-fixed-width: 150px;
+$btn-padding-y: .375rem;
+$btn-padding-x: .75rem;
+$btn-line-height: 1;
+
+$btn-padding-y-xs: .5rem;
+$btn-padding-x-xs: .75rem;
+
+$btn-padding-y-sm: .25rem;
+$btn-padding-x-sm: .5rem;
+
+$btn-padding-y-lg: 1rem;
+$btn-padding-x-lg: 3rem;
+
+$btn-font-size: 0.9375rem;
+$btn-font-size-xs: 0.625rem;
+$btn-font-size-sm: 0.875rem;
+$btn-font-size-lg: 0.875rem;
+
+$btn-border-radius: .1875rem;
+$btn-border-radius-xs: .1875rem;
+$btn-border-radius-sm: .1875rem;
+$btn-border-radius-lg: .1875rem;
+///////// BUTTONS ////////
+
+
+
+////////// TOOLTIP VARIABLES //////////
+//default styles
+$tooltip-font-size: .75rem;
+$tooltip-padding-y: .4rem;
+$tooltip-padding-x: .75rem;
+$tooltip-border-radius: .375rem;
+////////// TOOLTIP VARIABLES //////////
+$popover-bg: theme-color(dark);
+$popover-border-color: $border-color;
+$popover-arrow-color: $popover-bg;
+$popover-arrow-outer-color: $popover-border-color;
+$popover-header-bg: $popover-bg;
+
+
+
+/////////  FORMS /////////
+$input-bg: #2A3038;
+$input-border-radius: 2px;
+$input-border-color: $border-color;
+$input-placeholder-color: lighten($input-bg, 15%);
+$input-placeholder-font-size: 0.875rem;
+$input-font-size: 0.875rem;
+
+$input-padding-y: 0.56rem;
+$input-padding-x: 0.75rem;
+$input-line-height: 1;
+
+$input-padding-y-xs: .5rem;
+$input-padding-x-xs: .75rem;
+
+$input-padding-y-sm: .50rem;
+$input-padding-x-sm: .81rem;
+
+$input-padding-y-lg: .94rem;
+$input-padding-x-lg: 1.94rem;
+
+$input-height:          2.875rem;
+$input-height-sm:       2.575rem;
+$input-height-lg:       3.175rem;
+///////// FORMS /////////
+
+////////  DROPDOWNS ///////
+$dropdown-bg: $card-bg;
+$dropdown-color: $body-color;
+$dropdown-border-color: $border-color;
+$dropdown-divider-bg: $border-color;
+$dropdown-link-color: $body-color;
+$dropdown-link-hover-bg: darken($card-bg, 3%);
+$dropdown-header-color: $body-color;
+$dropdown-menu-box-shadow: none;
+////////  DROPDOWNS ///////
+
+
+////////  PROGRESSBAR ///////
+$progress-bg: $content-bg;
+////////  PROGRESSBAR ///////
+
+
+////////// MEASUREMENT AND PROPERTY VARIABLES //////////
+$boxed-container-width: 1200px;
+$border-property: 1px solid $border-color;
+$card-spacing-y: 2.5rem;  
+$card-padding-y: 1.75rem;
+$card-padding-x: 1.5625rem;
+$card-border-radius: 0.25rem;
+$grid-gutter-width: 1.5rem;
+$action-transition-duration: 0.25s;
+$action-transition-timing-function: ease;
+$border-width: 1px;
+////////// OTHER VARIABLES //////////
+
+
+
+////////// BREAD CRUMBS VARIABLES //////////
+// default styles
+$breadcrumb-padding-y: 0.56rem;
+$breadcrumb-padding-x: 1.13rem;
+$breadcrumb-item-padding: .5rem;
+$breadcrumb-margin-bottom: 1rem;
+$breadcrumb-font-size: $default-font-size;
+$breadcrumb-bg: transparent;
+$breadcrumb-border-color: $border-color;
+$breadcrumb-divider-color: $gray-600;
+$breadcrumb-active-color: $gray-700;
+$breadcrumb-divider: "/";
+
+// custom styles
+$breadcrumb-custom-padding-y: 0;
+$breadcrumb-custom-padding-x: 0;
+$breadcrumb-custom-item-padding-y: 0.56rem;
+$breadcrumb-custom-item-padding-x: 10px;
+$breadcrumb-custom-item-color: #FFFFF0;
+$breadcrumb-item-bg: #141414;
+////////// BREAD CRUMBS VARIABLES //////////
+
+
+
+////////// MODALS VARIABLES //////////
+$modal-inner-padding: 0.9375rem;
+$modal-dialog-margin: 10px;
+$modal-dialog-margin-y-sm-up: 30px;
+$modal-title-line-height: $line-height-base;
+$modal-content-box-shadow-xs: 0 3px 9px rgba($black, .5);
+$modal-content-box-shadow-sm-up: 0 5px 15px rgba($black, .5);
+
+$modal-backdrop-bg: $black;
+$modal-backdrop-opacity: .5;
+
+$modal-header-border-color: $border-color;
+$modal-content-border-color: $border-color;
+$modal-footer-border-color: $border-color;
+
+$modal-header-border-width: $border-width;
+$modal-content-border-width: $border-width;
+$modal-footer-border-width: $border-width;
+
+$modal-header-padding-x: 26px;
+$modal-header-padding-y: 25px;
+
+$modal-body-padding-x: 26px;
+$modal-body-padding-y: 35px;
+
+$modal-footer-padding-x: 31px;
+$modal-footer-padding-y: 15px;
+
+$modal-lg: 90%;
+$modal-md: 500px;
+$modal-sm: 300px;
+$modal-transition: transform .4s ease;
+////////// MODALS VARIABLES //////////
+
+
+/////////  PAGINATION VARIABLES //////////
+$pagination-bg: $content-bg;
+/////////  PAGINATION VARIABLES //////////
+
+
+/////////  TABS VARIABLES //////////
+$nav-tabs-border-color: $border-color;
+$nav-tabs-link-bg: $content-bg;
+$nav-tabs-link-color: $body-color;
+$nav-tabs-link-hover-border-color: $nav-tabs-border-color $nav-tabs-border-color $nav-tabs-border-color;
+$nav-tabs-link-active-color: $body-color;
+$nav-tabs-link-active-bg: darken($content-bg, 5%);
+$nav-tabs-link-active-border-color: $nav-tabs-border-color $nav-tabs-border-color $nav-tabs-link-active-bg;
+$nav-pills-custom-bg: #8489ab;
+////////   TABS VARIABLES /////////
+
+///////// SETTINGS PANEL ////////
+$settings-panel-width: 300px;
+///////// SETTINGS PANEL ////////
+
+////////   CALENDAR  //////////////
+$fullcalendar-color: #a8b2b9;
+////////   CALENDAR  //////////////
+
+////////   MISC  //////////////
+$page-title-color: $body-color;
+////////   MISC  //////////////
+
+/*-------------------------------------------------------------------
+  ===== Table of Contents =====
+
+  * Bootstrap functions
+  * Template variables
+  * SCSS Compass Functions
+  * Boostrap Main SCSS
+  * Template mixins
+    + Animation Mixins
+    + Background Mixins
+    + Badge Mixins
+    + Button Mixins
+    + Miscellaneous Mixins
+    + BlockQuote Mixins
+    + Cards Mixins
+    + Color Functions Mixins
+    + Tooltips
+    + popovers
+  * Core Styles
+    + Reset Styles
+    + Fonts
+    + Functions
+    + Backgrounds
+    + Typography
+    + Miscellaneous
+    + Footer
+    + Layouts
+    + Utilities
+    + Demo styles
+  * Components
+    + Accordions
+    + Badges
+    + Bootstrap Alerts
+    + Boostrap Progress
+    + Buttons
+    + Breadcrumbs
+    + Cards
+    + Checkboxes and Radios
+    + Dropdowns
+    + Forms
+    + Google maps
+    + Icons
+    + Loaders
+    + Lists
+    + Modals
+    + Pagination
+    + Popover
+    + Preview
+    + Tables
+    + Tabs
+    + Timeline
+    + Todo List
+    + Tooltips
+    + User Profile
+    + Pricing table
+  * Email
+    + Mail Sidebar
+    + Mail List Container
+    + Message Content
+  * Plugin Overrides
+    + Ace Editor
+    + Avgrund Popup
+    + Bootstrap Tour
+    + Chartist
+    + CodeMirror
+    + Colcade
+    + Colorpicker
+    + Context Menu
+    + Data Tables
+    + Datepicker
+    + Dropify
+    + Dropzone
+    + Flot chart
+    + Full Calendar
+    + Google Charts
+    + Icheck
+    + Jquery File Upload
+    + Js-grid
+    + Jvectormap
+    + Light Gallery
+    + Listify
+    + No-ui-slider
+    + Owl-carousel
+    + Progressbar-js
+    + Pws-tabs
+    + Quill Editor
+    + Rating
+    + Select2
+    + Summernote Editor
+    + SweetAlert
+    + Switchery
+    + Tags
+    + TinyMCE Editor
+    + Toast
+    + Typeahead
+    + Wysi Editor
+    + X-editable
+    + Wizard
+  * Landing screens
+    + Auth
+    + Lock Screen
+-------------------------------------------------------------------*/
+
+/*-------------------------------------------------------------------*/
+/* === Import Bootstrap functions and variables === */
+@import "../../node_modules/bootstrap/scss/functions";
+@import "../../node_modules/bootstrap/scss/variables";
+
+/*-------------------------------------------------------------------*/
+/* === Import template variables === */
+@import './variables';
+
+/*-------------------------------------------------------------------*/
+/* === SCSS Compass Functions === */
+@import "../../node_modules/compass-mixins/lib/compass";
+@import "../../node_modules/compass-mixins/lib/animate";
+
+/*-------------------------------------------------------------------*/
+/* === Boostrap Main SCSS === */
+@import "../../node_modules/bootstrap/scss/bootstrap";
+
+/*-------------------------------------------------------------------*/
+/* === Template mixins === */
+@import "components/mixins/misc";
+@import "components/mixins/animation";
+@import "components/mixins/background";
+@import "components/mixins/badges";
+@import "components/mixins/blockqoute";
+@import "components/mixins/buttons";
+@import "components/mixins/breadcrumbs";
+@import "components/mixins/cards";
+@import "components/mixins/no-ui-slider";
+@import "components/mixins/pagination";
+@import "components/mixins/popovers";
+@import "components/mixins/tooltips";
+
+/*-------------------------------------------------------------------*/
+/* === Core Styles === */
+@import "components/reset";
+@import "components/fonts";
+@import "components/functions";
+@import "components/background";
+@import "components/typography";
+@import "components/misc";
+@import "components/footer";
+@import "components/utilities";
+@import "components/demo";
+
+/*-------------------------------------------------------------------*/
+/* === Components === */
+// @import "components/accordions";
+@import "components/badges";
+// @import "components/bootstrap-alerts";
+// @import "components/bootstrap-progress";
+@import "components/buttons";
+// @import "components/breadcrumbs";
+@import "components/cards";
+@import "components/checkbox-radio";
+@import "components/dropdown";
+@import "components/forms";
+// @import "components/google-maps";
+@import "components/icons";
+@import "components/loaders/loaders";
+// @import "components/lists";
+// @import "components/modals";
+// @import "components/pagination";
+// @import "components/portfolio";
+// @import "components/popover";
+@import "components/preview";
+@import "components/tables";
+@import "components/tabs";
+// @import "components/timeline";
+@import "components/todo-list";
+// @import "components/tooltips";
+// @import "components/user-profile";
+// @import "components/pricing-table";
+
+/*-------------------------------------------------------------------*/
+/* === Email === */
+// @import "../modern-dark/shared/components/mail-components/mail-sidebar";
+// @import "../modern-dark/shared/components/mail-components/mail-list-container";
+// @import "../modern-dark/shared/components/mail-components/messagecontent";
+
+/*-------------------------------------------------------------------*/
+/* === Plugin overrides === */
+@import "components/plugin-overrides/ace";
+@import "components/plugin-overrides/avgrund";
+@import "components/plugin-overrides/chartist";
+@import "components/plugin-overrides/c3";
+@import "components/plugin-overrides/codemirror";
+@import "components/plugin-overrides/colcade";
+@import "components/plugin-overrides/colorpicker";
+@import "components/plugin-overrides/context-menu";
+@import "components/plugin-overrides/data-tables";
+@import "components/plugin-overrides/datepicker";
+@import "components/plugin-overrides/dropify";
+@import "components/plugin-overrides/dropzone";
+@import "components/plugin-overrides/flot-chart";
+@import "components/plugin-overrides/full-calendar";
+@import "components/plugin-overrides/google-charts";
+@import "components/plugin-overrides/icheck";
+@import "components/plugin-overrides/jquery-file-upload";
+@import "components/plugin-overrides/js-grid";
+@import "components/plugin-overrides/jvectormap";
+@import "components/plugin-overrides/justguage.scss";
+@import "components/plugin-overrides/light-gallery";
+@import "components/plugin-overrides/listify";
+@import "components/plugin-overrides/morris.scss";
+@import "components/plugin-overrides/no-ui-slider";
+@import "components/plugin-overrides/owl-carousel";
+@import "components/plugin-overrides/progressbar-js";
+@import "components/plugin-overrides/pws-tabs";
+@import "components/plugin-overrides/quill";
+@import "components/plugin-overrides/rating";
+@import "components/plugin-overrides/select2";
+@import "components/plugin-overrides/summernote";
+@import "components/plugin-overrides/sweet-alert";
+@import "components/plugin-overrides/switchery";
+@import "components/plugin-overrides/tags";
+@import "components/plugin-overrides/tinymce";
+@import "components/plugin-overrides/toast";
+@import "components/plugin-overrides/typeahead";
+@import "components/plugin-overrides/wysieditor";
+@import "components/plugin-overrides/x-editable";
+@import "components/plugin-overrides/wizard";
+
+/*-------------------------------------------------------------------*/
+/* === Landing screens === */
+@import "components/landing-screens/auth";
+
+@import './navbar';
+@import './sidebar';
+@import './layouts';
+@import './vertical/vertical-wrapper';<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>@ViewData["Title"] - SysSoniaInventory</title>
+    <!-- plugins:css -->
+    <link rel="stylesheet" href="~/assets/vendors/mdi/css/materialdesignicons.min.css">
+    <link rel="stylesheet" href="~/assets/vendors/css/vendor.bundle.base.css">
+    <!-- endinject -->
+    <!-- Plugin css for this page -->
+    <link rel="stylesheet" href="~/assets/vendors/jvectormap/jquery-jvectormap.css">
+    <link rel="stylesheet" href="~/assets/vendors/flag-icon-css/css/flag-icon.min.css">
+    <link rel="stylesheet" href="~/assets/vendors/owl-carousel-2/owl.carousel.min.css">
+    <link rel="stylesheet" href="~/assets/vendors/owl-carousel-2/owl.theme.default.min.css">
+
+    <link rel="stylesheet" href="~/vendor/fontawesome-free/css/all.min.css">
+    <!-- End plugin css for this page -->
+    <!-- inject:css -->
+    <!-- endinject -->
+    <!-- Layout styles -->
+    <link rel="stylesheet" href="~/assets/css/style.css">
+    <!-- End layout styles -->
+    <link rel="shortcut icon" href="~/assets/images/favicon.png" />
+  
+        <style>            
+            .form-control:focus {
+                color: white !important;
+            }
+
+            .readonly-input{
+                background-color: black !important;
+                
+            }
+        </style>
+   
+</head>
+<body class="sidebar-icon-only">
+    <div class="container-scroller">
+        <!-- partial:partials/_sidebar.html -->
+        <nav class="sidebar sidebar-offcanvas" id="sidebar">
+            <div class="sidebar-brand-wrapper d-none d-lg-flex align-items-center justify-content-center fixed-top">
+                <a class="sidebar-brand brand-logo" href="index.html"><img src="~/assets/images/logo.svg" alt="logo" /></a>
+                <a class="sidebar-brand brand-logo-mini" href="index.html"><img src="~/assets/images/logo-mini.svg" alt="logo" /></a>
+            </div>
+
+
+            <ul class="nav">
+                <li class="nav-item profile">
+                    <div class="profile-desc">
+                        <div class="profile-pic">
+                            <div class="count-indicator">
+                                <img class="img-xs rounded-circle " src="~/assets/images/faces/face15.jpg" alt="">
+                                <span class="count bg-success"></span>
+                            </div>
+                            
+                            <div class="profile-name">
+                                <h5 class="mb-0 font-weight-normal">Henry Klein</h5> <!-- -----------------nombre de usuario--------------------- -->
+                                <span>Gold Member</span>
+                            </div>
+                        </div>
+                        <a href="#" id="profile-dropdown" data-toggle="dropdown"><i class="mdi mdi-dots-vertical"></i></a>
+                        <div class="dropdown-menu dropdown-menu-right sidebar-dropdown preview-list" aria-labelledby="profile-dropdown">
+                            <a href="#" class="dropdown-item preview-item">
+                                <div class="preview-thumbnail">
+                                    <div class="preview-icon bg-dark rounded-circle">
+                                        <i class="mdi mdi-settings text-primary"></i>
+                                    </div>
+                                </div>
+                                <div class="preview-item-content">
+                                    <p class="preview-subject ellipsis mb-1 text-small">Ajustes</p>
+                                </div>
+                            </a>
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item preview-item">
+                                <div class="preview-thumbnail">
+                                    <div class="preview-icon bg-dark rounded-circle">
+                                        <i class="mdi mdi-onepassword  text-info"></i>
+                                    </div>
+                                </div>
+                                <div class="preview-item-content">
+                                    <p class="preview-subject ellipsis mb-1 text-small">Cambiar Contraseña</p>
+                                </div>
+                            </a>
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item preview-item">
+                                <div class="preview-thumbnail">
+                                    <div class="preview-icon bg-dark rounded-circle">
+                                        <i class="mdi mdi-calendar-today text-success"></i>
+                                    </div>
+                                </div>
+                                <div class="preview-item-content">
+                                    <p class="preview-subject ellipsis mb-1 text-small">To-do list</p>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                </li>
+                <li class="nav-item nav-category">
+                    <span class="nav-link">Navegación</span>
+                </li>
+                <li class="nav-item menu-items">
+                    <a class="nav-link" asp-controller="Home" asp-action="Index">
+                        <span class="menu-icon">
+                            <i class="mdi mdi-speedometer"></i>
+                        </span>
+                        <span class="menu-title">Dashboard</span>
+                    </a>
+                </li>
+
+                <!---->
+
+              
+                    <li class="nav-item menu-items">
+                        <a class="nav-link" asp-controller="Rol" asp-action="Index">
+                            <span class="menu-icon">
+                                <i class="mdi mdi-account-key"></i>
+                            </span>
+                            <span class="menu-title">Rol</span>
+                        </a>
+                    </li>
+                    <li class="nav-item menu-items">
+                        <a class="nav-link" asp-controller="Sucursal" asp-action="Index">
+                            <span class="menu-icon">
+                                <i class="mdi mdi-home-map-marker"></i>
+                            </span>
+                            <span class="menu-title">Sucursal</span>
+                        </a>
+                    </li>
+                    <li class="nav-item menu-items">
+                        <a class="nav-link" asp-controller="User" asp-action="Index">
+                            <span class="menu-icon">
+                                <i class="mdi mdi-account-multiple"></i>
+                            </span>
+                            <span class="menu-title">Usuario</span>
+                        </a>
+                    </li>
+                    <li class="nav-item menu-items">
+                        <a class="nav-link" asp-controller="Category" asp-action="Index">
+                            <span class="menu-icon">
+                                <i class="mdi mdi-tag-multiple"></i>
+                            </span>
+                            <span class="menu-title">Categoría</span>
+                        </a>
+                    </li>
+                <li class="nav-item menu-items">
+                    <a class="nav-link" asp-controller="HistorialProduct" asp-action="Index">
+                        <span class="menu-icon">
+                            <i class="mdi mdi-history"></i>
+                        </span>
+                        <span class="menu-title">Registros</span>
+                    </a>
+                </li>
+                    <li class="nav-item menu-items">
+                        <a class="nav-link" asp-controller="Proveedor" asp-action="Index">
+                            <span class="menu-icon">
+                                <i class="mdi mdi-truck"></i>
+                            </span>
+                            <span class="menu-title">Proveedor</span>
+                        </a>
+                    </li>
+                    <li class="nav-item menu-items">
+                        <a class="nav-link" asp-controller="Product" asp-action="Index">
+                            <span class="menu-icon">
+                                <i class="mdi mdi-cart"></i>
+                            </span>
+                            <span class="menu-title">Producto</span>
+                        </a>
+                    </li>
+
+             
+
+
+                <!---->
+
+              
+            </ul>
+        </nav>
+
+
+        <!-- partial -->
+        <div class="container-fluid page-body-wrapper">
+            <!-- partial:partials/_navbar.html -->
+            <nav class="navbar p-0 fixed-top d-flex flex-row">
+                <div class="navbar-brand-wrapper d-flex d-lg-none align-items-center justify-content-center">
+                    <a class="navbar-brand brand-logo-mini" href="index.html"><img src="~/assets/images/logo-mini.svg" alt="logo" /></a>
+                </div>
+                <div class="navbar-menu-wrapper flex-grow d-flex align-items-stretch">
+                    <button class="navbar-toggler navbar-toggler align-self-center" type="button" data-toggle="minimize">
+                        <span class="mdi mdi-menu"></span>
+                    </button>
+                    <button id="sidebar-dark-theme" class="btn btn-dark">Tema Oscuro</button>
+                    <button id="sidebar-default-theme" class="btn btn-light">Tema Claro</button>
+
+                    <ul class="navbar-nav w-100">
+                        <li class="nav-item w-100">
+                            <form class="nav-link mt-2 mt-md-0 d-none d-lg-flex search">
+                                <input type="text" id="searchInput" class="form-control" placeholder="Buscar Productos">
+                                <ul id="suggestions" class="dropdown-menu" style="display: none; position: absolute; z-index: 1000;"></ul>
+                            </form>
+                        </li>
+                    </ul>
+
+                    <ul class="navbar-nav navbar-nav-right">
+                        <!---->
+                        <li class="nav-item dropdown d-none d-lg-block">
+                            <a class="nav-link btn btn-success create-new-button font-weight-bold" id="createbuttonDropdown" data-toggle="dropdown" aria-expanded="false" href="#"><i class="fas fa-plus"></i> Creación rápida</a>
+                            <div class="dropdown-menu dropdown-menu-right navbar-dropdown preview-list" aria-labelledby="createbuttonDropdown">
+                                <h6 class="p-3 mb-0">Opciones de Creación</h6>
+
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item preview-item" asp-area="" asp-controller="Product" asp-action="Create">
+                                    <div class="preview-thumbnail">
+                                        <div class="preview-icon bg-dark rounded-circle">
+                                            <i class="mdi mdi-cube-outline text-primary"></i>
+                                        </div>
+                                    </div>
+                                    <div class="preview-item-content">
+                                        <p class="preview-subject ellipsis mb-1">Crear Producto</p>
+                                    </div>
+                                </a>
+
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item preview-item" asp-area="" asp-controller="Proveedor" asp-action="Create">
+                                    <div class="preview-thumbnail">
+                                        <div class="preview-icon bg-dark rounded-circle">
+                                            <i class="mdi mdi-truck text-success"></i>
+                                        </div>
+                                    </div>
+                                    <div class="preview-item-content">
+                                        <p class="preview-subject ellipsis mb-1">Crear Proveedor</p>
+                                    </div>
+                                </a>
+
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item preview-item" asp-area="" asp-controller="User" asp-action="Create">
+                                    <div class="preview-thumbnail">
+                                        <div class="preview-icon bg-dark rounded-circle">
+                                            <i class="mdi mdi-account-plus text-info"></i>
+                                        </div>
+                                    </div>
+                                    <div class="preview-item-content">
+                                        <p class="preview-subject ellipsis mb-1">Crear Usuario</p>
+                                    </div>
+                                </a>
+
+                               
+
+                                <div class="dropdown-divider"></div>
+                                <p class="p-3 mb-0 text-center">Ver todas las opciones</p>
+                            </div>
+                        </li>
+                        <!---->
+
+                      
+                        <li class="nav-item dropdown border-left">
+                            <a class="nav-link count-indicator dropdown-toggle" id="messageDropdown" href="#" data-toggle="dropdown" aria-expanded="false">
+                                <i class="mdi mdi-email"></i>
+                                <span class="count bg-success"></span>
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-right navbar-dropdown preview-list" aria-labelledby="messageDropdown">
+                                <h6 class="p-3 mb-0">Messages</h6>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item preview-item">
+                                    <div class="preview-thumbnail">
+                                        <img src="assets/images/faces/face4.jpg" alt="image" class="rounded-circle profile-pic">
+                                    </div>
+                                    <div class="preview-item-content">
+                                        <p class="preview-subject ellipsis mb-1">Mark send you a message</p>
+                                        <p class="text-muted mb-0"> 1 Minutes ago </p>
+                                    </div>
+                                </a>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item preview-item">
+                                    <div class="preview-thumbnail">
+                                        <img src="assets/images/faces/face2.jpg" alt="image" class="rounded-circle profile-pic">
+                                    </div>
+                                    <div class="preview-item-content">
+                                        <p class="preview-subject ellipsis mb-1">Cregh send you a message</p>
+                                        <p class="text-muted mb-0"> 15 Minutes ago </p>
+                                    </div>
+                                </a>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item preview-item">
+                                    <div class="preview-thumbnail">
+                                        <img src="assets/images/faces/face3.jpg" alt="image" class="rounded-circle profile-pic">
+                                    </div>
+                                    <div class="preview-item-content">
+                                        <p class="preview-subject ellipsis mb-1">Profile picture updated</p>
+                                        <p class="text-muted mb-0"> 18 Minutes ago </p>
+                                    </div>
+                                </a>
+                                <div class="dropdown-divider"></div>
+                                <p class="p-3 mb-0 text-center">4 new messages</p>
+                            </div>
+                        </li>
+                        <li class="nav-item dropdown border-left">
+                            <a class="nav-link count-indicator dropdown-toggle" id="notificationDropdown" href="#" data-toggle="dropdown">
+                                <i class="mdi mdi-bell"></i>
+                                <span class="count bg-danger"></span>
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-right navbar-dropdown preview-list" aria-labelledby="notificationDropdown">
+                                <h6 class="p-3 mb-0">Notifications</h6>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item preview-item">
+                                    <div class="preview-thumbnail">
+                                        <div class="preview-icon bg-dark rounded-circle">
+                                            <i class="mdi mdi-calendar text-success"></i>
+                                        </div>
+                                    </div>
+                                    <div class="preview-item-content">
+                                        <p class="preview-subject mb-1">Event today</p>
+                                        <p class="text-muted ellipsis mb-0"> Just a reminder that you have an event today </p>
+                                    </div>
+                                </a>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item preview-item">
+                                    <div class="preview-thumbnail">
+                                        <div class="preview-icon bg-dark rounded-circle">
+                                            <i class="mdi mdi-settings text-danger"></i>
+                                        </div>
+                                    </div>
+                                    <div class="preview-item-content">
+                                        <p class="preview-subject mb-1">Settings</p>
+                                        <p class="text-muted ellipsis mb-0"> Update dashboard </p>
+                                    </div>
+                                </a>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item preview-item">
+                                    <div class="preview-thumbnail">
+                                        <div class="preview-icon bg-dark rounded-circle">
+                                            <i class="mdi mdi-link-variant text-warning"></i>
+                                        </div>
+                                    </div>
+                                    <div class="preview-item-content">
+                                        <p class="preview-subject mb-1">Launch Admin</p>
+                                        <p class="text-muted ellipsis mb-0"> New admin wow! </p>
+                                    </div>
+                                </a>
+                                <div class="dropdown-divider"></div>
+                                <p class="p-3 mb-0 text-center">See all notifications</p>
+                            </div>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link" id="profileDropdown" href="#" data-toggle="dropdown">
+                                <div class="navbar-profile">
+                                    <img class="img-xs rounded-circle" src="~/assets/images/faces/face15.jpg" alt="">
+                                    <p class="mb-0 d-none d-sm-block navbar-profile-name">Henry Klein</p><!-- -----------------nombre de usuario--------------------- -->
+                                    <i class="mdi mdi-menu-down d-none d-sm-block"></i>
+                                </div>
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-right navbar-dropdown preview-list" aria-labelledby="profileDropdown">
+                                <h6 class="p-3 mb-0">Profile</h6>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item preview-item">
+                                    <div class="preview-thumbnail">
+                                        <div class="preview-icon bg-dark rounded-circle">
+                                            <i class="mdi mdi-settings text-success"></i>
+                                        </div>
+                                    </div>
+                                    <div class="preview-item-content">
+                                        <p class="preview-subject mb-1">Ajustes</p>
+                                    </div>
+                                </a>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item preview-item">
+                                    <div class="preview-thumbnail">
+                                        <div class="preview-icon bg-dark rounded-circle">
+                                            <i class="mdi mdi-logout text-danger"></i>
+                                        </div>
+                                    </div>
+                                    <div class="preview-item-content">
+                                        <p class="preview-subject mb-1">Log out</p>
+                                    </div>
+                                </a>
+                                <div class="dropdown-divider"></div>
+                                <p class="p-3 mb-0 text-center">Advanced settings</p>
+                            </div>
+                        </li>
+                    </ul>
+
+                    <button class="navbar-toggler navbar-toggler-right d-lg-none align-self-center" type="button" data-toggle="offcanvas">
+                        <span class="mdi mdi-format-line-spacing"></span>
+                    </button>
+                </div>
+            </nav>
+
+
+
+            <!-- partial -->
+            <div class="main-panel">
+                <div class="content-wrapper">
+                    <div class="container">
+                        <main role="main" class="pb-3">
+                            @RenderBody()
+                        </main>
+
+                    </div>
+
+                </div>
+                <div>
+                    <footer class="footer">
+                        <div class="d-sm-flex justify-content-center justify-content-sm-between">
+                            <span class="text-muted d-block text-center text-sm-left d-sm-inline-block">Copyright © bootstrapdash.com 2020</span>
+                            <span class="float-none float-sm-right d-block mt-1 mt-sm-0 text-center"> Free <a href="https://www.bootstrapdash.com/bootstrap-admin-template/" target="_blank">Bootstrap admin templates</a> from Bootstrapdash.com</span>
+                        </div>
+                    </footer>
+                </div>
+            </div>
+            <!-- main-panel ends -->
+        </div>
+        <!-- page-body-wrapper ends -->
+   
+     </div>    (function($) {
+  'use strict';
+  $(function() {
+    $(".nav-settings").click(function() {
+      $("#right-sidebar").toggleClass("open");
+    });
+    $(".settings-close").click(function() {
+      $("#right-sidebar,#theme-settings").removeClass("open");
+    });
+
+    $("#settings-trigger").on("click", function() {
+      $("#theme-settings").toggleClass("open");
+    });
+
+
+    //background constants
+    var navbar_classes = "navbar-danger navbar-success navbar-warning navbar-dark navbar-light navbar-primary navbar-info navbar-pink";
+    var sidebar_classes = "sidebar-light sidebar-dark";
+    var $body = $("body");
+
+    //sidebar backgrounds
+    $("#sidebar-default-theme").on("click", function() {
+      $body.removeClass(sidebar_classes);
+      $(".sidebar-bg-options").removeClass("selected");
+      $(this).addClass("selected");
+    });
+    $("#sidebar-dark-theme").on("click", function() {
+      $body.removeClass(sidebar_classes);
+      $body.addClass("sidebar-dark");
+      $(".sidebar-bg-options").removeClass("selected");
+      $(this).addClass("selected");
+    });
+
+
+    //Navbar Backgrounds
+    $(".tiles.primary").on("click", function() {
+      $(".navbar").removeClass(navbar_classes);
+      $(".navbar").addClass("navbar-primary");
+      $(".tiles").removeClass("selected");
+      $(this).addClass("selected");
+    });
+    $(".tiles.success").on("click", function() {
+      $(".navbar").removeClass(navbar_classes);
+      $(".navbar").addClass("navbar-success");
+      $(".tiles").removeClass("selected");
+      $(this).addClass("selected");
+    });
+    $(".tiles.warning").on("click", function() {
+      $(".navbar").removeClass(navbar_classes);
+      $(".navbar").addClass("navbar-warning");
+      $(".tiles").removeClass("selected");
+      $(this).addClass("selected");
+    });
+    $(".tiles.danger").on("click", function() {
+      $(".navbar").removeClass(navbar_classes);
+      $(".navbar").addClass("navbar-danger");
+      $(".tiles").removeClass("selected");
+      $(this).addClass("selected");
+    });
+    $(".tiles.info").on("click", function() {
+      $(".navbar").removeClass(navbar_classes);
+      $(".navbar").addClass("navbar-info");
+      $(".tiles").removeClass("selected");
+      $(this).addClass("selected");
+    });
+    $(".tiles.dark").on("click", function() {
+      $(".navbar").removeClass(navbar_classes);
+      $(".navbar").addClass("navbar-dark");
+      $(".tiles").removeClass("selected");
+      $(this).addClass("selected");
+    });
+    $(".tiles.default").on("click", function() {
+      $(".navbar").removeClass(navbar_classes);
+      $(".tiles").removeClass("selected");
+      $(this).addClass("selected");
+    });
+
+    //Horizontal menu in mobile
+    $('[data-toggle="horizontal-menu-toggle"]').on("click", function() {
+      $(".horizontal-menu .bottom-navbar").toggleClass("header-toggled");
+    });
+    // Horizontal menu navigation in mobile menu on click
+    var navItemClicked = $('.horizontal-menu .page-navigation >.nav-item');
+    navItemClicked.on("click", function(event) {
+      if(window.matchMedia('(max-width: 991px)').matches) {
+        if(!($(this).hasClass('show-submenu'))) {
+          navItemClicked.removeClass('show-submenu');
+        }
+        $(this).toggleClass('show-submenu');
+      }        
+    });
+
+    $(window).scroll(function() {
+      if(window.matchMedia('(min-width: 992px)').matches) {
+        var header = $('.horizontal-menu');
+        if ($(window).scrollTop() >= 71) {
+          $(header).addClass('fixed-on-scroll');
+        } else {
+          $(header).removeClass('fixed-on-scroll');
+        }
+      }
+    });
+
+  });
+})(jQuery);   $('[data-toggle="minimize"]').on("click", function() {
+     if ((body.hasClass('sidebar-toggle-display')) || (body.hasClass('sidebar-absolute'))) {
+       body.toggleClass('sidebar-hidden');
+     } else {
+       body.toggleClass('sidebar-icon-only');
+     }
+   });
