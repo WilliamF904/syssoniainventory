@@ -127,9 +127,8 @@
  
                                         }
                                         @if (User.HasClaim("AccessTipe", "Nivel 4") || User.HasClaim("AccessTipe", "Nivel 3"))
-                                        {
-                                            <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-primary">Modificar</a>
-                                            <a asp-action="EditUser" asp-route-id="@item.Id" class="btn btn-primary">Editar(No funcional)</a>
+                                        {  
+                                            <a asp-action="EditUser" asp-route-id="@item.Id" class="btn btn-primary">Editar</a>
 
                                         }
                                         |  <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-primary">Detalles</a> |

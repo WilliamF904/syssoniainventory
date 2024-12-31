@@ -44,7 +44,7 @@ namespace SysSoniaInventory.Controllers
 
             if (user == null)
             {
-                TempData["Message"] = "Usuario o contraseña invalida.";
+                TempData["Error"] = "Usuario o contraseña invalida.";
                 return View();
             }
 
@@ -140,7 +140,9 @@ namespace SysSoniaInventory.Controllers
             _context.Update(user);
             await _context.SaveChangesAsync();
 
-            TempData["Success"] = "La contraseña se ha cambiado correctamente.";
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            TempData["Message"] = "La contraseña ha sido actualizada correctamente. Por motivos de seguridad, hemos cerrado tu sesión. Por favor, inicia sesión nuevamente con tus credenciales actualizadas.";
+
             return View();
         }
 

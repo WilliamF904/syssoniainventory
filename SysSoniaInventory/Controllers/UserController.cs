@@ -186,6 +186,16 @@ namespace SysSoniaInventory.Controllers
                 {
                     modelUser.Password = SysSoniaInventory.Task.SecurityHelper.EncryptSHA256(modelUser.Password, _secretKey);
                 }
+                if (EsNivelIgualOSuperior(modelUser.IdRol, currentUserAccessTipe))
+                {
+                    TempData["Error"] = "No puedes asignar un nivel de acceso igual o superior al tuyo.";
+
+                    // Configurar las vistas para seleccionar roles y sucursales en caso de error
+                    ViewData["IdRol"] = new SelectList(_context.modelRol, "Id", "Name", modelUser.IdRol);
+                    ViewData["IdSucursal"] = new SelectList(_context.modelSucursal, "Id", "Name", modelUser.IdSucursal);
+
+                    return View(modelUser); // Retorna la vista con el modelo
+                }
 
 
                 // Agregar el usuario a la base de datos
@@ -201,6 +211,17 @@ namespace SysSoniaInventory.Controllers
 
             return View(modelUser);
         }
+
+
+
+
+
+
+
+
+
+
+
 
         // GET: User/Edit/5
         public async Task<IActionResult> Edit(int? id)
@@ -338,6 +359,12 @@ namespace SysSoniaInventory.Controllers
             }
          
             modelUser.RegistrationDate = existingUser.RegistrationDate;
+            if (string.IsNullOrEmpty(modelUser.Password))
+            {
+             
+                ModelState.Remove(nameof(modelUser.Password));
+            }
+
 
             if (ModelState.IsValid)
             {
@@ -345,17 +372,7 @@ namespace SysSoniaInventory.Controllers
                 {
                   
 
-                    
-
-                    // Verificar que el usuario no esté intentando dar un nivel superior a sí mismo
-                    if (EsNivelSuperior(modelUser.IdRol, currentUserAccessTipe)) { 
-                        TempData["Error"] = "No puedes asignar un nivel de acceso superior al tuyo.";
-                        // Configurar las vistas para seleccionar roles y sucursales en caso de error
-                        ViewData["IdRol"] = new SelectList(_context.modelRol, "Id", "Name", modelUser.IdRol);
-                        ViewData["IdSucursal"] = new SelectList(_context.modelSucursal, "Id", "Name", modelUser.IdSucursal);
-                        return View(modelUser); 
-                    }
-
+                   
                     if (EsNivelIgualOSuperior(modelUser.IdRol, currentUserAccessTipe))
                     {
                         TempData["Error"] = "No puedes asignar un nivel de acceso igual o superior al tuyo.";
@@ -555,112 +572,194 @@ namespace SysSoniaInventory.Controllers
 
 
 
-
-
         // GET: User/Edit/5
-        public async Task<IActionResult> EditUser()
+        public async Task<IActionResult> EditUser(int? id)
         {
+            var currentUserAccessTipe = User.FindFirst("AccessTipe")?.Value;
             var currentUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-
-            if (string.IsNullOrEmpty(currentUserId) || !int.TryParse(currentUserId, out int userId))
+            // Verificar si el ID se puede convertir a int (si aplica)
+            if (!int.TryParse(currentUserId, out int userId))
             {
                 TempData["Error"] = "No se pudo identificar al usuario actual.";
-                return RedirectToAction("Index", "Home");
+                return RedirectToAction(nameof(Index));
             }
-
-            // Buscar la información completa del usuario autenticado, incluyendo sus relaciones
-            var user = await _context.modelUser
-                .Include(u => u.IdRolNavigation)
-                .Include(u => u.IdSucursalNavigation)
-                .FirstOrDefaultAsync(u => u.Id == userId);
-
-            if (user == null)
+            if (id == null)
             {
-                TempData["Error"] = "El usuario no se encontró en la base de datos.";
+                return NotFound();
+            }
+
+            if (id == userId)
+            {
+                return RedirectToAction("EditInfoPerso", "User");
+            }
+
+            // Verificar niveles de acceso
+            if (User.HasClaim("AccessTipe", "Nivel 5"))
+            { // Nivel 5 tiene acceso
+                return RedirectToAction("Edit", "User", new { id });
+
+            }
+            else if (User.HasClaim("AccessTipe", "Nivel 4"))
+            { // Nivel 4 tiene acceso
+
+            }
+            else if (User.HasClaim("AccessTipe", "Nivel 3"))
+            { // Nivel 3 tiene acceso y asegura no modificar contraseña
+
+            }
+            else
+            {
+                // Redirigir con mensaje de error si el usuario no tiene acceso
+                TempData["Error"] = "No tienes acceso a esta sección. Requerido: Nivel 3 o superior.";
                 return RedirectToAction("Index", "Home");
             }
 
-            // Configurar datos para la vista
-            ViewData["IdRol"] = new SelectList(_context.modelRol, "Id", "Name", user.IdRol);
-            ViewData["IdSucursal"] = new SelectList(_context.modelSucursal, "Id", "Name", user.IdSucursal);
+            
 
-            return View(user);
+            var modelUser = await _context.modelUser.FindAsync(id);
+            if (modelUser == null)
+            {
+                TempData["Error"] = "El usuario a editar no se encontro en la base de datos.";
+                return RedirectToAction("Index", "Home");
+            }
+
+            if (EsNivelSuperior(modelUser.IdRol, currentUserAccessTipe))
+            {
+                TempData["Error"] = "No puedes editar a un usuario de nivel superior al tuyo.";
+                return RedirectToAction("Index", "Home");
+            }
+            ViewData["IdRol"] = new SelectList(_context.modelRol, "Id", "Name", modelUser.IdRol);
+            ViewData["IdSucursal"] = new SelectList(_context.modelSucursal, "Id", "Name", modelUser.IdSucursal);
+            return View(modelUser);
         }
 
 
         // POST: User/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditUser([Bind("Id,IdRol,IdSucursal,Tel,Name,LastName,Email,Password,Estatus,RegistrationDate")] ModelUser modelUser, string currentPasswordIdentity)
+        public async Task<IActionResult> EditUser(int id, [Bind("Id,IdRol,IdSucursal,Tel,Name,LastName,Email,Password,Estatus,RegistrationDate")] ModelUser modelUser, string currentPasswordIdentity)
         {
+            var currentUserAccessTipe = User.FindFirst("AccessTipe")?.Value;
             var currentUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-
-            if (string.IsNullOrEmpty(currentUserId) || !int.TryParse(currentUserId, out int userId))
+            // Verificar si el ID se puede convertir a int (si aplica)
+            if (!int.TryParse(currentUserId, out int userId))
             {
                 TempData["Error"] = "No se pudo identificar al usuario actual.";
-                return RedirectToAction("Index", "Home");
+                return RedirectToAction(nameof(Index));
             }
 
-            // Buscar al usuario actual en la base de datos
-            var existingUserIdentity = await _context.modelUser.AsNoTracking()
-                .FirstOrDefaultAsync(u => u.Id == userId);
 
-            if (existingUserIdentity == null)
+
+            if (id == userId) {
+                return RedirectToAction("EditInfoPerso", "User");
+            }
+
+
+            // Verificar niveles de acceso
+            if (User.HasClaim("AccessTipe", "Nivel 5"))
+            { // Nivel 5 tiene acceso
+                return RedirectToAction("Edit", "User", new { id });
+
+            }
+            else if (User.HasClaim("AccessTipe", "Nivel 4"))
+            { // Nivel 4 tiene acceso
+
+            }
+            else if (User.HasClaim("AccessTipe", "Nivel 3"))
+            { // Nivel 3 tiene acceso y asegura no modificar contraseña
+
+            }
+            else
             {
-                TempData["Error"] = "El usuario a editar no se encontró en la base de datos.";
+                // Redirigir con mensaje de error si el usuario no tiene acceso
+                TempData["Error"] = "No tienes acceso a esta sección. Requerido: Nivel 3 o superior.";
                 return RedirectToAction("Index", "Home");
             }
 
-            // Verificar la contraseña actual
+            var existingUser = await _context.modelUser.AsNoTracking().FirstOrDefaultAsync(u => u.Id == id);
+
+            if (id != modelUser.Id)
+            {
+                return NotFound();
+            }
+       
+            var existingUserIdentity = await _context.modelUser.AsNoTracking().FirstOrDefaultAsync(u => u.Id == userId);
             var encryptedPasswordIdentity = SysSoniaInventory.Task.SecurityHelper.EncryptSHA256(currentPasswordIdentity, _secretKey);
+
+  
+
+            // Comparar las contraseñas
             if (encryptedPasswordIdentity != existingUserIdentity.Password)
             {
                 TempData["Error"] = "Contraseña de autenticación inválida.";
 
+                // Configurar las vistas para roles y sucursales
                 ViewData["IdRol"] = new SelectList(_context.modelRol, "Id", "Name", modelUser.IdRol);
                 ViewData["IdSucursal"] = new SelectList(_context.modelSucursal, "Id", "Name", modelUser.IdSucursal);
 
                 return View(modelUser);
             }
 
-            // Detectar intentos de modificar campos no permitidos
-            var attemptedChanges = new List<string>();
 
-            if (modelUser.IdRol != existingUserIdentity.IdRol) attemptedChanges.Add("Rol");
-            if (modelUser.IdSucursal != existingUserIdentity.IdSucursal) attemptedChanges.Add("Sucursal");
-            if (modelUser.Name != existingUserIdentity.Name) attemptedChanges.Add("Nombre");
-            if (modelUser.LastName != existingUserIdentity.LastName) attemptedChanges.Add("Apellido");
-            if (modelUser.RegistrationDate != existingUserIdentity.RegistrationDate) attemptedChanges.Add("Fecha de registro");
-            if (modelUser.Estatus != existingUserIdentity.Estatus) attemptedChanges.Add("Estatus");
-            if (modelUser.Password != existingUserIdentity.Password) attemptedChanges.Add("Contraseña");
-
-
-            if (attemptedChanges.Any())
+            if (existingUser == null)
             {
-                TempData["Warning"] = $"Algunos campos no pueden ser modificados: {string.Join(", ", attemptedChanges)}.";
+                return NotFound();
             }
 
-            modelUser.IdRol = existingUserIdentity.IdRol;
-            modelUser.IdSucursal = existingUserIdentity.IdSucursal;
-            modelUser.Name = existingUserIdentity.Name;
-            modelUser.LastName = existingUserIdentity.LastName;
-            modelUser.RegistrationDate = existingUserIdentity.RegistrationDate;
-            modelUser.Estatus = existingUserIdentity.Estatus;
-            modelUser.Password = existingUserIdentity.Password;
+            modelUser.RegistrationDate = existingUser.RegistrationDate;
+            if (string.IsNullOrEmpty(modelUser.Password))
+            {
+
+                ModelState.Remove(nameof(modelUser.Password));
+            }
 
             if (ModelState.IsValid)
             {
                 try
                 {
+
+
+
+                    if (EsNivelIgualOSuperior(modelUser.IdRol, currentUserAccessTipe))
+                    {
+                        TempData["Error"] = "No puedes asignar un nivel de acceso igual o superior al tuyo.";
+
+                        // Configurar las vistas para seleccionar roles y sucursales en caso de error
+                        ViewData["IdRol"] = new SelectList(_context.modelRol, "Id", "Name", modelUser.IdRol);
+                        ViewData["IdSucursal"] = new SelectList(_context.modelSucursal, "Id", "Name", modelUser.IdSucursal);
+
+                        return View(modelUser); // Retorna la vista con el modelo
+                    }
+
+                    if (!string.IsNullOrEmpty(modelUser.Password) && User.HasClaim("AccessTipe", "Nivel 4"))
+                    {
+                        // Encriptar la nueva contraseña solo si fue modificada
+
+                        var encryptedPassword = SysSoniaInventory.Task.SecurityHelper.EncryptSHA256(modelUser.Password, _secretKey);
+
+                        if (encryptedPassword != existingUser.Password)
+                        {
+                            // Si la contraseña encriptada es diferente, actualizarla
+                            modelUser.Password = encryptedPassword;
+                        }
+                        else
+                        {
+                            // Mantener la contraseña actual si es la misma
+                            modelUser.Password = existingUser.Password;
+                        }
+                    }
+                    else
+                    {
+                        // Mantener la contraseña actual si no se cambió
+                        modelUser.Password = existingUser.Password;
+                    }
+
+
+
                     _context.Update(modelUser);
                     await _context.SaveChangesAsync();
+                    TempData["Success"] = "Usuario actualizado correctamente.";
 
-                    await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-                    TempData["Message"] = "Tu información ha sido actualizada correctamente. Por motivos de seguridad, hemos cerrado tu sesión. Por favor, inicia sesión nuevamente con tus credenciales actualizadas.";
-                    if (TempData["Warning"] != null)
-                    {
-                        TempData["Error"] += $" {TempData["Warning"]}";
-                    }
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -673,7 +772,7 @@ namespace SysSoniaInventory.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction("Login", "Auth");
+                return RedirectToAction(nameof(Index));
             }
 
             // Configurar las vistas para seleccionar roles y sucursales en caso de error
@@ -682,13 +781,6 @@ namespace SysSoniaInventory.Controllers
             TempData["Error"] = "Error inesperado en la validación de un campo o más.";
             return View(modelUser);
         }
-
-
-
-
-
-
-
 
 
 
