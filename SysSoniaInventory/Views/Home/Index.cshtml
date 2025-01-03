@@ -1,76 +1,259 @@
 ﻿@model List<SysSoniaInventory.ViewModels.FacturaViewModel>
 
+@{
+    // Obtener los claims del usuario autenticado
+
+    var role = User.FindFirstValue(ClaimTypes.Role); // Nombre del rol
+
+    var accessType = User.FindFirstValue("AccessTipe"); // Tipo de acceso
+}
 
 
+<script src="~/js/chart.js"></script>
+
+<script src="~/js/jquery.js"></script>
+
+
+<div class="row">
+    <!-- Gráfico de pastel + Información del Usuario Autenticado -->
     <div class="col-lg-6 grid-margin stretch-card">
         <div class="card">
             <div class="card-body">
-                <h4 class="card-title">Gráfico de Ventas (10 max.)</h4>
-                <canvas id="barChart" style="height:230px"></canvas>
+                <div class="row">
+                    <div class="col-12">
+                        <h3 class="card-title"><strong>Usuario:</strong> @ViewBag.UserName</h3>
+                        <div style="display: flex; flex-wrap: wrap; gap: 1rem; align-items: center;">
+                            <p style="font-size: 1rem; line-height: .4em; margin: 0;">
+                                Rol: @role
+                            </p>
+                            <p style="font-size: 1rem; line-height: .4em; margin: 0;">
+                                Tipo de acceso: @accessType
+                            </p>
+                            <p style="font-size: 1rem; line-height: .4em; margin: 0;">
+                                <strong>Total de Ventas: @ViewBag.TotalVentasUsuario.ToString("C")</strong>
+                            </p>
+                        </div>
+
+                        <br />
+
+                    </div>
+                </div>
+
+                    <div class="col-12">
+                        <canvas id="pieChart"></canvas>
+                    </div>
+               
             </div>
         </div>
     </div>
 
+    <!-- Gráfico de barras + Tabla de Ventas por Usuario -->
+    @if (ViewBag.ProductosGrafico != null && ViewBag.ProductosGrafico.Count > 0)
 
-    <script>
-        // Datos enviados desde el backend
-        const facturas = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model)) || [];
 
-        console.log('Datos de facturas:', facturas);
 
-        // Crear un mapa para acumular las cantidades vendidas por producto
-        const productosMap = {};
+    {
+        <div class="col-lg-6 grid-margin stretch-card">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title">Gráfico de Ventas del Mes (Top 10 Productos)</h4>
+                    <canvas id="barChart" style="height: 286px; display: block; width: 573px;" width="1146" height="572" class="chartjs-render-monitor"></canvas>
+                </div>
+            </div>
+        </div>
 
-        if (Array.isArray(facturas)) {
-            facturas.forEach(factura => {
-                const detalles = factura.Detalles || []; // Acceder a la propiedad Detalles
+        <!-- Tabla de Ventas por Usuario -->
+        <div class="col-lg-6 grid-margin stretch-card">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title">Ventas Totales por Usuario del Mes</h4>
 
-                detalles.forEach(detalle => {
-                    const codigoProducto = detalle.CodigoProducto || "Sin Código";
-                    productosMap[codigoProducto] = (productosMap[codigoProducto] || 0) + (detalle.CantidadProduct || 0);
-                });
-            });
-        }
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Usuario</th>
+                                    <th>Total Ventas</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var usuario in ViewBag.VentasPorUsuario)
 
-        console.log('Mapa de productos:', productosMap);
 
-        // Ordenar productos por cantidad y tomar los 10 más vendidos
-        const productosOrdenados = Object.entries(productosMap)
-            .sort((a, b) => b[1] - a[1])
-            .slice(0, 10);
 
-        // Extraer etiquetas y datos para el gráfico
-        const productos = productosOrdenados.map(p => p[0]);
-        const cantidades = productosOrdenados.map(p => p[1]);
+                                {
+                                    <tr>
+                                        <td>@usuario.NameUser</td>
+                                        <td>@usuario.TotalFacturas.ToString("C")</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
 
-        console.log('Productos:', productos);
-        console.log('Cantidades:', cantidades);
+                    <nav>
+                        <ul class="pagination">
+                            @for (int i = 1; i <= ViewBag.TotalPages; i++)
 
-        if (productos.length === 0 || cantidades.length === 0) {
-            console.error('No hay datos suficientes para generar el gráfico.');
-        } else {
-            // Crear el gráfico
-            const ctx = document.getElementById('barChart').getContext('2d');
-            const barChart = new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: productos,
-                    datasets: [{
-                        label: 'Cantidad Vendida',
-                        data: cantidades,
-                        backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                        borderColor: 'rgba(54, 162, 235, 1)',
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    scales: {
-                        y: {
-                            beginAtZero: true
-                        }
+
+
+                            {
+                                <li class="page-item @(i == ViewBag.Page ? "active" : "")">
+                                    <a class="page-link" href="@Url.Action("Index", new { page = i })">@i</a>
+                                </li>
+                            }
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    }
+
+</div>
+
+<script>
+    $(function () {
+        'use strict';
+
+        // Pie Chart - Productos Vendidos por Usuario
+        const productos = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(ViewBag.ProductosVendidosUsuario)) || [];
+
+        let pieData = {
+            datasets: [{
+                data: productos.map(p => p.CantidadVendida),
+                backgroundColor: [
+                    'rgba(255, 99, 132, 0.5)',
+                    'rgba(54, 162, 235, 0.5)',
+                    'rgba(255, 206, 86, 0.5)',
+                    'rgba(75, 192, 192, 0.5)',
+                    'rgba(153, 102, 255, 0.5)',
+                    'rgba(255, 159, 64, 0.5)',
+                    'rgba(201, 203, 207, 0.5)',
+                    'rgba(123, 239, 178, 0.5)',
+                    'rgba(244, 91, 105, 0.5)',
+                    'rgba(127, 127, 127, 0.5)'
+                ], borderColor: [
+                    'rgba(255,99,132,1)',
+                    'rgba(54, 162, 235, 1)',
+                    'rgba(255, 206, 86, 1)',
+                    'rgba(75, 192, 192, 1)',
+                    'rgba(153, 102, 255, 1)',
+                    'rgba(255, 159, 64, 1)',
+                    'rgba(201, 203, 207, 1)',
+                    'rgba(123, 239, 178, 1)',
+                    'rgba(244, 91, 105, 1)',
+                    'rgba(127, 127, 127, 1)'
+                ],
+            }],
+            labels: productos.map(p => p.NameProduct || "Sin nombre")
+        };
+
+        var doughnutPieOptions = {
+            responsive: true,
+            animation: {
+                animateScale: true,
+                animateRotate: true
+            },
+            tooltips: {
+                callbacks: {
+                    label: function (tooltipItem, data) {
+                        const index = tooltipItem.index;
+                        const producto = productos[index];
+                        return `Código: ${producto.CodigoProducto || "Sin código"} | Ventas: ${producto.CantidadVendida || 0}`;
                     }
                 }
+            }
+        };
+
+        // Bar Chart - Gráfico de Ventas del Mes (Solo para Niveles 3, 4, 5)
+        const productosGrafico = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(ViewBag.ProductosGrafico)) || [];
+
+        let barData = {
+            labels: productosGrafico.map(p => p.NameProduct || "Sin nombre"),
+            datasets: [{
+                label: '# de Ventas',
+                data: productosGrafico.map(p => p.CantidadVendida),
+                backgroundColor: [
+                    'rgba(255, 99, 132, 0.2)',
+                    'rgba(54, 162, 235, 0.2)',
+                    'rgba(255, 206, 86, 0.2)',
+                    'rgba(75, 192, 192, 0.2)',
+                    'rgba(153, 102, 255, 0.2)',
+                    'rgba(255, 159, 64, 0.2)',
+                    'rgba(201, 203, 207, 0.2)',
+                    'rgba(123, 239, 178, 0.2)',
+                    'rgba(244, 91, 105, 0.2)',
+                    'rgba(127, 127, 127, 0.2)'
+                ],
+                borderColor: [
+                    'rgba(255,99,132,1)',
+                    'rgba(54, 162, 235, 1)',
+                    'rgba(255, 206, 86, 1)',
+                    'rgba(75, 192, 192, 1)',
+                    'rgba(153, 102, 255, 1)',
+                    'rgba(255, 159, 64, 1)',
+                    'rgba(201, 203, 207, 1)',
+                    'rgba(123, 239, 178, 1)',
+                    'rgba(244, 91, 105, 1)',
+                    'rgba(127, 127, 127, 1)'
+                ],
+                borderWidth: 1,
+                fill: false
+            }]
+        };
+
+        var barOptions = {
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        beginAtZero: true
+                    },
+                    gridLines: {
+                        color: "rgba(204, 204, 204,0.1)"
+                    }
+                }],
+                xAxes: [{
+                    gridLines: {
+                        color: "rgba(204, 204, 204,0.1)"
+                    }
+                }]
+            },
+            legend: {
+                display: false
+            },
+            elements: {
+                point: {
+                    radius: 0
+                }
+            },
+            tooltips: {
+                callbacks: {
+                    label: function (tooltipItem, data) {
+                        const index = tooltipItem.index;
+                        const producto = productosGrafico[index];
+                        return `Código: ${producto.CodigoProducto || "Sin código"} | Ventas: ${producto.CantidadVendida || 0}`;
+                    }
+                }
+            }
+        };
+
+        if ($("#barChart").length) {
+            var barChartCanvas = $("#barChart").get(0).getContext("2d");
+            var barChart = new Chart(barChartCanvas, {
+                type: 'bar',
+                data: barData,
+                options: barOptions
             });
         }
-    </script>
+
+        if ($("#pieChart").length) {
+            var pieChartCanvas = $("#pieChart").get(0).getContext("2d");
+            var pieChart = new Chart(pieChartCanvas, {
+                type: 'pie',
+                data: pieData,
+                options: doughnutPieOptions
+            });
+        }
+    });
+</script>
+

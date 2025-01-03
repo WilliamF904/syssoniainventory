@@ -37,11 +37,18 @@ namespace SysSoniaInventory.Controllers
                 // Nivel 3 tiene acceso
 
             }
+            else if (User.HasClaim("AccessTipe", "Nivel 5"))
+            { // Nivel 5 tiene acceso
 
+            }
+            else if (User.HasClaim("AccessTipe", "Nivel 2"))
+            { // Nivel 2 tiene acceso
+
+            }
             else
             {
                 // Redirigir con mensaje de error si el usuario no tiene acceso
-                TempData["Error"] = "No tienes acceso a esta sección. Requerido: Nivel 3 o superior.";
+                TempData["Error"] = "No tienes acceso a esta sección. Requerido: Nivel 2 o superior.";
                 return RedirectToAction("Index", "Home");
             }
             var dBContext = _context.modelProduct.Include(m => m.IdCategoryNavigation).Include(m => m.IdProveedorNavigation);
@@ -63,11 +70,18 @@ namespace SysSoniaInventory.Controllers
                 // Nivel 3 tiene acceso
 
             }
+            else if (User.HasClaim("AccessTipe", "Nivel 5"))
+            { // Nivel 5 tiene acceso
 
+            }
+            else if (User.HasClaim("AccessTipe", "Nivel 2"))
+            { // Nivel 5 tiene acceso
+
+            }
             else
             {
                 // Redirigir con mensaje de error si el usuario no tiene acceso
-                TempData["Error"] = "No tienes acceso a esta sección. Requerido: Nivel 3 o superior.";
+                TempData["Error"] = "No tienes acceso a esta sección. Requerido: Nivel 2 o superior.";
                 return RedirectToAction("Index", "Home");
             }
             if (string.IsNullOrEmpty(term))
@@ -99,11 +113,18 @@ namespace SysSoniaInventory.Controllers
                 // Nivel 3 tiene acceso
 
             }
+            else if (User.HasClaim("AccessTipe", "Nivel 5"))
+            { // Nivel 5 tiene acceso
 
+            }
+            else if (User.HasClaim("AccessTipe", "Nivel 2"))
+            { // Nivel 2 tiene acceso
+
+            }
             else
             {
                 // Redirigir con mensaje de error si el usuario no tiene acceso
-                TempData["Error"] = "No tienes acceso a esta sección. Requerido: Nivel 3 o superior.";
+                TempData["Error"] = "No tienes acceso a esta sección. Requerido: Nivel 2 o superior.";
                 return RedirectToAction("Index", "Home");
             }
             if (id == null)
@@ -132,16 +153,16 @@ namespace SysSoniaInventory.Controllers
             { // Nivel 4 tiene acceso
 
             }
-            else if (User.HasClaim("AccessTipe", "Nivel 3"))
-            {
-                // Nivel 3 tiene acceso
+
+            else if (User.HasClaim("AccessTipe", "Nivel 5"))
+            { // Nivel 5 tiene acceso
 
             }
 
             else
             {
                 // Redirigir con mensaje de error si el usuario no tiene acceso
-                TempData["Error"] = "No tienes acceso a esta sección. Requerido: Nivel 3 o superior.";
+                TempData["Error"] = "No tienes acceso a esta sección. Requerido: Nivel 4.";
                 return RedirectToAction("Index", "Home");
             }
             ViewData["IdCategory"] = new SelectList(_context.modelCategory, "Id", "Name");
@@ -160,16 +181,15 @@ namespace SysSoniaInventory.Controllers
             { // Nivel 4 tiene acceso
 
             }
-            else if (User.HasClaim("AccessTipe", "Nivel 3"))
-            {
-                // Nivel 3 tiene acceso
+
+            else if (User.HasClaim("AccessTipe", "Nivel 5"))
+            { // Nivel 5 tiene acceso
 
             }
-
             else
             {
                 // Redirigir con mensaje de error si el usuario no tiene acceso
-                TempData["Error"] = "No tienes acceso a esta sección. Requerido: Nivel 3 o superior.";
+                TempData["Error"] = "No tienes acceso a esta sección. Requerido: Nivel 4.";
                 return RedirectToAction("Index", "Home");
             }
             if (ModelState.IsValid)
@@ -238,16 +258,14 @@ namespace SysSoniaInventory.Controllers
             { // Nivel 4 tiene acceso
 
             }
-            else if (User.HasClaim("AccessTipe", "Nivel 3"))
-            {
-                // Nivel 3 tiene acceso
+            else if (User.HasClaim("AccessTipe", "Nivel 5"))
+            { // Nivel 5 tiene acceso
 
             }
-
             else
             {
                 // Redirigir con mensaje de error si el usuario no tiene acceso
-                TempData["Error"] = "No tienes acceso a esta sección. Requerido: Nivel 3 o superior.";
+                TempData["Error"] = "No tienes acceso a esta sección. Requerido: Nivel 4.";
                 return RedirectToAction("Index", "Home");
             }
             if (id == null)
@@ -275,16 +293,14 @@ namespace SysSoniaInventory.Controllers
             { // Nivel 4 tiene acceso
 
             }
-            else if (User.HasClaim("AccessTipe", "Nivel 3"))
-            {
-                // Nivel 3 tiene acceso
+            else if (User.HasClaim("AccessTipe", "Nivel 5"))
+            { // Nivel 5 tiene acceso
 
             }
-
             else
             {
                 // Redirigir con mensaje de error si el usuario no tiene acceso
-                TempData["Error"] = "No tienes acceso a esta sección. Requerido: Nivel 3 o superior.";
+                TempData["Error"] = "No tienes acceso a esta sección. Requerido: Nivel 4.";
                 return RedirectToAction("Index", "Home");
             }
             if (id != modelProduct.Id)
@@ -375,7 +391,10 @@ namespace SysSoniaInventory.Controllers
             { // Nivel 4 tiene acceso
 
             }
+            else if (User.HasClaim("AccessTipe", "Nivel 5"))
+            { // Nivel 5 tiene acceso
 
+            }
             else
             {
                 // Redirigir con mensaje de error si el usuario no tiene acceso
@@ -409,7 +428,11 @@ namespace SysSoniaInventory.Controllers
             { // Nivel 4 tiene acceso
 
             }
-              else
+            else if (User.HasClaim("AccessTipe", "Nivel 5"))
+            { // Nivel 5 tiene acceso
+
+            }
+            else
             {
                 // Redirigir con mensaje de error si el usuario no tiene acceso
                 TempData["Error"] = "No tienes acceso a esta sección. Requerido: Nivel 4.";

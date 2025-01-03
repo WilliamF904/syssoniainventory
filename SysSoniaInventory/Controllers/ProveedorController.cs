@@ -34,7 +34,11 @@ namespace SysSoniaInventory.Controllers
                 // Nivel 3 tiene acceso
 
             }
-            
+            else if (User.HasClaim("AccessTipe", "Nivel 5"))
+            { // Nivel 5 tiene acceso
+
+            }
+
             else
             {
                 // Redirigir con mensaje de error si el usuario no tiene acceso
@@ -55,6 +59,10 @@ namespace SysSoniaInventory.Controllers
             else if (User.HasClaim("AccessTipe", "Nivel 3"))
             {
                 // Nivel 3 tiene acceso
+
+            }
+            else if (User.HasClaim("AccessTipe", "Nivel 5"))
+            { // Nivel 5 tiene acceso
 
             }
 
@@ -87,16 +95,15 @@ namespace SysSoniaInventory.Controllers
             { // Nivel 4 tiene acceso
 
             }
-            else if (User.HasClaim("AccessTipe", "Nivel 3"))
-            {
-                // Nivel 3 tiene acceso
+            else if (User.HasClaim("AccessTipe", "Nivel 5"))
+            { // Nivel 5 tiene acceso
 
             }
 
             else
             {
                 // Redirigir con mensaje de error si el usuario no tiene acceso
-                TempData["Error"] = "No tienes acceso a esta sección. Requerido: Nivel 3 o superior.";
+                TempData["Error"] = "No tienes acceso a esta sección. Requerido: Nivel 4.";
                 return RedirectToAction("Index", "Home");
             }
             return View();
@@ -112,16 +119,16 @@ namespace SysSoniaInventory.Controllers
             { // Nivel 4 tiene acceso
 
             }
-            else if (User.HasClaim("AccessTipe", "Nivel 3"))
-            {
-                // Nivel 3 tiene acceso
+            else if (User.HasClaim("AccessTipe", "Nivel 5"))
+            { // Nivel 5 tiene acceso
 
             }
+
 
             else
             {
                 // Redirigir con mensaje de error si el usuario no tiene acceso
-                TempData["Error"] = "No tienes acceso a esta sección. Requerido: Nivel 3 o superior.";
+                TempData["Error"] = "No tienes acceso a esta sección. Requerido: Nivel 4.";
                 return RedirectToAction("Index", "Home");
             }
             if (ModelState.IsValid)
@@ -141,16 +148,15 @@ namespace SysSoniaInventory.Controllers
             { // Nivel 4 tiene acceso
 
             }
-            else if (User.HasClaim("AccessTipe", "Nivel 3"))
-            {
-                // Nivel 3 tiene acceso
+            else if (User.HasClaim("AccessTipe", "Nivel 5"))
+            { // Nivel 5 tiene acceso
 
             }
 
             else
             {
                 // Redirigir con mensaje de error si el usuario no tiene acceso
-                TempData["Error"] = "No tienes acceso a esta sección. Requerido: Nivel 3 o superior.";
+                TempData["Error"] = "No tienes acceso a esta sección. Requerido: Nivel 4.";
                 return RedirectToAction("Index", "Home");
             }
             if (id == null)
@@ -177,16 +183,16 @@ namespace SysSoniaInventory.Controllers
             { // Nivel 4 tiene acceso
 
             }
-            else if (User.HasClaim("AccessTipe", "Nivel 3"))
-            {
-                // Nivel 3 tiene acceso
+            else if (User.HasClaim("AccessTipe", "Nivel 5"))
+            { // Nivel 5 tiene acceso
 
             }
+
 
             else
             {
                 // Redirigir con mensaje de error si el usuario no tiene acceso
-                TempData["Error"] = "No tienes acceso a esta sección. Requerido: Nivel 3 o superior.";
+                TempData["Error"] = "No tienes acceso a esta sección. Requerido: Nivel 4.";
                 return RedirectToAction("Index", "Home");
             }
             if (id != modelProveedor.Id)
@@ -225,6 +231,10 @@ namespace SysSoniaInventory.Controllers
             { // Nivel 4 tiene acceso
 
             }
+            else if (User.HasClaim("AccessTipe", "Nivel 5"))
+            { // Nivel 5 tiene acceso
+
+            }
 
             else
             {
@@ -253,26 +263,43 @@ namespace SysSoniaInventory.Controllers
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             // Verificar niveles de acceso
-            if (User.HasClaim("AccessTipe", "Nivel 4"))
-            { // Nivel 4 tiene acceso
-
-            }
-
-            else
+            if (!User.HasClaim("AccessTipe", "Nivel 4") && !User.HasClaim("AccessTipe", "Nivel 5"))
             {
-                // Redirigir con mensaje de error si el usuario no tiene acceso
-                TempData["Error"] = "No tienes acceso a esta sección. Requerido: Nivel 4.";
+                TempData["Error"] = "No tienes acceso a esta sección. Requerido: Nivel 4 o Nivel 5.";
                 return RedirectToAction("Index", "Home");
             }
+
             var modelProveedor = await _context.modelProveedor.FindAsync(id);
-            if (modelProveedor != null)
+
+            if (modelProveedor == null)
             {
-                _context.modelProveedor.Remove(modelProveedor);
+                TempData["Error"] = "El proveedor que intentas eliminar no existe.";
+                return RedirectToAction(nameof(Index));
             }
 
-            await _context.SaveChangesAsync();
+            // Verificar si hay productos asociados a este proveedor
+            var relatedProducts = await _context.modelProduct.AnyAsync(p => p.IdProveedor == id);
+            if (relatedProducts)
+            {
+                TempData["Error"] = "No se puede eliminar el proveedor porque tiene productos asociados.";
+                return RedirectToAction(nameof(Index));
+            }
+
+            // Si no hay productos relacionados, eliminar el proveedor
+            try
+            {
+                _context.modelProveedor.Remove(modelProveedor);
+                await _context.SaveChangesAsync();
+                TempData["Success"] = "Proveedor eliminado correctamente.";
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = "Ocurrió un error al intentar eliminar el proveedor: " + ex.Message;
+            }
+
             return RedirectToAction(nameof(Index));
         }
+
 
         private bool ModelProveedorExists(int id)
         {

@@ -34,6 +34,11 @@ namespace SysSoniaInventory.Controllers
                 // Nivel 2 tiene acceso
 
             }
+            else if (User.HasClaim("AccessTipe", "Nivel 5"))
+            {
+                // Nivel 5 tiene acceso
+
+            }
             else
             {
                 // Redirigir con mensaje de error si el usuario no tiene acceso
@@ -69,7 +74,11 @@ namespace SysSoniaInventory.Controllers
                 // Nivel 2 tiene acceso
 
             }
-           
+            else if (User.HasClaim("AccessTipe", "Nivel 5"))
+            {
+                // Nivel 5 tiene acceso
+
+            }
             else
             {
                 // Redirigir con mensaje de error si el usuario no tiene acceso
@@ -113,13 +122,21 @@ namespace SysSoniaInventory.Controllers
                 // Nivel 2 tiene acceso
 
             }
-         
+            else if (User.HasClaim("AccessTipe", "Nivel 5"))
+            {
+                // Nivel 5 tiene acceso
+
+            }
             else
             {
                 // Redirigir con mensaje de error si el usuario no tiene acceso
                 TempData["Error"] = "No tienes acceso a esta sección. Requerido: Nivel 2 o superior.";
                 return RedirectToAction("Index", "Home");
             }
+
+
+            ViewBag.NameSucursal = User.FindFirst("Sucursal")?.Value;
+            ViewBag.NameUser = User.Identity?.Name;
 
             ViewBag.Productos = _context.modelProduct.ToList();
             return View();
@@ -144,6 +161,11 @@ namespace SysSoniaInventory.Controllers
                 // Nivel 2 tiene acceso
 
             }
+            else if (User.HasClaim("AccessTipe", "Nivel 5"))
+            {
+                // Nivel 5 tiene acceso
+
+            }
             else
             {
                 // Redirigir con mensaje de error si el usuario no tiene acceso
@@ -151,9 +173,9 @@ namespace SysSoniaInventory.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
-            // Asignar valores automáticos para la factura
-            factura.NameUser = "Usuario Fijo"; // Usuario actual (dinámico en el futuro)
-            factura.NameSucursal = "Sucursal Fija"; // Sucursal actual (dinámico en el futuro)
+            // Sobrescribir valores de seguridad
+            factura.NameUser = User.Identity?.Name;
+            factura.NameSucursal = User.FindFirst("Sucursal")?.Value;
             factura.Date = DateOnly.FromDateTime(DateTime.Now);
             factura.Time = TimeOnly.FromDateTime(DateTime.Now);
             // Validar que los datos son correctos
@@ -266,6 +288,11 @@ namespace SysSoniaInventory.Controllers
             else if (User.HasClaim("AccessTipe", "Nivel 2"))
             {
                 // Nivel 2 tiene acceso
+
+            }
+            else if (User.HasClaim("AccessTipe", "Nivel 5"))
+            {
+                // Nivel 5 tiene acceso
 
             }
             else

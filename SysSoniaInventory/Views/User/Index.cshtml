@@ -119,7 +119,8 @@
                                     <td>@Html.DisplayFor(modelItem => item.Name)</td>
                                     <td>@Html.DisplayFor(modelItem => item.LastName)</td>
                                     <td>@Html.DisplayFor(modelItem => item.Email)</td>
-                                    <td>@Html.DisplayFor(modelItem => item.Estatus)</td>
+                                    <td> @(item.Estatus == 1 ? "Activo" : "Inactivo")</td>
+
                                     <td>
                                         @if (User.HasClaim("AccessTipe", "Nivel 5"))
                                         {

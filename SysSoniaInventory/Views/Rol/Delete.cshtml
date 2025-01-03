@@ -11,20 +11,34 @@
             <h3 class="card-title font-weight-bold text-danger">Eliminar Rol</h3>
             <p class="text-warning font-weight-bold">¿Está seguro de que desea eliminar este rol?</p>
 
-            <dl class="row">
-                <dt class="col-sm-3">Nombre del Rol</dt>
-                <dd class="col-sm-9">
-                    @Html.DisplayFor(model => model.Name)
-                </dd>
-
-                <dt class="col-sm-3">Tipo de Acceso</dt>
-                <dd class="col-sm-9">
-                    @Html.DisplayFor(model => model.AccessTipe)
-                </dd>
-            </dl>
-
             <form asp-action="Delete" class="mt-4">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="form-group row">
+                            <label class="col-sm-2 col-form-label text-light" asp-for="Name">Nombre del Rol</label>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control readonly-input" asp-for="Name" value="@Model.Name" readonly />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-12">
+                        <div class="form-group row">
+                            <label class="col-sm-2 col-form-label" asp-for="AccessTipe">Tipo de Acceso</label>
+                            <div class="col-sm-10">
+                                <select class="form-control text-light readonly-input" asp-for="AccessTipe" disabled>
+                                    <option value="Nivel 1">Nivel 1 - Acceso Restringido (Acceso al sistema pero sin poder ver o modificar información)</option>
+                                    <option value="Nivel 2">Nivel 2 - Acceso Básico (Acceso a gestión de ventas e información de productos limitado)</option>
+                                    <option value="Nivel 3">Nivel 3 - Acceso Intermedio (Acceso a información y modificaciones básicas)</option>
+                                    <option value="Nivel 4">Nivel 4 - Acceso Total (Todo permitido)</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <input type="hidden" asp-for="Id" />
+
                 <div class="d-flex justify-content-end">
                     <button type="submit" class="btn btn-danger font-weight-bold">Eliminar</button>
                     <a asp-action="Index" class="btn btn-outline-secondary font-weight-bold ml-2">Volver a la lista</a>

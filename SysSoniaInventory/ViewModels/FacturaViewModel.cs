@@ -12,6 +12,15 @@
     public class DetalleFacturaViewModel
     {
         public string? CodigoProducto { get; set; }
+        public string NameProduct { get; set; }
         public int CantidadProduct { get; set; }
     }
+    public class UsuariosVentasViewModel
+    {
+        public string NameUser { get; set; }
+        public decimal TotalFacturas { get; set; }
+    }
+
+
+
 }

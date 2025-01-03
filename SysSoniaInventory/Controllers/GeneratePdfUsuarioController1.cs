@@ -25,6 +25,11 @@ public class UserController : Controller
         { // Nivel 4 tiene acceso
 
         }
+        else if (User.HasClaim("AccessTipe", "Nivel 5"))
+        {
+            // Nivel 5 tiene acceso
+
+        }
         else
         {
             // Redirigir con mensaje de error si el usuario no tiene acceso

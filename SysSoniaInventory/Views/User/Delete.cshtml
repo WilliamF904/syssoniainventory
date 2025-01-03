@@ -10,28 +10,88 @@
             <h3 class="card-title font-weight-bold">Eliminar Usuario</h3>
             <p class="text-danger">¿Está seguro de que desea eliminar este usuario?</p>
 
-            <dl class="row">
-                <dt class="col-sm-3 font-weight-bold">Teléfono</dt>
-                <dd class="col-sm-9">@Model.Tel</dd>
-
-                <dt class="col-sm-3 font-weight-bold">Nombre</dt>
-                <dd class="col-sm-9">@Model.Name</dd>
-
-                <dt class="col-sm-3 font-weight-bold">Apellido</dt>
-                <dd class="col-sm-9">@Model.LastName</dd>
-
-                <dt class="col-sm-3 font-weight-bold">Correo Electrónico</dt>
-                <dd class="col-sm-9">@Model.Email</dd>
-
-                <dt class="col-sm-3 font-weight-bold">Estatus</dt>
-                <dd class="col-sm-9">@(Model.Estatus == 1 ? "Activo" : "Inactivo")</dd>
-
-                <dt class="col-sm-3 font-weight-bold">Fecha de Registro</dt>
-                <dd class="col-sm-9">@Model.RegistrationDate</dd>
-            </dl>
-
             <form asp-action="Delete">
                 <input type="hidden" asp-for="Id" />
+
+                    <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label" asp-for="IdRol">Rol: </label>
+                            <div class="col-sm-9">
+                                <select class="form-control  text-light readonly-input" asp-for="IdRol" asp-items="ViewBag.IdRol"  disabled></select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label" asp-for="IdSucursal">Sucursal: </label>
+                            <div class="col-sm-9">
+                                <select class="form-control  text-light readonly-input" asp-for="IdSucursal" asp-items="ViewBag.IdSucursal" disabled></select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label font-weight-bold">Teléfono</label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control readonly-input" asp-for="Tel" readonly />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label font-weight-bold">Nombre</label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control readonly-input" asp-for="Name" readonly />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label font-weight-bold">Apellido</label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control readonly-input" asp-for="LastName" readonly />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label font-weight-bold">Correo Electrónico</label>
+                            <div class="col-sm-9">
+                                <input type="email" class="form-control readonly-input" asp-for="Email" readonly />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label font-weight-bold">Estatus</label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control readonly-input" value="@(Model.Estatus == 1 ? "Activo" : "Inactivo")" readonly />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label font-weight-bold">Fecha de Registro</label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control readonly-input" value="@Model.RegistrationDate" readonly />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="d-flex justify-content-end">
                     <button type="submit" class="btn btn-danger font-weight-bold">Eliminar</button>
                     <a asp-action="Index" class="btn btn-outline-secondary font-weight-bold ml-2">Cancelar</a>

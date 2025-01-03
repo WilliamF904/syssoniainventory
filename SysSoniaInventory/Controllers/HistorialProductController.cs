@@ -29,6 +29,11 @@ namespace SysSoniaInventory.Controllers
             { // Nivel 4 tiene acceso
 
             }
+            else if (User.HasClaim("AccessTipe", "Nivel 5"))
+            {
+                // Nivel 5 tiene acceso
+
+            }
             else
             {
                 // Redirigir con mensaje de error si el usuario no tiene acceso
@@ -46,7 +51,11 @@ namespace SysSoniaInventory.Controllers
             { // Nivel 4 tiene acceso
 
             }
+            else if (User.HasClaim("AccessTipe", "Nivel 5"))
+            {
+                // Nivel 5 tiene acceso
 
+            }
             else
             {
                 // Redirigir con mensaje de error si el usuario no tiene acceso
@@ -72,17 +81,16 @@ namespace SysSoniaInventory.Controllers
         // GET: HistorialProduct/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            // Verificar niveles de acceso
-            if (User.HasClaim("AccessTipe", "Nivel 4"))
-            { // Nivel 4 tiene acceso
+         
+           if (User.HasClaim("AccessTipe", "Nivel 5"))
+            {
+                // Nivel 5 tiene acceso
 
             }
-
-
             else
             {
                 // Redirigir con mensaje de error si el usuario no tiene acceso
-                TempData["Error"] = "No tienes acceso a esta sección. Requerido: Nivel 4.";
+                TempData["Error"] = "No tienes acceso a esta sección. Requerido: Nivel 5.";
                 return RedirectToAction("Index", "Home");
             }
             if (id == null)
@@ -106,14 +114,14 @@ namespace SysSoniaInventory.Controllers
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             // Verificar niveles de acceso
-            if (User.HasClaim("AccessTipe", "Nivel 4"))
+            if (User.HasClaim("AccessTipe", "Nivel 5"))
             { // Nivel 4 tiene acceso
 
             }
             else
             {
                 // Redirigir con mensaje de error si el usuario no tiene acceso
-                TempData["Error"] = "No tienes acceso a esta sección. Requerido: Nivel 4.";
+                TempData["Error"] = "No tienes acceso a esta sección. Requerido: Nivel 5.";
                 return RedirectToAction("Index", "Home");
             }
             var modelHistorialProduct = await _context.modelHistorialProduct.FindAsync(id);

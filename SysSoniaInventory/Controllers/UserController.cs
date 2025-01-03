@@ -79,20 +79,10 @@ namespace SysSoniaInventory.Controllers
                 // Nivel 3 tiene acceso
 
             }
-            else if (User.HasClaim("AccessTipe", "Nivel 2"))
-            {
-                // Nivel 2 tiene acceso
-
-            }
-            else if (User.HasClaim("AccessTipe", "Nivel 1"))
-            {
-                // Nivel 1 tiene acceso
-               
-            }
             else
             {
                 // Redirigir con mensaje de error si el usuario no tiene acceso
-                TempData["Error"] = "No tienes acceso a esta sección. Requerido: Nivel 1 o superior.";
+                TempData["Error"] = "No tienes acceso a esta sección. Requerido: Nivel 3.";
                 return RedirectToAction("Index", "Home");
             }
 
@@ -131,15 +121,10 @@ namespace SysSoniaInventory.Controllers
                 // Nivel 4 tiene acceso
 
             }
-            else if (User.HasClaim("AccessTipe", "Nivel 3"))
-            {
-                // Nivel 3 tiene acceso
-
-            }
             else
             {
                 // Redirigir con mensaje de error si el usuario no tiene acceso
-                TempData["Error"] = "No tienes acceso a esta sección. Requerido: Nivel 3 o superior.";
+                TempData["Error"] = "No tienes acceso a esta sección. Requerido: Nivel 4.";
                 return RedirectToAction("Index", "Home");
             }
 
@@ -164,15 +149,10 @@ namespace SysSoniaInventory.Controllers
                 // Nivel 4 tiene acceso
 
             }
-            else if (User.HasClaim("AccessTipe", "Nivel 3"))
-            {
-                // Nivel 3 tiene acceso
-
-            }
             else
             {
                 // Redirigir con mensaje de error si el usuario no tiene acceso
-                TempData["Error"] = "No tienes acceso a esta sección. Requerido: Nivel 3 o superior.";
+                TempData["Error"] = "No tienes acceso a esta sección. Requerido: Nivel 4.";
                 return RedirectToAction("Index", "Home");
             }
 
@@ -201,7 +181,7 @@ namespace SysSoniaInventory.Controllers
                 // Agregar el usuario a la base de datos
                 _context.Add(modelUser);
                 await _context.SaveChangesAsync();
-
+                TempData["Success"] = "Usuario creado correctamente.";
                 return RedirectToAction(nameof(Index));
             }
 
@@ -425,6 +405,7 @@ namespace SysSoniaInventory.Controllers
                         throw;
                     }
                 }
+                TempData["Success"] = "Usuario editado correctamente.";
                 return RedirectToAction(nameof(Index));
             }
 
@@ -466,7 +447,7 @@ namespace SysSoniaInventory.Controllers
             // Configurar datos para la vista
             ViewData["IdRol"] = new SelectList(_context.modelRol, "Id", "Name", user.IdRol);
             ViewData["IdSucursal"] = new SelectList(_context.modelSucursal, "Id", "Name", user.IdSucursal);
-
+         
             return View(user);
         }
 
@@ -556,6 +537,7 @@ namespace SysSoniaInventory.Controllers
                         throw;
                     }
                 }
+               
                 return RedirectToAction("Login", "Auth");
             }
 
@@ -858,6 +840,7 @@ namespace SysSoniaInventory.Controllers
             }
 
             await _context.SaveChangesAsync();
+            TempData["Success"] = "Usuario eliminado correctamente.";
             return RedirectToAction(nameof(Index));
         }
 

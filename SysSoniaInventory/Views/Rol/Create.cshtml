@@ -13,34 +13,32 @@
         <form asp-action="Create">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                 <div class="row">
-                    <div class="col-md-6">
+                    <div class="col-12">
                         <div class="form-group row">
-                            <label class="col-sm-3 col-form-label text-light" asp-for="Name" >Nombre del Rol</label>
-                            <div class="col-sm-9">
+                            <label class="col-sm-2 col-form-label text-light" asp-for="Name">Nombre del Rol</label>
+                            <div class="col-sm-10">
                                 <input type="text" class="form-control" asp-for="Name" placeholder="Ingrese el rol" required />
                                 <span asp-validation-for="Name" class="text-danger"></span>
                             </div>
                         </div>
                     </div>
 
-
-                    <div class="col-md-6">
+                    <div class="col-12">
                         <div class="form-group row">
-                            <label class="col-sm-3 col-form-label" asp-for="AccessTipe">Tipo de acceso</label>
-                            <div class="col-sm-9">
+                            <label class="col-sm-2 col-form-label" asp-for="AccessTipe">Tipo de Acceso</label>
+                            <div class="col-sm-10">
                                 <select class="form-control text-light" asp-for="AccessTipe" required>
                                     <option value="" disabled selected>Seleccione un nivel de acceso</option>
+                                    <option value="Nivel 1">Nivel 1 - Acceso Restringido (Acceso al sistema pero sin poder ver o modificar información)</option>
+                                    <option value="Nivel 2">Nivel 2 - Acceso Básico (Acceso a gestión de ventas e información de productos limitado)</option>
+                                    <option value="Nivel 3">Nivel 3 - Acceso Intermedio (Acceso a información y modificaciones básicas)</option>
                                     <option value="Nivel 4">Nivel 4 - Acceso Total (Todo permitido)</option>
-                                    <option value="Nivel 3">Nivel 3 - Acceso Intermedio (Acceso a registros y reportes, sin edición de facturación)</option>
-                                    <option value="Nivel 2">Nivel 2 - Acceso Básico (Solo visualización de datos y reportes básicos)</option>
-                                    <option value="Nivel 1">Nivel 1 - Acceso Restringido (Solo lectura de información)</option>
                                 </select>
 
                                 <span asp-validation-for="AccessTipe" class="text-danger"></span>
                             </div>
                         </div>
                     </div>
-                  
                 </div>
                 <div class="d-flex justify-content-end">
                     <button type="submit" value="Create" class="btn btn-outline-primary font-weight-bold">Guardar</button>

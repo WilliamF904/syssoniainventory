@@ -3,71 +3,101 @@
 @{
     ViewData["Title"] = "Details";
 }
+
 <div class="col-12 grid-margin">
     <div class="card">
         <div class="card-body">
             <h3 class="card-title font-weight-bold">Detalles del Usuario</h3>
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="form-group row">
-                        <label class="col-sm-4 col-form-label font-weight-bold">Teléfono</label>
-                        <div class="col-sm-8">
-                            <p class="form-control-plaintext">@Model.Tel</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="form-group row">
-                        <label class="col-sm-4 col-form-label font-weight-bold">Nombre</label>
-                        <div class="col-sm-8">
-                            <p class="form-control-plaintext">@Model.Name</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
 
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="form-group row">
-                        <label class="col-sm-4 col-form-label font-weight-bold">Apellido</label>
-                        <div class="col-sm-8">
-                            <p class="form-control-plaintext">@Model.LastName</p>
+            <form>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label" asp-for="IdRol">Rol: </label>
+                            <div class="col-sm-9">
+                                <select class="form-control  text-light readonly-input" asp-for="IdRol" asp-items="ViewBag.IdRol" disabled></select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label" asp-for="IdSucursal">Sucursal: </label>
+                            <div class="col-sm-9">
+                                <select class="form-control  text-light readonly-input" asp-for="IdSucursal" asp-items="ViewBag.IdSucursal" disabled></select>
+                            </div>
                         </div>
                     </div>
                 </div>
-                <div class="col-md-6">
-                    <div class="form-group row">
-                        <label class="col-sm-4 col-form-label font-weight-bold">Correo Electrónico</label>
-                        <div class="col-sm-8">
-                            <p class="form-control-plaintext">@Model.Email</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
 
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="form-group row">
-                        <label class="col-sm-4 col-form-label font-weight-bold">Estatus</label>
-                        <div class="col-sm-8">
-                            <p class="form-control-plaintext">@(Model.Estatus == 1 ? "Activo" : "Inactivo")</p>
+                <div class="row">
+               
+                    <div class="col-md-6">
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label font-weight-bold">Nombre</label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control readonly-input" asp-for="Name" readonly />
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="form-group row">
-                        <label class="col-sm-4 col-form-label font-weight-bold">Fecha de Registro</label>
-                        <div class="col-sm-8">
-                            <p class="form-control-plaintext">@Model.RegistrationDate</p><!--.ToShortDateString()-->
-                        </div>
-                    </div>
-                </div>
-            </div>
 
-            <div class="d-flex justify-content-end">
-                <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-outline-primary font-weight-bold">Editar</a>
-                <a asp-action="Index" class="btn btn-outline-secondary font-weight-bold ml-2">Volver a la lista</a>
-            </div>
+                    <div class="col-md-6">
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label font-weight-bold">Apellido</label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control readonly-input" asp-for="LastName" readonly />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                 
+
+                    <div class="col-md-6">
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label font-weight-bold">Correo Electrónico</label>
+                            <div class="col-sm-9">
+                                <input type="email" class="form-control readonly-input" asp-for="Email" readonly />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label font-weight-bold">Teléfono</label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control readonly-input" asp-for="Tel" readonly />
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label font-weight-bold">Fecha de Registro</label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control readonly-input" value="@Model.RegistrationDate" readonly />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label font-weight-bold">Estatus</label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control readonly-input" value="@(Model.Estatus == 1 ? "Activo" : "Inactivo")" readonly />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-end">
+                    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-outline-primary font-weight-bold">Editar</a>
+                    <a asp-action="Index" class="btn btn-outline-secondary font-weight-bold ml-2">Volver a la lista</a>
+                </div>
+            </form>
         </div>
     </div>
 </div>
