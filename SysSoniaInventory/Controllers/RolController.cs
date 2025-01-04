@@ -114,6 +114,15 @@ namespace SysSoniaInventory.Controllers
                 TempData["Error"] = "No tienes acceso a esta sección. Requerido: Nivel 5.";
                 return RedirectToAction("Index", "Home");
             }
+
+            // Validar AccessTipe
+            var validLevels = new[] { "Nivel 1", "Nivel 2", "Nivel 3", "Nivel 4" };
+            if (!validLevels.Contains(modelRol.AccessTipe))
+            {
+                TempData["Error"] = "Inconsistencia al asignar el tipo de acceso, se restablecio a Nivel 1.";
+                modelRol.AccessTipe = "Nivel 1";
+            }
+
             if (ModelState.IsValid)
             {
                 _context.Add(modelRol);
@@ -121,6 +130,7 @@ namespace SysSoniaInventory.Controllers
                 TempData["Success"] = "Rol creado correctamente.";
                 return RedirectToAction(nameof(Index));
             }
+
             return View(modelRol);
         }
 
@@ -171,6 +181,18 @@ namespace SysSoniaInventory.Controllers
             {
                 return NotFound();
             }
+
+
+
+
+            // Validar AccessTipe
+            var validLevels = new[] { "Nivel 1", "Nivel 2", "Nivel 3", "Nivel 4" };
+            if (!validLevels.Contains(modelRol.AccessTipe))
+            {
+                TempData["Error"] = "Inconsistencia al asignar el tipo de acceso, se restablecio a Nivel 1.";
+                modelRol.AccessTipe = "Nivel 1";
+            }
+
 
             if (ModelState.IsValid)
             {

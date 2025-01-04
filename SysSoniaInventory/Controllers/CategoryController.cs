@@ -262,21 +262,22 @@ namespace SysSoniaInventory.Controllers
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             // Verificar niveles de acceso
-            if (User.HasClaim("AccessTipe", "Nivel 4"))
-            { // Nivel 4 tiene acceso
-
-            }
-            else if (User.HasClaim("AccessTipe", "Nivel 5"))
-            {
-                // Nivel 5 tiene acceso
-
-            }
-            else
+            if (!User.HasClaim("AccessTipe", "Nivel 4") || !User.HasClaim("AccessTipe", "Nivel 5"))
             {
                 // Redirigir con mensaje de error si el usuario no tiene acceso
-                TempData["Error"] = "No tienes acceso a esta sección. Requerido: Nivel 4.";
+                TempData["Error"] = "No tienes acceso a esta sección. Requerido: Nivel 4 o superior.";
                 return RedirectToAction("Index", "Home");
             }
+
+
+            // Verificar si hay productos asociados a este proveedor
+            var relatedProducts = await _context.modelProduct.AnyAsync(p => p.IdCategory == id);
+            if (relatedProducts)
+            {
+                TempData["Error"] = "No se puede eliminar la categoria porque tiene productos asociados.";
+                return RedirectToAction(nameof(Index));
+            }
+
             var modelCategory = await _context.modelCategory.FindAsync(id);
             if (modelCategory != null)
             {

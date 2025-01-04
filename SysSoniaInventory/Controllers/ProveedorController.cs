@@ -263,9 +263,9 @@ namespace SysSoniaInventory.Controllers
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             // Verificar niveles de acceso
-            if (!User.HasClaim("AccessTipe", "Nivel 4") && !User.HasClaim("AccessTipe", "Nivel 5"))
+            if (!User.HasClaim("AccessTipe", "Nivel 4") || !User.HasClaim("AccessTipe", "Nivel 5"))
             {
-                TempData["Error"] = "No tienes acceso a esta sección. Requerido: Nivel 4 o Nivel 5.";
+                TempData["Error"] = "No tienes acceso a esta sección. Requerido: Nivel 4.";
                 return RedirectToAction("Index", "Home");
             }
 

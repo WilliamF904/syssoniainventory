@@ -486,30 +486,41 @@ else
                                         <div class="modal-body">
                                             @if (ViewBag.ErrorMessage != null)
                                             {
-                                                <img src="~/img/0_licuadora.png" class="img-fluid mb-2" alt="Imagen de error">
-                                                <div class="alert alert-danger">
-                                                    <strong>Error:</strong> @ViewBag.ErrorMessage
+                                                <div class="text-center">
+                                                    <img src="~/img/nou.png" class="img-fluid custom-img mb-2" alt="Imagen de error">
+                                                    <div class="alert alert-danger">
+                                                        <strong>Error:</strong> @ViewBag.ErrorMessage
+                                                    </div>
                                                 </div>
                                             }
                                             @if (TempData["Message"] != null)
                                             {
-                                                <div class="alert alert-info">
-                                                    @TempData["Message"]
+                                                <div class="text-center">
+                                                    <img src="~/img/yes.png" class="img-fluid custom-img mb-2" alt="Imagen de validación">
+                                                    <div class="alert alert-info">
+                                                        @TempData["Message"]
+                                                    </div>
                                                 </div>
                                             }
                                             @if (TempData["Error"] != null)
                                             {
-                                                <img src="~/img/0_licuadora.png" class="img-fluid mb-2" alt="Imagen de error">
-                                                <div class="alert alert-danger">
-                                                    @TempData["Error"]
+                                                <div class="text-center">
+                                                    <img src="~/img/nou.png" class="img-fluid custom-img mb-2" alt="Imagen de error">
+                                                    <div class="alert alert-danger">
+                                                        @TempData["Error"]
+                                                    </div>
                                                 </div>
                                             }
                                             @if (TempData["Success"] != null)
                                             {
-                                                <div class="alert alert-success">
-                                                    @TempData["Success"]
+                                                <div class="text-center">
+                                                    <img src="~/img/yes.png" class="img-fluid custom-img mb-2" alt="Imagen de validación">
+                                                    <div class="alert alert-success">
+                                                        @TempData["Success"]
+                                                    </div>
                                                 </div>
                                             }
+
                                         </div>
                                         <div class="modal-footer">
                                             @if (TempData["Error"] != null)
@@ -549,6 +560,8 @@ else
      </div>    
 
 
+
+
     <!-- container-scroller -->
     <!-- plugins:js -->
     <script src="~/assets/vendors/js/vendor.bundle.base.js"></script>
@@ -566,7 +579,7 @@ else
     <script src="~/assets/js/misc.js"></script>
     <script src="~/assets/js/settings.js"></script>
     <script src="~/assets/js/todolist.js"></script>
-    <script src="../../assets/vendors/js/vendor.bundle.base.js"></script>
+
     <!-- endinject -->
    
 

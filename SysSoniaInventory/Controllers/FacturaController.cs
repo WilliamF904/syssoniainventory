@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SysSoniaInventory.DataAccess;
 using SysSoniaInventory.Models;
+using System.Security.Claims;
 
 namespace SysSoniaInventory.Controllers
 {
@@ -16,27 +17,14 @@ namespace SysSoniaInventory.Controllers
             _context = context;
         }
 
+
         // Acción Index para listar facturas
         public IActionResult Index()
         {
+
             // Verificar niveles de acceso
-            if (User.HasClaim("AccessTipe", "Nivel 4"))
+            if (User.HasClaim("AccessTipe", "Nivel 5") || User.HasClaim("AccessTipe", "Nivel 4") || User.HasClaim("AccessTipe", "Nivel 3") || User.HasClaim("AccessTipe", "Nivel 2"))
             { // Nivel 4 tiene acceso
-
-            }
-            else if (User.HasClaim("AccessTipe", "Nivel 3"))
-            {
-                // Nivel 3 tiene acceso
-
-            }
-            else if (User.HasClaim("AccessTipe", "Nivel 2"))
-            {
-                // Nivel 2 tiene acceso
-
-            }
-            else if (User.HasClaim("AccessTipe", "Nivel 5"))
-            {
-                // Nivel 5 tiene acceso
 
             }
             else
@@ -45,17 +33,23 @@ namespace SysSoniaInventory.Controllers
                 TempData["Error"] = "No tienes acceso a esta sección. Requerido: Nivel 2 o superior.";
                 return RedirectToAction("Index", "Home");
             }
+            var accessLevel = User.Claims.FirstOrDefault(c => c.Type == "AccessTipe")?.Value;
 
-            // Obtener el nivel de acceso del token
-            var accessLevel = User.Claims.FirstOrDefault(c => c.Type == "AccessLevel")?.Value;
+            // Obtener el nombre del usuario autenticado
+            var userName = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name)?.Value;
 
-            if (accessLevel == "Nivel 1")
+            IQueryable<ModelFactura> facturasQuery = _context.modelFactura.Include(f => f.DetalleFactura);
+
+            // Filtrar facturas según el nivel de acceso
+            if (accessLevel == "Nivel 2" || accessLevel == "Nivel 3")
             {
-                return Forbid("No tienes permisos para acceder a esta funcionalidad.");
+                facturasQuery = facturasQuery.Where(f => f.NameUser == userName);
             }
-            var facturas = _context.modelFactura.Include(f => f.DetalleFactura).ToList();
+
+            var facturas = facturasQuery.ToList();
             return View(facturas);
         }
+
 
         public IActionResult BuscarProducto(string query)
         {
@@ -108,23 +102,8 @@ namespace SysSoniaInventory.Controllers
         public IActionResult Create()
         {
             // Verificar niveles de acceso
-            if (User.HasClaim("AccessTipe", "Nivel 4"))
+            if (User.HasClaim("AccessTipe", "Nivel 5") || User.HasClaim("AccessTipe", "Nivel 4") || User.HasClaim("AccessTipe", "Nivel 3") || User.HasClaim("AccessTipe", "Nivel 2"))
             { // Nivel 4 tiene acceso
-
-            }
-            else if (User.HasClaim("AccessTipe", "Nivel 3"))
-            {
-                // Nivel 3 tiene acceso
-
-            }
-            else if (User.HasClaim("AccessTipe", "Nivel 2"))
-            {
-                // Nivel 2 tiene acceso
-
-            }
-            else if (User.HasClaim("AccessTipe", "Nivel 5"))
-            {
-                // Nivel 5 tiene acceso
 
             }
             else
@@ -147,23 +126,8 @@ namespace SysSoniaInventory.Controllers
         public IActionResult Create(ModelFactura factura, List<ModelDetalleFactura> detalles)
         {
             // Verificar niveles de acceso
-            if (User.HasClaim("AccessTipe", "Nivel 4"))
+            if (User.HasClaim("AccessTipe", "Nivel 5") || User.HasClaim("AccessTipe", "Nivel 4") || User.HasClaim("AccessTipe", "Nivel 3") || User.HasClaim("AccessTipe", "Nivel 2"))
             { // Nivel 4 tiene acceso
-
-            }
-            else if (User.HasClaim("AccessTipe", "Nivel 3"))
-            {
-                // Nivel 3 tiene acceso
-
-            }
-            else if (User.HasClaim("AccessTipe", "Nivel 2"))
-            {
-                // Nivel 2 tiene acceso
-
-            }
-            else if (User.HasClaim("AccessTipe", "Nivel 5"))
-            {
-                // Nivel 5 tiene acceso
 
             }
             else
@@ -276,23 +240,8 @@ namespace SysSoniaInventory.Controllers
         public IActionResult Details(int id)
         {
             // Verificar niveles de acceso
-            if (User.HasClaim("AccessTipe", "Nivel 4"))
+            if (User.HasClaim("AccessTipe", "Nivel 5") || User.HasClaim("AccessTipe", "Nivel 4") || User.HasClaim("AccessTipe", "Nivel 3") || User.HasClaim("AccessTipe", "Nivel 2"))
             { // Nivel 4 tiene acceso
-
-            }
-            else if (User.HasClaim("AccessTipe", "Nivel 3"))
-            {
-                // Nivel 3 tiene acceso
-
-            }
-            else if (User.HasClaim("AccessTipe", "Nivel 2"))
-            {
-                // Nivel 2 tiene acceso
-
-            }
-            else if (User.HasClaim("AccessTipe", "Nivel 5"))
-            {
-                // Nivel 5 tiene acceso
 
             }
             else
@@ -301,7 +250,6 @@ namespace SysSoniaInventory.Controllers
                 TempData["Error"] = "No tienes acceso a esta sección. Requerido: Nivel 2 o superior.";
                 return RedirectToAction("Index", "Home");
             }
-
             // Obtener la factura y sus detalles
             var factura = _context.modelFactura
                 .Include(f => f.DetalleFactura) // Incluir los detalles de la factura
@@ -309,8 +257,21 @@ namespace SysSoniaInventory.Controllers
 
             if (factura == null)
             {
-                return NotFound();
+                TempData["Error"] = "Factura no encontrada.";
+                return RedirectToAction(nameof(Index));
             }
+
+            // Verificar el nivel de acceso
+            var accessLevel = User.Claims.FirstOrDefault(c => c.Type == "AccessTipe")?.Value;
+            var userName = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name)?.Value;
+
+            // Si es Nivel 2 o Nivel 3, verificar que la factura le corresponda
+            if ((accessLevel == "Nivel 2" || accessLevel == "Nivel 3") && factura.NameUser != userName)
+            {
+                TempData["Error"] = "No tienes permisos para acceder a esta factura.";
+                return RedirectToAction(nameof(Index));
+            }
+
 
             // Pasar los datos a la vista
             return View(factura);

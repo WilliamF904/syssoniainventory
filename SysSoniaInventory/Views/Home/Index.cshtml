@@ -148,22 +148,37 @@
             labels: productos.map(p => p.NameProduct || "Sin nombre")
         };
 
-        var doughnutPieOptions = {
-            responsive: true,
-            animation: {
-                animateScale: true,
-                animateRotate: true
-            },
-            tooltips: {
-                callbacks: {
-                    label: function (tooltipItem, data) {
-                        const index = tooltipItem.index;
-                        const producto = productos[index];
-                        return `Código: ${producto.CodigoProducto || "Sin código"} | Ventas: ${producto.CantidadVendida || 0}`;
-                    }
-                }
+      var doughnutPieOptions = {
+    responsive: true,
+    animation: {
+        animateScale: true,
+        animateRotate: true
+    },
+    tooltips: {
+        callbacks: {
+            label: function (tooltipItem, data) {
+                const index = tooltipItem.index;
+                const producto = productos[index];
+                return `Código: ${producto.CodigoProducto || "Sin código"} | Ventas: ${producto.CantidadVendida || 0}`;
             }
-        };
+        }
+    },
+    legend: {
+        labels: {
+            fontColor: 'white', // Cambia el color de las etiquetas en la leyenda
+        }
+    },
+    plugins: {
+        datalabels: {
+            color: 'white', // Cambia el color del texto mostrado en la gráfica
+            formatter: function (value, context) {
+                const index = context.dataIndex;
+                const producto = productos[index];
+                return producto.NameProduct || "Sin nombre"; // Etiqueta personalizada
+            }
+        }
+    }
+};
 
         // Bar Chart - Gráfico de Ventas del Mes (Solo para Niveles 3, 4, 5)
         const productosGrafico = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(ViewBag.ProductosGrafico)) || [];
@@ -202,40 +217,49 @@
             }]
         };
 
-        var barOptions = {
-            scales: {
-                yAxes: [{
-                    ticks: {
-                        beginAtZero: true
-                    },
-                    gridLines: {
-                        color: "rgba(204, 204, 204,0.1)"
-                    }
-                }],
-                xAxes: [{
-                    gridLines: {
-                        color: "rgba(204, 204, 204,0.1)"
-                    }
-                }]
+var barOptions = {
+    scales: {
+        yAxes: [{
+            ticks: {
+                beginAtZero: true,
+                fontColor: 'white' // Cambiar color del texto del eje Y
             },
-            legend: {
-                display: false
-            },
-            elements: {
-                point: {
-                    radius: 0
-                }
-            },
-            tooltips: {
-                callbacks: {
-                    label: function (tooltipItem, data) {
-                        const index = tooltipItem.index;
-                        const producto = productosGrafico[index];
-                        return `Código: ${producto.CodigoProducto || "Sin código"} | Ventas: ${producto.CantidadVendida || 0}`;
-                    }
-                }
+            gridLines: {
+                color: "rgba(204, 204, 204,0.1)"
             }
-        };
+        }],
+        xAxes: [{
+            ticks: {
+                fontColor: 'white' // Cambiar color del texto del eje X
+            },
+            gridLines: {
+                color: "rgba(204, 204, 204,0.1)"
+            }
+        }]
+    },
+    legend: {
+        display: false,
+        labels: {
+            fontColor: 'white' // Cambiar color de las etiquetas de la leyenda (si se muestra)
+        }
+    },
+    elements: {
+        point: {
+            radius: 0
+        }
+    },
+    tooltips: {
+        callbacks: {
+            label: function (tooltipItem, data) {
+                const index = tooltipItem.index;
+                const producto = productosGrafico[index];
+                return `Código: ${producto.CodigoProducto || "Sin código"} | Ventas: ${producto.CantidadVendida || 0}`;
+            }
+        }
+    }
+};
+
+
 
         if ($("#barChart").length) {
             var barChartCanvas = $("#barChart").get(0).getContext("2d");
