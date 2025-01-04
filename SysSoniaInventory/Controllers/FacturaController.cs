@@ -211,6 +211,46 @@ namespace SysSoniaInventory.Controllers
 
                         // Guardar el detalle
                         _context.modelDetalleFactura.Add(detalle);
+
+
+
+
+                        // Verificar si el producto tiene stock bajo y si se debe crear un reporte
+                        if (producto.LowStock >= 0 && producto.Stock <= producto.LowStock)
+                        {
+                            // Verificar si ya existe un reporte con el IdRelation igual al producto
+                            var reportesExistentes = _context.modelReport.Where(r => r.IdRelation == producto.Id).ToList();
+
+                            bool crearReporte = true;
+
+                            foreach (var reporte in reportesExistentes)
+                            {
+                                if (reporte.Estatus != "Finalizado")
+                                {
+                                    crearReporte = false;
+                                    break;
+                                }
+                            }
+
+                            if (crearReporte)
+                            {
+                                // Crear un nuevo reporte si no existe uno o si todos los reportes existentes están finalizados
+                                var nuevoReporte = new ModelReport
+                                {
+                                    TypeReport = "Stock Bajo",
+                                    Description = $"El producto '{producto.Name}' con el código '{producto.Codigo}' e id '{producto.Id}' tiene el stock bajo con {producto.Stock} cantidad a la hora y fecha de creación del reporte.",
+                                    Estatus = "Pendiente",
+                                    StarDate = DateOnly.FromDateTime(DateTime.Now),
+                                    StarTime = TimeOnly.FromDateTime(DateTime.Now),
+                                    IdRelation = producto.Id
+                                };
+
+                                _context.modelReport.Add(nuevoReporte);
+                            }
+                        }
+
+
+
                     }
 
                     // Guardar cambios y confirmar transacción

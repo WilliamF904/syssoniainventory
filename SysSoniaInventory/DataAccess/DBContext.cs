@@ -16,12 +16,12 @@ namespace SysSoniaInventory.DataAccess
         }
         public virtual DbSet<ModelRol> modelRol { get; set; }
         public virtual DbSet<ModelSucursal> modelSucursal { get; set; }
-        public virtual DbSet<ModelUser> modelUser{ get; set; }
-        
+        public virtual DbSet<ModelUser> modelUser { get; set; }
+
         public virtual DbSet<ModelCategory> modelCategory { get; set; }
         public virtual DbSet<ModelProveedor> modelProveedor { get; set; }
         public virtual DbSet<ModelProduct> modelProduct { get; set; }
-     
+
 
         public virtual DbSet<ModelFactura> modelFactura { get; set; }
         public virtual DbSet<ModelDetalleFactura> modelDetalleFactura { get; set; }
@@ -31,7 +31,7 @@ namespace SysSoniaInventory.DataAccess
 
         public virtual DbSet<ModelHistorialProduct> modelHistorialProduct { get; set; }
 
-
+        public DbSet<ModelReport> modelReport { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<ModelRol>(entity =>
@@ -86,6 +86,7 @@ namespace SysSoniaInventory.DataAccess
                 entity.Property(e => e.PurchasePrice).HasColumnType("decimal(18, 2)").IsRequired();
                 entity.Property(e => e.SalePrice).HasColumnType("decimal(18, 2)").IsRequired();
                 entity.Property(e => e.Stock).IsRequired();
+                entity.Property(e => e.LowStock);
                 entity.Property(e => e.Codigo).HasMaxLength(25).IsUnicode(false);
                 entity.Property(e => e.Url).HasMaxLength(100).IsUnicode(false);
                 entity.Property(e => e.Estatus).IsRequired();
@@ -132,9 +133,24 @@ namespace SysSoniaInventory.DataAccess
             });
 
 
+            // Configuración de ModelReport
+            modelBuilder.Entity<ModelReport>(entity =>
+            {
+                entity.HasKey(e => e.Id).HasName("PK_ModelReport");
+                entity.Property(e => e.TypeReport).IsRequired().HasMaxLength(100).IsUnicode(false);
+                entity.Property(e => e.Description).IsRequired().HasMaxLength(250).IsUnicode(false);
+                entity.Property(e => e.Estatus).IsRequired().HasMaxLength(30).IsUnicode(false);
+                entity.Property(e => e.NameUser).HasMaxLength(100).IsUnicode(false);
+                entity.Property(e => e.ComentaryUser).HasMaxLength(100).IsUnicode(false);
+                entity.Property(e => e.StarDate).IsRequired().HasColumnType("date");
+                entity.Property(e => e.StarTime).IsRequired().HasColumnType("time");
+                entity.Property(e => e.EndDate).HasColumnType("date");
+                entity.Property(e => e.EndTime).HasColumnType("time");
+                entity.Property(e => e.IdRelation).IsRequired(false);
+            });
 
 
-   
+
             // Ajustes restantes similares.
             OnModelCreatingPartial(modelBuilder);
         }

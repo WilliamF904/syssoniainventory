@@ -174,7 +174,7 @@ namespace SysSoniaInventory.Controllers
         // POST: Product/Create 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,IdCategory,IdProveedor,Name,PurchasePrice,SalePrice,Stock,Codigo,Url,Estatus")] ModelProduct modelProduct, string DescriptionCambio, IFormFile imagen)
+        public async Task<IActionResult> Create([Bind("Id,IdCategory,IdProveedor,Name,PurchasePrice,SalePrice,Stock,LowStock,Codigo,Url,Estatus")] ModelProduct modelProduct, string DescriptionCambio, IFormFile imagen)
         {
             // Verificar niveles de acceso
             if (User.HasClaim("AccessTipe", "Nivel 4"))
@@ -192,6 +192,13 @@ namespace SysSoniaInventory.Controllers
                 TempData["Error"] = "No tienes acceso a esta sección. Requerido: Nivel 4.";
                 return RedirectToAction("Index", "Home");
             }
+
+            if (modelProduct.LowStock == null || modelProduct.LowStock == 0)
+            {
+                modelProduct.LowStock = 10;
+            }
+            ModelState.Remove("imagen");
+            ModelState.Remove("LowStock");
             if (ModelState.IsValid)
             {
                 try
@@ -220,7 +227,7 @@ namespace SysSoniaInventory.Controllers
                     // Crear el historial del nuevo producto
                     var historial = new ModelHistorialProduct
                     {
-                        NameUser = "NPueba",
+                        NameUser = User.Identity?.Name,
                         IdProduct = modelProduct.Id,
                         AfterNameProduct = modelProduct.Name,
                         AfterPurchasePrice = modelProduct.PurchasePrice,
@@ -286,7 +293,7 @@ namespace SysSoniaInventory.Controllers
         // POST: Product/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,IdCategory,IdProveedor,Name,PurchasePrice,SalePrice,Stock,Codigo,Url,Estatus")] ModelProduct modelProduct, string DescriptionCambio)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,IdCategory,IdProveedor,Name,PurchasePrice,SalePrice,Stock,LowStock,Codigo,Url,Estatus")] ModelProduct modelProduct, string DescriptionCambio, IFormFile imagen)
         {
             // Verificar niveles de acceso
             if (User.HasClaim("AccessTipe", "Nivel 4"))
@@ -307,17 +314,42 @@ namespace SysSoniaInventory.Controllers
             {
                 return NotFound();
             }
-
+            if (modelProduct.LowStock == null || modelProduct.LowStock == 0)
+            {
+                modelProduct.LowStock = 10;
+            }
+            ModelState.Remove("imagen");
+            ModelState.Remove("LowStock");
             if (ModelState.IsValid)
             {
                 try
                 {
                     // Obtener el producto original antes de la edición
                     var originalProduct = await _context.modelProduct.AsNoTracking().FirstOrDefaultAsync(p => p.Id == id);
+                    if (originalProduct == null)
+                    {
+                        return NotFound();
+                    }
+                    // Si se proporciona una nueva imagen, procesarla
+                    if (imagen != null && imagen.Length > 0)
+                    {
+                        var imgSave = new ImgSave();
+                        string nuevaRutaImagen = imgSave.GuardarImagen(imagen, modelProduct.Id, modelProduct.Name);
+
+                        // Actualizar la URL de la imagen en el producto
+                        modelProduct.Url = nuevaRutaImagen;
+                    }
+                    else
+                    {
+                        // Mantener la URL de la imagen existente
+                        modelProduct.Url = originalProduct.Url;
+                    }
 
                     // Actualizar el producto en la base de datos
                     _context.Update(modelProduct);
                     await _context.SaveChangesAsync();
+
+
 
                     // Asignar "Sin descripción" si el campo está vacío o es nulo
                     DescriptionCambio ??= "Sin descripción";
@@ -325,7 +357,7 @@ namespace SysSoniaInventory.Controllers
                     // Crear el historial con los datos previos y nuevos
                     var historial = new ModelHistorialProduct
                     {
-                        NameUser = "NPueba",
+                        NameUser = User.Identity?.Name,
                         IdProduct = modelProduct.Id,
                         Date = DateOnly.FromDateTime(DateTime.Now),
                         Time = TimeOnly.FromDateTime(DateTime.Now),
@@ -376,6 +408,137 @@ namespace SysSoniaInventory.Controllers
             ViewData["IdProveedor"] = new SelectList(_context.modelProveedor, "Id", "Name", modelProduct.IdProveedor);
             return View(modelProduct);
         }
+
+
+
+
+        // GET: Product/Edit/5
+        [HttpGet]
+        public async Task<IActionResult> Stock(int? id)
+        {
+            // Verificar niveles de acceso
+            if (User.HasClaim("AccessTipe", "Nivel 4"))
+            { // Nivel 4 tiene acceso
+
+            }
+            else if (User.HasClaim("AccessTipe", "Nivel 5"))
+            { // Nivel 5 tiene acceso
+
+            }
+            else
+            {
+                // Redirigir con mensaje de error si el usuario no tiene acceso
+                TempData["Error"] = "No tienes acceso a esta sección. Requerido: Nivel 4.";
+                return RedirectToAction("Index", "Home");
+            }
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var modelProduct = await _context.modelProduct.FindAsync(id);
+            if (modelProduct == null)
+            {
+                return NotFound();
+            }
+            ViewData["IdCategory"] = new SelectList(_context.modelCategory, "Id", "Name", modelProduct.IdCategory);
+            ViewData["IdProveedor"] = new SelectList(_context.modelProveedor, "Id", "Name", modelProduct.IdProveedor);
+            return View(modelProduct);
+        }
+
+        // POST: Product/Stock/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Stock(int id, [Bind("Id,Stock,LowStock")] ModelProduct modelProduct, string DescriptionCambio)
+        {
+            // Verificar niveles de acceso
+            if (User.HasClaim("AccessTipe", "Nivel 4"))
+            {
+                // Nivel 4 tiene acceso
+            }
+            else if (User.HasClaim("AccessTipe", "Nivel 5"))
+            {
+                // Nivel 5 tiene acceso
+            }
+            else
+            {
+                // Redirigir con mensaje de error si el usuario no tiene acceso
+                TempData["Error"] = "No tienes acceso a esta sección. Requerido: Nivel 4.";
+                return RedirectToAction("Index", "Home");
+            }
+
+            if (id != modelProduct.Id)
+            {
+                return NotFound();
+            }
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    // Obtener el producto original antes de la actualización
+                    var originalProduct = await _context.modelProduct.FirstOrDefaultAsync(p => p.Id == id);
+
+                    if (originalProduct == null)
+                    {
+                        return NotFound();
+                    }
+
+                    // Actualizar solo el stock y LowStock
+                    originalProduct.Stock = modelProduct.Stock;
+
+                    if (modelProduct.LowStock == null || modelProduct.LowStock == 0)
+                    {
+                        originalProduct.LowStock = 10;
+                    }
+                    else
+                    {
+                        originalProduct.LowStock = modelProduct.LowStock;
+                    }
+
+                    _context.Update(originalProduct);
+                    await _context.SaveChangesAsync();
+
+                    // Asignar "Sin descripción" si el campo está vacío o es nulo
+                    DescriptionCambio ??= "Sin descripción";
+
+                    // Crear el historial solo si cambia el stock
+                    var historial = new ModelHistorialProduct
+                    {
+                        NameUser = User.Identity?.Name,
+                        IdProduct = originalProduct.Id,
+                        Date = DateOnly.FromDateTime(DateTime.Now),
+                        Time = TimeOnly.FromDateTime(DateTime.Now),
+                        BeforeStock = originalProduct.Stock,
+                        AfterStock = modelProduct.Stock,
+                        RazonCambioAuto = "Actualización de stock",
+                        DescriptionCambio = DescriptionCambio
+                    };
+
+                    if (historial.BeforeStock != historial.AfterStock)
+                    {
+                        _context.Add(historial);
+                        await _context.SaveChangesAsync();
+                    }
+
+                    return RedirectToAction(nameof(Index));
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!ModelProductExists(modelProduct.Id))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+            }
+
+            return View(modelProduct);
+        }
+
 
 
 

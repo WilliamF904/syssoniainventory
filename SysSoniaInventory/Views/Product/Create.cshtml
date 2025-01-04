@@ -9,32 +9,31 @@
         <div class="card-body">
 
             <form id="createProductForm" asp-action="Create" class="form-sample" enctype="multipart/form-data">
-             
-                    <h3 class="card-title font-weight-bold">Crear Producto</h3>
-              
-
+                <h3 class="card-title font-weight-bold">Crear Producto</h3>
                 <hr class="linea-blanca" />
                 <div class="row">
-                    <!-- Columna izquierda con los campos de detalle -->
-                   
+                    <!-- Fila 1: Categoría y Proveedor -->
                     <div class="col-md-6">
-                 
-
-                      
                         <div class="form-group row">
                             <label class="col-sm-3 col-form-label" asp-for="IdCategory">Categoría</label>
                             <div class="col-sm-9">
                                 <select class="form-control text-light" asp-for="IdCategory" asp-items="ViewBag.IdCategory" required></select>
+                                <span asp-validation-for="IdCategory" class="text-danger"></span>
                             </div>
                         </div>
-
+                    </div>
+                    <div class="col-md-6">
                         <div class="form-group row">
                             <label class="col-sm-3 col-form-label" asp-for="IdProveedor">Proveedor</label>
                             <div class="col-sm-9">
                                 <select class="form-control text-light" asp-for="IdProveedor" asp-items="ViewBag.IdProveedor" required></select>
+                                <span asp-validation-for="IdProveedor" class="text-danger"></span>
                             </div>
                         </div>
+                    </div>
 
+                    <!-- Fila 2: Nombre y Código -->
+                    <div class="col-md-6">
                         <div class="form-group row">
                             <label class="col-sm-3 col-form-label" asp-for="Name">Nombre</label>
                             <div class="col-sm-9">
@@ -42,15 +41,19 @@
                                 <span asp-validation-for="Name" class="text-danger"></span>
                             </div>
                         </div>
-
+                    </div>
+                    <div class="col-md-6">
                         <div class="form-group row">
                             <label class="col-sm-3 col-form-label" asp-for="Codigo">Código</label>
                             <div class="col-sm-9">
-                                <input type="number" class="form-control text-light" asp-for="Codigo" placeholder="Ingrese el código" />
+                                <input type="text" class="form-control" asp-for="Codigo" placeholder="Ingrese el código" />
                                 <span asp-validation-for="Codigo" class="text-danger"></span>
                             </div>
                         </div>
+                    </div>
 
+                    <!-- Fila 3: Precio Compra y Precio Venta -->
+                    <div class="col-md-6">
                         <div class="form-group row">
                             <label class="col-sm-3 col-form-label" asp-for="PurchasePrice">Precio Compra</label>
                             <div class="col-sm-9">
@@ -59,8 +62,45 @@
                             </div>
                         </div>
                     </div>
+                    <div class="col-md-6">
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label" asp-for="SalePrice">Precio Venta</label>
+                            <div class="col-sm-9">
+                                <input type="number" class="form-control" asp-for="SalePrice" placeholder="Ingrese el precio de venta" required />
+                                <span asp-validation-for="SalePrice" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
 
-                    <!-- Columna derecha con los demás campos -->
+                    <!-- Fila 4: URL y Estatus -->
+                    <div class="col-md-6">
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label" asp-for="Url">URL</label>
+                            <div class="col-sm-9">
+                                <div class="input-group col-xs-12">
+                                    <input type="file" name="imagen" class="file-upload-default" />
+                                    <input type="text" class="form-control file-upload-info" disabled placeholder="Subir Imagen" />
+                                    <span class="input-group-append">
+                                        <button class="file-upload-browse btn btn-primary" type="button">Subir</button>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label" asp-for="Estatus">Estatus</label>
+                            <div class="col-sm-9">
+                                <select class="form-control text-light" asp-for="Estatus">
+                                    <option value="1" selected>Activo</option>
+                                    <option value="0">Inactivo</option>
+                                </select>
+                                <span asp-validation-for="Estatus" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Fila 5: Stock y Reportar Stock Bajo -->
                     <div class="col-md-6">
                         <div class="form-group row">
                             <label class="col-sm-3 col-form-label" asp-for="Stock">Stock</label>
@@ -69,47 +109,25 @@
                                 <span asp-validation-for="Stock" class="text-danger"></span>
                             </div>
                         </div>
-
+                    </div>
+                    <div class="col-md-6">
                         <div class="form-group row">
-                            <label class="col-sm-3 col-form-label" asp-for="SalePrice">Precio Venta</label>
+                            <label class="col-sm-3 col-form-label" asp-for="LowStock">Reportar Stock bajo</label>
                             <div class="col-sm-9">
-                                <input type="number" class="form-control text-light" asp-for="SalePrice" placeholder="Ingrese el precio de venta" required />
-                                <span asp-validation-for="SalePrice" class="text-danger"></span>
-                            </div>
-                        </div>
-
-                        <div class="form-group row">
-                            <label class="col-sm-3 col-form-label" asp-for="Url">URL</label>
-                            <div class="col-sm-9">
-                                <div class="form-group">
-                                    <input type="file" name="imagen" class="file-upload-default" />
-                                    <div class="input-group col-xs-12">
-                                        <input type="text" class="form-control file-upload-info" disabled placeholder="Subir Imagen" />
-                                        <span class="input-group-append">
-                                            <button class="file-upload-browse btn btn-primary" type="button">Subir</button>
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="form-group row">
-                            <label class="col-sm-3 col-form-label" asp-for="Estatus">Estatus</label>
-                            <div class="col-sm-9">
-                                <select class="form-control text-light" asp-for="Estatus">
-                                    <option value="1" selected>Activo</option>
-                                    <option value="0">Inactivo</option>
-                                </select>
+                                <input type="number" class="form-control text-light" asp-for="LowStock" placeholder="Reportar cuando stock llegue a..." required />
+                                <span asp-validation-for="LowStock" class="text-danger"></span>
                             </div>
                         </div>
                     </div>
                 </div>
+
                 <hr class="linea-blanca" />
                 <div class="d-flex justify-content-end">
                     <button type="button" class="btn btn-outline-primary font-weight-bold" data-toggle="modal" data-target="#descriptionModal">Guardar</button>
                     <a asp-action="Index" class="btn btn-outline-secondary font-weight-bold ml-2">Volver a la lista</a>
                 </div>
             </form>
+
 
             <!-- Modal para Descripción de Cambios -->
             <div class="modal fade" id="descriptionModal" tabindex="-1" role="dialog" aria-labelledby="descriptionModalLabel" aria-hidden="true">
