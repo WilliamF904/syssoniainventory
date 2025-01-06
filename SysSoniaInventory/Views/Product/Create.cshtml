@@ -15,7 +15,7 @@
                     <!-- Fila 1: Categoría y Proveedor -->
                     <div class="col-md-6">
                         <div class="form-group row">
-                            <label class="col-sm-3 col-form-label" asp-for="IdCategory">Categoría</label>
+                            <label class="col-sm-3 col-form-label" asp-for="IdCategory">Categoría:</label>
                             <div class="col-sm-9">
                                 <select class="form-control text-light" asp-for="IdCategory" asp-items="ViewBag.IdCategory" required></select>
                                 <span asp-validation-for="IdCategory" class="text-danger"></span>
@@ -24,7 +24,7 @@
                     </div>
                     <div class="col-md-6">
                         <div class="form-group row">
-                            <label class="col-sm-3 col-form-label" asp-for="IdProveedor">Proveedor</label>
+                            <label class="col-sm-3 col-form-label" asp-for="IdProveedor">Proveedor:</label>
                             <div class="col-sm-9">
                                 <select class="form-control text-light" asp-for="IdProveedor" asp-items="ViewBag.IdProveedor" required></select>
                                 <span asp-validation-for="IdProveedor" class="text-danger"></span>
@@ -35,7 +35,7 @@
                     <!-- Fila 2: Nombre y Código -->
                     <div class="col-md-6">
                         <div class="form-group row">
-                            <label class="col-sm-3 col-form-label" asp-for="Name">Nombre</label>
+                            <label class="col-sm-3 col-form-label" asp-for="Name">Nombre:</label>
                             <div class="col-sm-9">
                                 <input type="text" class="form-control" asp-for="Name" placeholder="Ingrese el nombre" required />
                                 <span asp-validation-for="Name" class="text-danger"></span>
@@ -44,9 +44,9 @@
                     </div>
                     <div class="col-md-6">
                         <div class="form-group row">
-                            <label class="col-sm-3 col-form-label" asp-for="Codigo">Código</label>
+                            <label class="col-sm-3 col-form-label" asp-for="Codigo">Código:</label>
                             <div class="col-sm-9">
-                                <input type="text" class="form-control" asp-for="Codigo" placeholder="Ingrese el código" />
+                                <input type="text" class="form-control" asp-for="Codigo" placeholder="Ingrese el código de producto" />
                                 <span asp-validation-for="Codigo" class="text-danger"></span>
                             </div>
                         </div>
@@ -55,7 +55,7 @@
                     <!-- Fila 3: Precio Compra y Precio Venta -->
                     <div class="col-md-6">
                         <div class="form-group row">
-                            <label class="col-sm-3 col-form-label" asp-for="PurchasePrice">Precio Compra</label>
+                            <label class="col-sm-3 col-form-label" asp-for="PurchasePrice">Precio Compra:</label>
                             <div class="col-sm-9">
                                 <input type="number" class="form-control" asp-for="PurchasePrice" placeholder="Ingrese el precio de compra" required />
                                 <span asp-validation-for="PurchasePrice" class="text-danger"></span>
@@ -64,7 +64,7 @@
                     </div>
                     <div class="col-md-6">
                         <div class="form-group row">
-                            <label class="col-sm-3 col-form-label" asp-for="SalePrice">Precio Venta</label>
+                            <label class="col-sm-3 col-form-label" asp-for="SalePrice">Precio Venta:</label>
                             <div class="col-sm-9">
                                 <input type="number" class="form-control" asp-for="SalePrice" placeholder="Ingrese el precio de venta" required />
                                 <span asp-validation-for="SalePrice" class="text-danger"></span>
@@ -75,7 +75,7 @@
                     <!-- Fila 4: URL y Estatus -->
                     <div class="col-md-6">
                         <div class="form-group row">
-                            <label class="col-sm-3 col-form-label" asp-for="Url">URL</label>
+                            <label class="col-sm-3 col-form-label" asp-for="Url">URL:</label>
                             <div class="col-sm-9">
                                 <div class="input-group col-xs-12">
                                     <input type="file" name="imagen" class="file-upload-default" />
@@ -89,7 +89,7 @@
                     </div>
                     <div class="col-md-6">
                         <div class="form-group row">
-                            <label class="col-sm-3 col-form-label" asp-for="Estatus">Estatus</label>
+                            <label class="col-sm-3 col-form-label" asp-for="Estatus">Estatus:</label>
                             <div class="col-sm-9">
                                 <select class="form-control text-light" asp-for="Estatus">
                                     <option value="1" selected>Activo</option>
@@ -103,7 +103,7 @@
                     <!-- Fila 5: Stock y Reportar Stock Bajo -->
                     <div class="col-md-6">
                         <div class="form-group row">
-                            <label class="col-sm-3 col-form-label" asp-for="Stock">Stock</label>
+                            <label class="col-sm-3 col-form-label" asp-for="Stock">Stock:</label>
                             <div class="col-sm-9">
                                 <input type="number" class="form-control text-light" asp-for="Stock" placeholder="Ingrese la cantidad de stock" required />
                                 <span asp-validation-for="Stock" class="text-danger"></span>
@@ -112,7 +112,7 @@
                     </div>
                     <div class="col-md-6">
                         <div class="form-group row">
-                            <label class="col-sm-3 col-form-label" asp-for="LowStock">Reportar Stock bajo</label>
+                            <label class="col-sm-3 col-form-label" asp-for="LowStock">Reportar Stock bajo:</label>
                             <div class="col-sm-9">
                                 <input type="number" class="form-control text-light" asp-for="LowStock" placeholder="Reportar cuando stock llegue a..." required />
                                 <span asp-validation-for="LowStock" class="text-danger"></span>

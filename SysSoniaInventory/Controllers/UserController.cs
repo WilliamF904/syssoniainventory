@@ -814,8 +814,11 @@ namespace SysSoniaInventory.Controllers
         // POST: User/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public async Task<IActionResult> DeleteConfirmed(int id, string currentPasswordIdentity)
         {
+            var currentUserAccessTipe = User.FindFirst("AccessTipe")?.Value;
+            var currentUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
             // Verificar niveles de acceso
             if (User.HasClaim("AccessTipe", "Nivel 5"))
             { // Nivel 5 tiene acceso
@@ -833,7 +836,36 @@ namespace SysSoniaInventory.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
+            // Verificar si el ID se puede convertir a int (si aplica)
+            if (!int.TryParse(currentUserId, out int userId))
+            {
+                TempData["Error"] = "No se pudo identificar al usuario actual.";
+                return RedirectToAction(nameof(Index));
+            }
             var modelUser = await _context.modelUser.FindAsync(id);
+            var existingUserIdentity = await _context.modelUser.AsNoTracking().FirstOrDefaultAsync(u => u.Id == userId);
+            var encryptedPasswordIdentity = SysSoniaInventory.Task.SecurityHelper.EncryptSHA256(currentPasswordIdentity, _secretKey);
+            // Comparar las contraseñas
+            if (encryptedPasswordIdentity != existingUserIdentity.Password)
+            {
+                TempData["Error"] = "Contraseña de autenticación inválida.";
+
+                // Configurar las vistas para roles y sucursales
+                ViewData["IdRol"] = new SelectList(_context.modelRol, "Id", "Name", modelUser.IdRol);
+                ViewData["IdSucursal"] = new SelectList(_context.modelSucursal, "Id", "Name", modelUser.IdSucursal);
+
+                return View(modelUser);
+            }
+
+
+
+
+
+
+
+
+
+         
             if (modelUser != null)
             {
                 _context.modelUser.Remove(modelUser);

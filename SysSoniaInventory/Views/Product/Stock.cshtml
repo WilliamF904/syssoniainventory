@@ -1,0 +1,148 @@
+﻿@model SysSoniaInventory.Models.ModelProduct
+
+@{
+    ViewData["Title"] = "Editar Producto";
+}
+
+
+<div class="col-12 grid-margin">
+    <div class="card">
+        <div class="card-body">
+
+
+            <form id="editProductForm" asp-action="Stock" enctype="multipart/form-data">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <input type="hidden" asp-for="Id" />
+
+                <div class="row">
+                    <!-- Columna izquierda con los campos principales -->
+                    <div class="col-md-6">
+                        <div class="justify-content-center">
+                            <h3 class="card-title font-weight-bold">Editar Stock</h3>
+                        </div>
+                        <hr class="linea-blanca" />
+
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label" asp-for="Name">Nombre: </label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control readonly-input" asp-for="Name" readonly />
+                                <span asp-validation-for="Name" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label" asp-for="Codigo">Código: </label>
+                            <div class="col-sm-9">
+                                <input type="number" class="form-control readonly-input" asp-for="Codigo" readonly />
+                                <span asp-validation-for="Codigo" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="row mb-3">
+                                    <!-- Sub-columna 1: Stock -->
+                                    <div class="col-md-6">
+                                        <label class="form-label" asp-for="Stock">Stock:</label>
+                                        <input type="number" class="form-control readonly-input" asp-for="Stock" readonly />
+                                        <span asp-validation-for="Stock" class="text-danger"></span>
+                                    </div>
+                                    <!-- Sub-columna 2: LowStock -->
+                                    <div class="col-md-6">
+                                        <label class="form-label" asp-for="LowStock">Low Stock:</label>
+                                        <input type="number" class="form-control readonly-input" asp-for="LowStock" readonly />
+                                        <span asp-validation-for="LowStock" class="text-danger"></span>
+                                    </div>
+                                </div>
+
+                                <div class="row mb-3">
+                                    <!-- Campo adicional para modificar stock -->
+                                    <div class="col-md-6">
+                                        <label for="modificarStock">Modificar Stock:</label>
+                                        <input type="number" id="modificarStock" name="modificarStock" class="form-control text-light" min="1" placeholder="Ingrese valor" required />
+                                    </div>
+                                    <!-- Botón de selección -->
+                                    <div class="col-md-6">
+                                        <label for="accionStock">Acción:</label>
+                                        <select id="accionStock" name="accionStock" class="form-control text-light">
+                                            <option value="True">Agregar</option>
+                                            <option value="False">Remover</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Columna derecha con la imagen -->
+                    <div class="col-md-6">
+                        <div class="form-group text-center">
+                            @if (!string.IsNullOrEmpty(Model.Url))
+                            {
+                                <img src="@Model.Url" alt="Imagen del producto" class="img-fluid img-thumbnail" style="max-width: 250px; max-height: 250px; object-fit: cover;" />
+                            }
+                            else
+                            {
+                                var fallbackImages = new string[] { "/imgSystem/nou.png", "/imgSystem/LogoProductos1.jfif", "/imgSystem/LogoProductos2.jfif", "/imgSystem/LogoProductos3.jfif" };
+                                var randomIndex = new Random().Next(fallbackImages.Length);
+                                var selectedImage = fallbackImages[randomIndex];
+
+                                <img src="@selectedImage" alt="Imagen de reemplazo" class="img-fluid img-thumbnail" style="max-width: 250px; max-height: 250px; object-fit: cover;" />
+                            }
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="linea-blanca" />
+                <div class="d-flex justify-content-end">
+                    <button type="button" class="btn btn-outline-primary font-weight-bold" data-toggle="modal" data-target="#descriptionModal">Guardar</button>
+                    <a asp-action="Index" class="btn btn-outline-secondary font-weight-bold ml-2">Volver a la lista</a>
+                </div>
+            </form>
+
+            <!-- Modal para Descripción de Cambios -->
+            <div class="modal fade" id="descriptionModal" tabindex="-1" role="dialog" aria-labelledby="descriptionModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h3 class="modal-title font-weight-bold" id="descriptionModalLabel">Confirmar Acción</h3>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <label for="DescriptionCambio" class="h4">Descripción para el registro (opcional):</label>
+                                <textarea class="form-control" id="DescriptionCambio" name="DescriptionCambio"></textarea>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancelar</button>
+                            <button type="button" class="btn btn-outline-primary" onclick="submitForm()">Guardar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <script>
+                function submitForm() {
+                    const descriptionField = document.getElementById('DescriptionCambio');
+                    const descriptionValue = descriptionField.value.trim();
+
+                    if (!descriptionValue) {
+                        descriptionField.value = "Sin descripción";
+                    }
+
+                    const form = document.getElementById('editProductForm');
+                    const input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.name = 'DescriptionCambio';
+                    input.value = descriptionField.value;
+
+                    form.appendChild(input);
+                    form.submit();
+                }
+            </script>
+        </div>
+    </div>
+</div>

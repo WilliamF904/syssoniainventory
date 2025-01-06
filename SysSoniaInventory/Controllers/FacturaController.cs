@@ -237,6 +237,8 @@ namespace SysSoniaInventory.Controllers
                                 // Crear un nuevo reporte si no existe uno o si todos los reportes existentes están finalizados
                                 var nuevoReporte = new ModelReport
                                 {
+                                    NameUser = "",
+                                    ComentaryUser = "",
                                     TypeReport = "Stock Bajo",
                                     Description = $"El producto '{producto.Name}' con el código '{producto.Codigo}' e id '{producto.Id}' tiene el stock bajo con {producto.Stock} cantidad a la hora y fecha de creación del reporte.",
                                     Estatus = "Pendiente",

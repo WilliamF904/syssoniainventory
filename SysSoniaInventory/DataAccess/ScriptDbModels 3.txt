@@ -152,12 +152,12 @@ CREATE TABLE ModelReport (
     Description VARCHAR(250) NOT NULL,
     Estatus VARCHAR(30) NOT NULL,
     NameUser VARCHAR(100) NULL,
-    ComentaryUser VARCHAR(100) NULL,
+    ComentaryUser VARCHAR(100),
     StarDate DATE NOT NULL,
     StarTime TIME NOT NULL,
-    EndDate DATE NULL,
-    EndTime TIME NULL,
-    IdRelation INT NULL
+    EndDate DATE,
+    EndTime TIME,
+    IdRelation INT
 );
 
 

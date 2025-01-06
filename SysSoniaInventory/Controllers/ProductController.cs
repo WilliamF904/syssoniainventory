@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using SysSoniaInventory.DataAccess;
 using SysSoniaInventory.Models;
 using SysSoniaInventory.Task;
+using System.IO;
 
 
 namespace SysSoniaInventory.Controllers
@@ -17,10 +18,11 @@ namespace SysSoniaInventory.Controllers
     public class ProductController : Controller
     {
         private readonly DBContext _context;
-
-        public ProductController(DBContext context)
+        private readonly IWebHostEnvironment _webHostEnvironment;
+        public ProductController(DBContext context, IWebHostEnvironment webHostEnvironment)
         {
             _context = context;
+            _webHostEnvironment = webHostEnvironment;
         }
 
         // GET: Product
@@ -129,7 +131,8 @@ namespace SysSoniaInventory.Controllers
             }
             if (id == null)
             {
-                return NotFound();
+                TempData["Error"] = "Debese seleccionar un producto.";
+                return RedirectToAction(nameof(Index));
             }
 
             var modelProduct = await _context.modelProduct
@@ -138,7 +141,19 @@ namespace SysSoniaInventory.Controllers
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (modelProduct == null)
             {
-                return NotFound();
+                TempData["Error"] = "Producto no encontrado.";
+                return RedirectToAction(nameof(Index));
+            }
+
+            // Verificar si hay reportes pendientes para el producto del tipo "Stock Bajo"
+            var reportesPendientes = await _context.modelReport
+                .Where(r => r.IdRelation == id && r.TypeReport == "Stock Bajo" && r.Estatus != "Finalizado")
+                .ToListAsync();
+
+            if (reportesPendientes.Any())
+            {
+                // Enviar mensaje a la vista si hay reportes pendientes de tipo "Stock Bajo"
+                ViewBag.CasoPendiente = "Reporte de este producto: Stock bajo; Estado: Pendiente.";
             }
 
             return View(modelProduct);
@@ -205,6 +220,7 @@ namespace SysSoniaInventory.Controllers
                 {
                     // Agregar el producto inicial a la base de datos sin la URL de la imagen
                     _context.Add(modelProduct);
+                    TempData["Success"] = "Producto creado correctamente.";
                     await _context.SaveChangesAsync();
 
                     // Si hay una imagen, procesarla usando el ID generado
@@ -248,8 +264,9 @@ namespace SysSoniaInventory.Controllers
                 }
                 catch (Exception ex)
                 {
-                    // Manejo de errores opcional
-                    ModelState.AddModelError("", "Error al crear el producto: " + ex.Message);
+                   
+                    TempData["Error"] = "Error al intentar crear el producto.";
+                    return RedirectToAction(nameof(Index));
                 }
             }
 
@@ -277,13 +294,25 @@ namespace SysSoniaInventory.Controllers
             }
             if (id == null)
             {
-                return NotFound();
+                TempData["Error"] = "Debese seleccionar un producto.";
+                return RedirectToAction(nameof(Index));
             }
 
             var modelProduct = await _context.modelProduct.FindAsync(id);
             if (modelProduct == null)
             {
-                return NotFound();
+                TempData["Error"] = "Producto no encontrado.";
+                return RedirectToAction(nameof(Index));
+            }
+            // Verificar si hay reportes pendientes para el producto del tipo "Stock Bajo"
+            var reportesPendientes = await _context.modelReport
+                .Where(r => r.IdRelation == id && r.TypeReport == "Stock Bajo" && r.Estatus != "Finalizado")
+                .ToListAsync();
+
+            if (reportesPendientes.Any())
+            {
+                // Enviar mensaje a la vista si hay reportes pendientes de tipo "Stock Bajo"
+                ViewBag.CasoPendiente = "Reporte de este producto: Stock bajo; Estado: Pendiente.";
             }
             ViewData["IdCategory"] = new SelectList(_context.modelCategory, "Id", "Name", modelProduct.IdCategory);
             ViewData["IdProveedor"] = new SelectList(_context.modelProveedor, "Id", "Name", modelProduct.IdProveedor);
@@ -312,8 +341,10 @@ namespace SysSoniaInventory.Controllers
             }
             if (id != modelProduct.Id)
             {
-                return NotFound();
+                TempData["Error"] = "El id del producto debe ser el mismo al editar.";
+                return RedirectToAction(nameof(Index));
             }
+
             if (modelProduct.LowStock == null || modelProduct.LowStock == 0)
             {
                 modelProduct.LowStock = 10;
@@ -326,13 +357,24 @@ namespace SysSoniaInventory.Controllers
                 {
                     // Obtener el producto original antes de la edición
                     var originalProduct = await _context.modelProduct.AsNoTracking().FirstOrDefaultAsync(p => p.Id == id);
+                    modelProduct.Stock = originalProduct.Stock;
                     if (originalProduct == null)
                     {
                         return NotFound();
                     }
+
                     // Si se proporciona una nueva imagen, procesarla
                     if (imagen != null && imagen.Length > 0)
                     {
+                        //Aqui valida la ruta desde el campo del modelo guardado en la base
+                        var imgDelete = new ImgDelete();
+
+                        // Eliminar la imagen anterior si existe
+                        if (!string.IsNullOrEmpty(originalProduct.Url))
+                        {
+                            imgDelete.EliminarImagenPorUrl(originalProduct.Url);
+                        }
+
                         var imgSave = new ImgSave();
                         string nuevaRutaImagen = imgSave.GuardarImagen(imagen, modelProduct.Id, modelProduct.Name);
 
@@ -347,6 +389,7 @@ namespace SysSoniaInventory.Controllers
 
                     // Actualizar el producto en la base de datos
                     _context.Update(modelProduct);
+                    TempData["Success"] = "Producto editado correctamente.";  
                     await _context.SaveChangesAsync();
 
 
@@ -393,7 +436,9 @@ namespace SysSoniaInventory.Controllers
                 {
                     if (!ModelProductExists(modelProduct.Id))
                     {
-                        return NotFound();
+                    
+                        TempData["Error"] = "Producto no encontrado.";
+                        return RedirectToAction(nameof(Index));
                     }
                     else
                     {
@@ -425,118 +470,166 @@ namespace SysSoniaInventory.Controllers
             { // Nivel 5 tiene acceso
 
             }
+            else if (User.HasClaim("AccessTipe", "Nivel 3"))
+            { // Nivel 5 tiene acceso
+
+            }
             else
             {
                 // Redirigir con mensaje de error si el usuario no tiene acceso
-                TempData["Error"] = "No tienes acceso a esta sección. Requerido: Nivel 4.";
+                TempData["Error"] = "No tienes acceso a esta sección. Requerido: Nivel 3.";
                 return RedirectToAction("Index", "Home");
             }
             if (id == null)
             {
-                return NotFound();
+              
+                TempData["Error"] = "Debese seleccionar un producto.";
+
+                return RedirectToAction(nameof(Index));
             }
 
             var modelProduct = await _context.modelProduct.FindAsync(id);
             if (modelProduct == null)
             {
-                return NotFound();
+               
+                TempData["Error"] = "Producto no encontrado.";
+                return RedirectToAction(nameof(Index));
             }
             ViewData["IdCategory"] = new SelectList(_context.modelCategory, "Id", "Name", modelProduct.IdCategory);
             ViewData["IdProveedor"] = new SelectList(_context.modelProveedor, "Id", "Name", modelProduct.IdProveedor);
+
+
             return View(modelProduct);
         }
 
         // POST: Product/Stock/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Stock(int id, [Bind("Id,Stock,LowStock")] ModelProduct modelProduct, string DescriptionCambio)
+        public async Task<IActionResult> Stock(int id, string DescriptionCambio, int modificarStock, bool accionStock)
         {
             // Verificar niveles de acceso
             if (User.HasClaim("AccessTipe", "Nivel 4"))
-            {
-                // Nivel 4 tiene acceso
+            { // Nivel 4 tiene acceso
+
             }
             else if (User.HasClaim("AccessTipe", "Nivel 5"))
-            {
-                // Nivel 5 tiene acceso
+            { // Nivel 5 tiene acceso
+
+            }
+            else if (User.HasClaim("AccessTipe", "Nivel 3"))
+            { // Nivel 5 tiene acceso
+
             }
             else
             {
                 // Redirigir con mensaje de error si el usuario no tiene acceso
-                TempData["Error"] = "No tienes acceso a esta sección. Requerido: Nivel 4.";
+                TempData["Error"] = "No tienes acceso a esta sección. Requerido: Nivel 3.";
                 return RedirectToAction("Index", "Home");
             }
 
-            if (id != modelProduct.Id)
+            // Obtener el producto desde la base de datos
+            var originalProduct = await _context.modelProduct.FirstOrDefaultAsync(p => p.Id == id);
+            // Validaciones iniciales
+            if (modificarStock <= 0 || modificarStock > 999)
             {
-                return NotFound();
+                TempData["Error"] = "El valor de modificación debe estar entre 1 y 999.";
+                return RedirectToAction(nameof(Index));
             }
 
-            if (ModelState.IsValid)
+
+            if (modificarStock > 0 && !accionStock && modificarStock > originalProduct.Stock)
             {
-                try
+                TempData["Error"] = "No se puede remover más de lo que hay registrado en stock";
+                return RedirectToAction(nameof(Index));
+            }
+
+            try
+            {
+               
+
+                if (originalProduct == null)
                 {
-                    // Obtener el producto original antes de la actualización
-                    var originalProduct = await _context.modelProduct.FirstOrDefaultAsync(p => p.Id == id);
-
-                    if (originalProduct == null)
-                    {
-                        return NotFound();
-                    }
-
-                    // Actualizar solo el stock y LowStock
-                    originalProduct.Stock = modelProduct.Stock;
-
-                    if (modelProduct.LowStock == null || modelProduct.LowStock == 0)
-                    {
-                        originalProduct.LowStock = 10;
-                    }
-                    else
-                    {
-                        originalProduct.LowStock = modelProduct.LowStock;
-                    }
-
-                    _context.Update(originalProduct);
-                    await _context.SaveChangesAsync();
-
-                    // Asignar "Sin descripción" si el campo está vacío o es nulo
-                    DescriptionCambio ??= "Sin descripción";
-
-                    // Crear el historial solo si cambia el stock
-                    var historial = new ModelHistorialProduct
-                    {
-                        NameUser = User.Identity?.Name,
-                        IdProduct = originalProduct.Id,
-                        Date = DateOnly.FromDateTime(DateTime.Now),
-                        Time = TimeOnly.FromDateTime(DateTime.Now),
-                        BeforeStock = originalProduct.Stock,
-                        AfterStock = modelProduct.Stock,
-                        RazonCambioAuto = "Actualización de stock",
-                        DescriptionCambio = DescriptionCambio
-                    };
-
-                    if (historial.BeforeStock != historial.AfterStock)
-                    {
-                        _context.Add(historial);
-                        await _context.SaveChangesAsync();
-                    }
-
+                    TempData["Error"] = "Producto no encontrado.";
                     return RedirectToAction(nameof(Index));
                 }
-                catch (DbUpdateConcurrencyException)
+
+                // Almacenar valores originales para el historial
+                var stockAnterior = originalProduct.Stock;
+
+                // Actualizar stock según la acción
+                if (accionStock == true)
                 {
-                    if (!ModelProductExists(modelProduct.Id))
+                    originalProduct.Stock += modificarStock;
+                }
+                else
+                {
+                    originalProduct.Stock -= modificarStock;
+                }
+
+                // Validar que el stock no sea negativo
+                if (originalProduct.Stock < 0)
+                {
+                    TempData["Error"] = "La operación resultaría en un stock negativo.";
+                    return RedirectToAction(nameof(Index));
+                }
+
+                // Guardar cambios en la base de datos
+                _context.Update(originalProduct);
+                await _context.SaveChangesAsync();
+
+                // Registrar historial del cambio
+                var historial = new ModelHistorialProduct
+                {
+                    NameUser = User.Identity?.Name,
+                    IdProduct = originalProduct.Id,
+                    Date = DateOnly.FromDateTime(DateTime.Now),
+                    Time = TimeOnly.FromDateTime(DateTime.Now),
+                    BeforeStock = stockAnterior,
+                    AfterStock = originalProduct.Stock,
+                    RazonCambioAuto = "Actualización de stock",
+                    DescriptionCambio = string.IsNullOrWhiteSpace(DescriptionCambio) ? "Sin descripción" : DescriptionCambio
+                };
+
+                _context.Add(historial);
+
+
+                // Validar si el stock supera LowStock y hay reportes pendientes
+                if (accionStock && originalProduct.Stock > originalProduct.LowStock)
+                {
+                    var reportesPendientes = await _context.modelReport
+                        .Where(r => r.IdRelation == id && r.TypeReport == "Stock Bajo" && r.Estatus != "Finalizado")
+                        .ToListAsync();
+
+                    foreach (var reporte in reportesPendientes)
                     {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
+                        reporte.Estatus = "Finalizado";
+                        reporte.NameUser = User.Identity?.Name;
+                        reporte.ComentaryUser = $"Descripción automática: Se agregó {modificarStock} al stock del producto.";
+                        reporte.EndDate = DateOnly.FromDateTime(DateTime.Now);
+                        reporte.EndTime = TimeOnly.FromDateTime(DateTime.Now);
+
+                        _context.Update(reporte);
+                        TempData["reporte"] = "Reporte: Stock bajo; Estado: Finalizado.";
                     }
                 }
-            }
 
-            return View(modelProduct);
+
+                await _context.SaveChangesAsync();
+
+
+
+                TempData["Success"] = accionStock ? "Stock agregado correctamente." : "Stock removido correctamente.";
+                return RedirectToAction(nameof(Index));
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!ModelProductExists(id))
+                {
+                    TempData["Error"] = "Producto no encontrado.";
+                    return RedirectToAction(nameof(Index));
+                }
+                throw;
+            }
         }
 
 
@@ -566,7 +659,8 @@ namespace SysSoniaInventory.Controllers
             }
             if (id == null)
             {
-                return NotFound();
+                TempData["Error"] = "Debese seleccionar un producto.";
+                return RedirectToAction(nameof(Index));
             }
 
             var modelProduct = await _context.modelProduct
@@ -575,7 +669,8 @@ namespace SysSoniaInventory.Controllers
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (modelProduct == null)
             {
-                return NotFound();
+                TempData["Error"] = "Producto no encontrado.";
+                return RedirectToAction(nameof(Index));
             }
 
             return View(modelProduct);
@@ -627,8 +722,19 @@ namespace SysSoniaInventory.Controllers
 
                 _context.Add(historial);
 
+                //Aqui valida la ruta desde el campo del modelo guardado en la base
+                var imgDelete = new ImgDelete();
+
+                // Eliminar la imagen anterior si existe
+                if (!string.IsNullOrEmpty(modelProduct.Url))
+                {
+                    imgDelete.EliminarImagenPorUrl(modelProduct.Url);
+                }
+
+
                 // Eliminar el producto
                 _context.modelProduct.Remove(modelProduct);
+                TempData["Success"] = "Producto eliminado correctamente.";
                 await _context.SaveChangesAsync();
             }
 

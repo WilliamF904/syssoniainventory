@@ -8,9 +8,9 @@
 <div class="col-12 grid-margin">
     <div class="card">
         <div class="card-body">
-        
 
-            <form id="editProductForm" asp-action="Edit">
+
+            <form id="editProductForm" asp-action="Edit" enctype="multipart/form-data">
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
                 <input type="hidden" asp-for="Id" />
@@ -25,21 +25,21 @@
                         </div>
                         <hr class="linea-blanca" />
                         <div class="form-group row">
-                            <label class="col-sm-3 col-form-label" asp-for="IdCategory">Categoría</label>
+                            <label class="col-sm-3 col-form-label" asp-for="IdCategory">Categoría: </label>
                             <div class="col-sm-9">
                                 <select class="form-control text-light" asp-for="IdCategory" asp-items="ViewBag.IdCategory"></select>
                             </div>
                         </div>
 
                         <div class="form-group row">
-                            <label class="col-sm-3 col-form-label" asp-for="IdProveedor">Proveedor</label>
+                            <label class="col-sm-3 col-form-label" asp-for="IdProveedor">Proveedor: </label>
                             <div class="col-sm-9">
                                 <select class="form-control text-light" asp-for="IdProveedor" asp-items="ViewBag.IdProveedor"></select>
                             </div>
                         </div>
 
                         <div class="form-group row">
-                            <label class="col-sm-3 col-form-label" asp-for="Name">Nombre</label>
+                            <label class="col-sm-3 col-form-label" asp-for="Name">Nombre: </label>
                             <div class="col-sm-9">
                                 <input type="text" class="form-control" asp-for="Name" placeholder="Ingrese el nombre" />
                                 <span asp-validation-for="Name" class="text-danger"></span>
@@ -47,39 +47,49 @@
                         </div>
 
                         <div class="form-group row">
-                            <label class="col-sm-3 col-form-label" asp-for="Codigo">Código</label>
+                            <label class="col-sm-3 col-form-label" asp-for="Codigo">Código: </label>
                             <div class="col-sm-9">
-                                <input type="number" class="form-control" asp-for="Codigo" placeholder="Ingrese el código" />
+                                <input type="number" class="form-control " asp-for="Codigo" placeholder="Ingrese el código de producto" />
                                 <span asp-validation-for="Codigo" class="text-danger"></span>
                             </div>
                         </div>
 
-                        <div class="form-group row">
-                            <label class="col-sm-3 col-form-label" asp-for="Stock">Stock</label>
-                            <div class="col-sm-9">
-                                <input type="number" class="form-control" asp-for="Stock" placeholder="Ingrese la cantidad de stock" />
-                                <span asp-validation-for="Stock" class="text-danger"></span>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="row mb-3">
+                                    <!-- Sub-columna 1: Stock -->
+                                    <div class="col-md-6 d-flex flex-column flex-md-row align-items-start align-items-md-center">
+                                        <label class="form-label me-md-2 mb-1 mb-md-0 w-100 w-md-55" asp-for="Stock">Stock:</label>
+                                        <input type="number" class="form-control w-100 w-md-45 readonly-input" asp-for="Stock" placeholder="Ingrese la cantidad de stock" readonly />
+                                        <span asp-validation-for="Stock" class="text-danger mt-1 mt-md-0 ms-md-2"></span>
+                                    </div>
+                                    <!-- Sub-columna 2: LowStock -->
+                                    <div class="col-md-6 d-flex flex-column flex-md-row align-items-start align-items-md-center">
+                                        <label class="form-label me-md-2 mb-1 mb-md-0 w-100 w-md-55" asp-for="LowStock">Reportar Stock:</label>
+                                        <input type="number" class="form-control w-100 w-md-45" asp-for="LowStock" placeholder="Reportar cuando llegue a.. " />
+                                        <span asp-validation-for="LowStock" class="text-danger mt-1 mt-md-0 ms-md-2"></span>
+                                    </div>
+                                </div>
+
+                                <div class="row mb-3">
+                                    <!-- Sub-columna 1: Precio Compra -->
+                                    <div class="col-md-6 d-flex flex-column flex-md-row align-items-start align-items-md-center">
+                                        <label class="form-label me-md-2 mb-1 mb-md-0 w-100 w-md-55" asp-for="PurchasePrice">Precio Compra:</label>
+                                        <input type="number" class="form-control w-100 w-md-45" asp-for="PurchasePrice" placeholder="Ingrese el precio de compra" />
+                                        <span asp-validation-for="PurchasePrice" class="text-danger mt-1 mt-md-0 ms-md-2"></span>
+                                    </div>
+                                    <!-- Sub-columna 2: Precio Venta -->
+                                    <div class="col-md-6 d-flex flex-column flex-md-row align-items-start align-items-md-center">
+                                        <label class="form-label me-md-2 mb-1 mb-md-0 w-100 w-md-55" asp-for="SalePrice">Precio Venta:</label>
+                                        <input type="number" class="form-control w-100 w-md-45" asp-for="SalePrice" placeholder="Ingrese el precio de venta" />
+                                        <span asp-validation-for="SalePrice" class="text-danger mt-1 mt-md-0 ms-md-2"></span>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
                         <div class="form-group row">
-                           
-                            <div  class="col-md-6 col-12">
-                                <label asp-for="PurchasePrice">Precio Compra</label>
-                                <input type="number" class="form-control" asp-for="PurchasePrice" placeholder="Ingrese el precio de compra" />
-                                <span asp-validation-for="PurchasePrice" class="text-danger"></span>
-                            </div>
-                    
-                           
-                            <div class="col-md-6 col-12">
-                                <label asp-for="SalePrice">Precio Venta</label>
-                                <input type="number" class="form-control" asp-for="SalePrice" placeholder="Ingrese el precio de venta" />
-                                <span asp-validation-for="SalePrice" class="text-danger"></span>
-                            </div>
-                        </div>
-
-                        <div class="form-group row">
-                            <label class="col-sm-3 col-form-label" asp-for="Estatus">Estatus</label>
+                            <label class="col-sm-3 col-form-label" asp-for="Estatus">Estatus: </label>
                             <div class="col-sm-9">
                                 <select class="form-control text-light" asp-for="Estatus">
                                     <option value="1" selected>Activo</option>
@@ -97,27 +107,38 @@
                             <div class="col-sm-12">
                                 <div class="form-group text-center">
                                     @if (!string.IsNullOrEmpty(Model.Url))
-
                                     {
                                         <img src="@Model.Url" alt="Imagen del producto" class="img-fluid img-thumbnail" style="max-width: 250px; max-height: 250px; object-fit: cover;" />
                                     }
-
                                     else
-
                                     {
-                                        <p>No hay ninguna imagen cargada.</p>
+
+                                        var fallbackImages = new string[]
+                                        {
+                                            "/imgSystem/nou.png",
+                                            "/imgSystem/LogoProductos1.jfif",
+                                            "/imgSystem/LogoProductos2.jfif",
+                                            "/imgSystem/LogoProductos3.jfif"
+                                        };
+
+                                        var randomIndex = new Random().Next(fallbackImages.Length);
+                                        var selectedImage = fallbackImages[randomIndex];
+
+
+                                        <img src="@selectedImage" alt="Imagen de remplazo" class="img-fluid custom-img mb-2" style="max-width: 250px; max-height: 250px; object-fit: cover;" />
                                     }
+
                                 </div>
                             </div>
                         </div>
 
                         <!-- Cargar Nueva Imagen -->
                         <div class="form-group row">
-                            <label class="col-sm-3 col-form-label" for="Url">Nueva Imagen</label>
+                            <label class="col-sm-3 col-form-label" for="Url">Nueva Imagen: </label>
                             <div class="col-sm-9">
-                                <div class="form-group">
-                                    <input type="file" name="img[]" class="file-upload-default" />
+                                <div class="col-sm-9">
                                     <div class="input-group col-xs-12">
+                                        <input type="file" name="imagen" class="file-upload-default" />
                                         <input type="text" class="form-control file-upload-info" disabled placeholder="Subir Imagen" />
                                         <span class="input-group-append">
                                             <button class="file-upload-browse btn btn-primary" type="button">Subir</button>
@@ -129,9 +150,9 @@
 
                         <!-- URL del Producto -->
                         <div class="form-group row">
-                            <label class="col-sm-3 col-form-label" asp-for="Url">URL</label>
+                            <label class="col-sm-3 col-form-label" asp-for="Url">URL: </label>
                             <div class="col-sm-9">
-                                <input type="text" class="form-control" asp-for="Url" placeholder="Ingrese la URL" />
+                                <input type="text" class="form-control  readonly-input" asp-for="Url" placeholder="Ingrese la URL" readonly />
                             </div>
                         </div>
                     </div>

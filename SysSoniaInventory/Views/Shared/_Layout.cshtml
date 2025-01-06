@@ -180,7 +180,20 @@ else
                             <span class="menu-title">Registros</span>
                         </a>
                     </li>
-                }   @if (User.HasClaim("AccessTipe", "Nivel 4") || User.HasClaim("AccessTipe", "Nivel 3") || User.HasClaim("AccessTipe", "Nivel 5"))
+                }   
+                  @if ( User.HasClaim("AccessTipe", "Nivel 4") ||  User.HasClaim("AccessTipe", "Nivel 5"))
+                {
+                    <li class="nav-item menu-items">
+                        <a class="nav-link" asp-controller="Report" asp-action="Index">
+                            <span class="menu-icon">
+                                <i class="mdi mdi-alert-box"></i>
+                            </span>
+                            <span class="menu-title">Reportes</span>
+                        </a>
+                    </li>
+                }
+                
+                @if (User.HasClaim("AccessTipe", "Nivel 4") || User.HasClaim("AccessTipe", "Nivel 3") || User.HasClaim("AccessTipe", "Nivel 5"))
                 {
                     <li class="nav-item menu-items">
                         <a class="nav-link" asp-controller="Proveedor" asp-action="Index">
@@ -248,6 +261,8 @@ else
                     </ul>
 
                     <ul class="navbar-nav navbar-nav-right">
+
+
                         <!---->
                         @if (User.HasClaim("AccessTipe", "Nivel 4") ||User.HasClaim("AccessTipe", "Nivel 5"))
                         {
@@ -256,30 +271,6 @@ else
                                 <a class="nav-link btn btn-success create-new-button font-weight-bold" id="createbuttonDropdown" data-toggle="dropdown" aria-expanded="false" href="#"><i class="fas fa-plus"></i> Creación rápida</a>
                                 <div class="dropdown-menu dropdown-menu-right navbar-dropdown preview-list" aria-labelledby="createbuttonDropdown">
                                     <h6 class="p-3 mb-0">Opciones de Creación</h6>
-
-                                    <div class="dropdown-divider"></div>
-                                    <a class="dropdown-item preview-item" asp-area="" asp-controller="Product" asp-action="Create">
-                                        <div class="preview-thumbnail">
-                                            <div class="preview-icon bg-dark rounded-circle">
-                                                <i class="mdi mdi-cube-outline text-primary"></i>
-                                            </div>
-                                        </div>
-                                        <div class="preview-item-content">
-                                            <p class="preview-subject ellipsis mb-1">Crear Producto</p>
-                                        </div>
-                                    </a>
-
-                                    <div class="dropdown-divider"></div>
-                                    <a class="dropdown-item preview-item" asp-area="" asp-controller="Proveedor" asp-action="Create">
-                                        <div class="preview-thumbnail">
-                                            <div class="preview-icon bg-dark rounded-circle">
-                                                <i class="mdi mdi-truck text-success"></i>
-                                            </div>
-                                        </div>
-                                        <div class="preview-item-content">
-                                            <p class="preview-subject ellipsis mb-1">Crear Proveedor</p>
-                                        </div>
-                                    </a>
 
                                     <div class="dropdown-divider"></div>
                                     <a class="dropdown-item preview-item" asp-area="" asp-controller="User" asp-action="Create">
@@ -293,15 +284,59 @@ else
                                         </div>
                                     </a>
 
-
+                                    <div class="dropdown-divider"></div>
+                                    <a class="dropdown-item preview-item" asp-area="" asp-controller="Category" asp-action="Create">
+                                        <div class="preview-thumbnail">
+                                            <div class="preview-icon bg-dark rounded-circle">
+                                                <i class="mdi mdi-truck text-success"></i>
+                                            </div>
+                                        </div>
+                                        <div class="preview-item-content">
+                                            <p class="preview-subject ellipsis mb-1">Crear Categoria</p>
+                                        </div>
+                                    </a>
 
                                     <div class="dropdown-divider"></div>
-                                    <p class="p-3 mb-0 text-center">Ver todas las opciones</p>
+                                    <a class="dropdown-item preview-item" asp-area="" asp-controller="Product" asp-action="Create">
+                                        <div class="preview-thumbnail">
+                                            <div class="preview-icon bg-dark rounded-circle">
+                                                <i class="mdi mdi-cube-outline text-primary"></i>
+                                            </div>
+                                        </div>
+                                        <div class="preview-item-content">
+                                            <p class="preview-subject ellipsis mb-1">Crear Producto</p>
+                                        </div>
+                                    </a>
+                                    <div class="dropdown-divider"></div>
+                                    <a class="dropdown-item preview-item" asp-area="" asp-controller="Factura" asp-action="Create">
+                                        <div class="preview-thumbnail">
+                                            <div class="preview-icon bg-dark rounded-circle">
+                                                <i class="mdi mdi-truck text-success"></i>
+                                            </div>
+                                        </div>
+                                        <div class="preview-item-content">
+                                            <p class="preview-subject ellipsis mb-1">Realizar Pago</p>
+                                        </div>
+                                    </a>
+                               
+
+                                 
+
+                      
+                                    <div class="dropdown-divider"></div>
+                                   
                                 </div>
                             </li>
 
 
+                        }   @if (User.HasClaim("AccessTipe", "Nivel 3") || User.HasClaim("AccessTipe", "Nivel 2"))
+                        {
+                         <li class="nav-item dropdown d-none d-lg-block">
+                                <a class="nav-link btn btn-success create-new-button font-weight-bold" asp-controller="Factura" asp-action="Create">          <i class="fas fa-plus"> </i>Realizar Pago</a>
+                          
+                        </li>
                         }
+
 
                         <!---->
 
@@ -484,10 +519,28 @@ else
                                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" data-close-modal></button>
                                         </div>
                                         <div class="modal-body">
+                                            @if (TempData["reporte"] != null)
+                                            {
+                                                <div class="text-center">
+                                                   
+                                                    <div class="alert alert-info">
+                                                        <strong>Mensaje:</strong> @TempData["reporte"]
+                                                    </div>
+                                                </div>
+                                            }
+                                            @if (ViewBag.CasoPendiente != null)
+                                            {
+                                                <div class="text-center">
+                                                    <img src="~/imgSystem/LogoCaballero1.png" class="img-fluid custom-img mb-2" alt="Imagen de caso">
+                                                    <div class="alert alert-warning">
+                                                        <strong>Mensaje:</strong> @ViewBag.CasoPendiente
+                                                    </div>
+                                                </div>
+                                            }
                                             @if (ViewBag.ErrorMessage != null)
                                             {
                                                 <div class="text-center">
-                                                    <img src="~/img/nou.png" class="img-fluid custom-img mb-2" alt="Imagen de error">
+                                                    <img src="~/imgSystem/nou.png" class="img-fluid custom-img mb-2" alt="Imagen de error">
                                                     <div class="alert alert-danger">
                                                         <strong>Error:</strong> @ViewBag.ErrorMessage
                                                     </div>
@@ -496,7 +549,8 @@ else
                                             @if (TempData["Message"] != null)
                                             {
                                                 <div class="text-center">
-                                                    <img src="~/img/yes.png" class="img-fluid custom-img mb-2" alt="Imagen de validación">
+                                                   
+                                                    <img src="~/imgSystem/yes.png" class="img-fluid custom-img mb-2" alt="Imagen de validación">
                                                     <div class="alert alert-info">
                                                         @TempData["Message"]
                                                     </div>
@@ -505,7 +559,7 @@ else
                                             @if (TempData["Error"] != null)
                                             {
                                                 <div class="text-center">
-                                                    <img src="~/img/nou.png" class="img-fluid custom-img mb-2" alt="Imagen de error">
+                                                    <img src="~/imgSystem/nou.png" class="img-fluid custom-img mb-2" alt="Imagen de error">
                                                     <div class="alert alert-danger">
                                                         @TempData["Error"]
                                                     </div>
@@ -514,7 +568,7 @@ else
                                             @if (TempData["Success"] != null)
                                             {
                                                 <div class="text-center">
-                                                    <img src="~/img/yes.png" class="img-fluid custom-img mb-2" alt="Imagen de validación">
+                                                    <img src="~/imgSystem/yes.png" class="img-fluid custom-img mb-2" alt="Imagen de validación">
                                                     <div class="alert alert-success">
                                                         @TempData["Success"]
                                                     </div>

@@ -10,8 +10,10 @@
         <div class="card">
             <div class="card-body">
                 <h1 class="card-title">Lista de Productos</h1>
+                 @if (User.HasClaim("AccessTipe", "Nivel 5") || User.HasClaim("AccessTipe", "Nivel 4") || User.HasClaim("AccessTipe", "Nivel 3"))
+                                        {
                 <a asp-action="Create" class="btn btn-outline-primary font-weight-bold ml-2"> <i class="fas fa-plus"></i> Nuevo producto</a>
-
+                                        }
             </div>
         </div>
     </div>
@@ -35,9 +37,6 @@
                                    Nombre
                                 </th>
                                 <th>
-                                    Precio de compra
-                                </th>
-                                <th>
                                    precio de venta
                                 </th>
                                 <th>
@@ -47,17 +46,10 @@
                                    Codigo
                                 </th>
                                 <th>
-                                   URL
-                                </th>
-                                <th>
                                     Estatus
                                 </th>
-                                <th>
-                                    @Html.DisplayNameFor(model => model.IdCategoryNavigation)
-                                </th>
-                                <th>
-                                    @Html.DisplayNameFor(model => model.IdProveedorNavigation)
-                                </th>
+                               
+
                                 <th>Acciones</th>
                             </tr>
                         </thead>
@@ -68,9 +60,7 @@
                                     <td>
                                         @Html.DisplayFor(modelItem => item.Name)
                                     </td>
-                                    <td>
-                                        @Html.DisplayFor(modelItem => item.PurchasePrice)
-                                    </td>
+
                                     <td>
                                         @Html.DisplayFor(modelItem => item.SalePrice)
                                     </td>
@@ -80,9 +70,7 @@
                                     <td>
                                         @Html.DisplayFor(modelItem => item.Codigo)
                                     </td>
-                                    <td>
-                                        @Html.DisplayFor(modelItem => item.Url)
-                                    </td>
+
                                     <td>
                                         @if (item.Estatus == 1)
                                         {
@@ -93,16 +81,24 @@
                                             @:Inactivo
                                         }
                                     </td>
+
                                     <td>
-                                        @Html.DisplayFor(modelItem => item.IdCategoryNavigation.Name)
-                                    </td>
-                                    <td>
-                                        @Html.DisplayFor(modelItem => item.IdProveedorNavigation.Name)
-                                    </td>
-                                    <td>
-                                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-primary">Editar</a> |
-                                        <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-primary">Detalles</a>
-                                        <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger">Eliminar</a>
+                                        @if (User.HasClaim("AccessTipe", "Nivel 5") || User.HasClaim("AccessTipe", "Nivel 4") || User.HasClaim("AccessTipe", "Nivel 3"))
+                                        {
+                                            <a asp-action="Stock" asp-route-id="@item.Id" class="btn btn-success">Stock</a>
+                                        }
+                                        @if (User.HasClaim("AccessTipe", "Nivel 5") || User.HasClaim("AccessTipe", "Nivel 4"))
+                                        {
+                                            <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning">Editar</a>
+                                        }
+                                        @if (!User.HasClaim("AccessTipe", "Nivel 1"))
+                                        {
+                                            <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-primary">Detalles</a>
+                                        }
+                                        @if (User.HasClaim("AccessTipe", "Nivel 5") || User.HasClaim("AccessTipe", "Nivel 4"))
+                                        {
+                                            <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger">Eliminar</a>
+                                        }
                                     </td>
                                 </tr>
                             }
