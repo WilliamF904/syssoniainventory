@@ -143,7 +143,7 @@ namespace SysSoniaInventory.Controllers
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
             TempData["Message"] = "La contraseña ha sido actualizada correctamente. Por motivos de seguridad, hemos cerrado tu sesión. Por favor, inicia sesión nuevamente con tus credenciales actualizadas.";
 
-            return View();
+            return RedirectToAction("Login");
         }
 
 

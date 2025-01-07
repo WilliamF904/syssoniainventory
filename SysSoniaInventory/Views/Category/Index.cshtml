@@ -13,16 +13,21 @@
         <div class="card-body">
             <h1 class="card-title">Lista de Categorias</h1>
             <div class="d-flex align-items-center justify-content-start">
+                 @if (User.HasClaim("AccessTipe", "Nivel 4") || User.HasClaim("AccessTipe", "Nivel 5"))
+                    {
                 <a asp-action="Create" class="btn btn-outline-primary font-weight-bold ml-2">
                     <i class="fas fa-plus"></i> Nueva categoria
                 </a>
+                    
                 <div class="separator mx-3"></div>
+                    
+
                 <div class="dropdown-container">
                     <button id="dropdownButton" class="dropdown-button btn btn-outline-secondary">
                         <i class="mdi mdi-download"></i> Descargar PDF
                     </button>
                     <ul id="dropdownMenu" class="dropdown-menu">
-                            <
+                            
                             <li>
                                 <a asp-controller="Category" asp-action="GeneratePdfCategoria">
                                     <i class="mdi mdi-download"></i> Descargar Todas las Categorías
@@ -32,6 +37,7 @@
                     </ul>
 
                 </div>
+                    }
             </div>
         </div>
     </div>
@@ -69,9 +75,15 @@
                                 <tr>
                                     <td>@Html.DisplayFor(modelItem => item.Name)</td>
                                     <td>
-                                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-primary">Editar</a> |
-                                        <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-primary">Detalles</a> |
-                                        <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger">Eliminar</a>
+                                         @if (User.HasClaim("AccessTipe", "Nivel 4") || User.HasClaim("AccessTipe", "Nivel 5"))
+                    {
+                                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning">Editar</a>
+                    }
+                                        <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-primary">Detalles</a>
+                                        @if (User.HasClaim("AccessTipe", "Nivel 4") || User.HasClaim("AccessTipe", "Nivel 5"))
+                                        {
+                                            <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger">Eliminar</a>
+                                        }
                                     </td>
                                 </tr>
                             }
