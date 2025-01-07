@@ -33,8 +33,12 @@ namespace SysSoniaInventory.Controllers
         }
         // GET: User
       
+
+
+
+
         public async Task<IActionResult> Index()
-        {    // Verificar niveles de acceso
+        {
             if (User.HasClaim("AccessTipe", "Nivel 5"))
             { // Nivel 5 tiene acceso
 
@@ -56,15 +60,55 @@ namespace SysSoniaInventory.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
-            var dBContext = _context.modelUser.Include(m => m.IdRolNavigation).Include(m => m.IdSucursalNavigation);
-            return View(await dBContext.ToListAsync());
+            // Obtener el nivel de acceso del usuario autenticado
+            var userAccessTipe = User.Claims.FirstOrDefault(c => c.Type == "AccessTipe")?.Value;
+
+            if (userAccessTipe == null)
+            {
+                TempData["Error"] = "No tienes acceso a esta sección. Requerido: Nivel 3 o superior.";
+                return RedirectToAction("Index", "Home");
+            }
+
+            // Definir niveles de acceso
+            var nivelesAcceso = new Dictionary<string, int>
+    {
+        { "Nivel 5", 5 },
+        { "Nivel 4", 4 },
+        { "Nivel 3", 3 },
+        { "Nivel 2", 2 },
+        { "Nivel 1", 1 }
+    };
+
+            if (!nivelesAcceso.ContainsKey(userAccessTipe))
+            {
+                TempData["Error"] = "Nivel de acceso desconocido.";
+                return RedirectToAction("Index", "Home");
+            }
+
+            int nivelUsuario = nivelesAcceso[userAccessTipe];
+
+            // Obtener todos los registros necesarios desde la base de datos
+            var allUsers = await _context.modelUser
+                .Include(m => m.IdRolNavigation)
+                .Include(m => m.IdSucursalNavigation)
+                .ToListAsync();
+
+            // Eliminar registros con nivel de acceso superior
+            allUsers.RemoveAll(m => nivelesAcceso[m.IdRolNavigation.AccessTipe] >= nivelUsuario && nivelUsuario != 4);
+
+            // Permitir que los usuarios de nivel 4 vean información de otros usuarios de nivel 4
+            if (nivelUsuario == 4)
+            {
+                allUsers.RemoveAll(m => nivelesAcceso[m.IdRolNavigation.AccessTipe] > nivelUsuario);
+            }
+
+            return View(allUsers);
         }
 
-        // GET: User/Details/5
-     
+
+
         public async Task<IActionResult> Details(int? id)
         {
-            // Verificar niveles de acceso
             if (User.HasClaim("AccessTipe", "Nivel 5"))
             { // Nivel 5 tiene acceso
 
@@ -82,30 +126,74 @@ namespace SysSoniaInventory.Controllers
             else
             {
                 // Redirigir con mensaje de error si el usuario no tiene acceso
-                TempData["Error"] = "No tienes acceso a esta sección. Requerido: Nivel 3.";
+                TempData["Error"] = "No tienes acceso a esta sección. Requerido: Nivel 3 o superior.";
                 return RedirectToAction("Index", "Home");
             }
+            // Obtener el nivel de acceso del usuario autenticado
+            var userAccessTipe = User.Claims.FirstOrDefault(c => c.Type == "AccessTipe")?.Value;
 
+            if (userAccessTipe == null)
+            {
+                TempData["Error"] = "No tienes acceso a esta sección. Requerido: Nivel 3 o superior.";
+                return RedirectToAction("Index");
+            }
 
+            // Definir niveles de acceso
+            var nivelesAcceso = new Dictionary<string, int>
+    {
+        { "Nivel 5", 5 },
+        { "Nivel 4", 4 },
+        { "Nivel 3", 3 },
+        { "Nivel 2", 2 },
+        { "Nivel 1", 1 }
+    };
 
+            if (!nivelesAcceso.ContainsKey(userAccessTipe))
+            {
+                TempData["Error"] = "Nivel de acceso desconocido.";
+                return RedirectToAction("Index");
+            }
+
+            int nivelUsuario = nivelesAcceso[userAccessTipe];
 
             if (id == null)
             {
                 return NotFound();
             }
 
+            // Obtener el usuario del detalle
             var modelUser = await _context.modelUser
                 .Include(m => m.IdRolNavigation)
                 .Include(m => m.IdSucursalNavigation)
                 .FirstOrDefaultAsync(m => m.Id == id);
+
             if (modelUser == null)
             {
                 return NotFound();
             }
+
+            // Verificar si el usuario tiene acceso al detalle
+            int nivelDetalle = nivelesAcceso[modelUser.IdRolNavigation.AccessTipe];
+
+            if (nivelDetalle > nivelUsuario || (nivelUsuario != 4 && nivelDetalle == nivelUsuario))
+            {
+                TempData["Error"] = "No tienes permiso para ver este detalle.";
+                return RedirectToAction("Index");
+            }
+
+            // Configurar las listas de selección para la vista
             ViewData["IdRol"] = new SelectList(_context.modelRol, "Id", "Name", modelUser.IdRol);
             ViewData["IdSucursal"] = new SelectList(_context.modelSucursal, "Id", "Name", modelUser.IdSucursal);
+
             return View(modelUser);
         }
+
+
+
+
+
+
+
 
         // GET: User/Create
         public IActionResult Create()
@@ -776,20 +864,30 @@ namespace SysSoniaInventory.Controllers
         // GET: User/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
+
+            var currentUserAccessTipe = User.FindFirst("AccessTipe")?.Value;
+            var currentUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            // Verificar si el ID se puede convertir a int (si aplica)
+            if (!int.TryParse(currentUserId, out int userId))
+            {
+                TempData["Error"] = "No se pudo identificar al usuario actual.";
+                return RedirectToAction(nameof(Index));
+            }
+            if (id == userId)
+            {
+                TempData["Error"] = "¡No puedes elimininarte a ti mismo!";
+                return RedirectToAction("Index", "User");
+            }
+
             // Verificar niveles de acceso
             if (User.HasClaim("AccessTipe", "Nivel 5"))
             { // Nivel 5 tiene acceso
 
             }
-            else if (User.HasClaim("AccessTipe", "Nivel 4"))
-            {
-                // Nivel 4 tiene acceso
-
-            }
             else
             {
                 // Redirigir con mensaje de error si el usuario no tiene acceso
-                TempData["Error"] = "No tienes acceso a esta sección. Requerido: Nivel 4.";
+                TempData["Error"] = "No tienes acceso a esta sección. Requerido: Nivel 5.";
                 return RedirectToAction("Index", "Home");
             }
 
@@ -819,14 +917,22 @@ namespace SysSoniaInventory.Controllers
             var currentUserAccessTipe = User.FindFirst("AccessTipe")?.Value;
             var currentUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
+            // Verificar si el ID se puede convertir a int (si aplica)
+            if (!int.TryParse(currentUserId, out int userId))
+            {
+                TempData["Error"] = "No se pudo identificar al usuario actual.";
+                return RedirectToAction(nameof(Index));
+            }
+            if (id == userId)
+            {
+                ViewBag.ErrorMessage = "¡No puedes elimininarte a ti mismo!";
+                return RedirectToAction("Index", "User");
+            }
+
+
             // Verificar niveles de acceso
             if (User.HasClaim("AccessTipe", "Nivel 5"))
             { // Nivel 5 tiene acceso
-
-            }
-            else if (User.HasClaim("AccessTipe", "Nivel 4"))
-            {
-                // Nivel 4 tiene acceso
 
             }
             else
@@ -836,12 +942,7 @@ namespace SysSoniaInventory.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
-            // Verificar si el ID se puede convertir a int (si aplica)
-            if (!int.TryParse(currentUserId, out int userId))
-            {
-                TempData["Error"] = "No se pudo identificar al usuario actual.";
-                return RedirectToAction(nameof(Index));
-            }
+ 
             var modelUser = await _context.modelUser.FindAsync(id);
             var existingUserIdentity = await _context.modelUser.AsNoTracking().FirstOrDefaultAsync(u => u.Id == userId);
             var encryptedPasswordIdentity = SysSoniaInventory.Task.SecurityHelper.EncryptSHA256(currentPasswordIdentity, _secretKey);

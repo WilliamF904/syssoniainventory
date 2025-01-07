@@ -19,7 +19,12 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
     .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
     {
         options.LoginPath = "/Auth/Login"; // Ruta al formulario de inicio de sesión
-       
+        options.Cookie.HttpOnly = true; // Impide el acceso desde JavaScript (protección XSS)
+        options.Cookie.SecurePolicy = CookieSecurePolicy.None; // Cambiar a 'Always' si usas HTTPS
+        options.Cookie.SameSite = SameSiteMode.Strict; // Restringe el envío de la cookie en solicitudes cruzadas
+        options.Cookie.Name = "AuthCookie"; // Nombre único para la cookie
+        options.ExpireTimeSpan = TimeSpan.FromHours(8); // Duración de la cookie
+        options.SlidingExpiration = true; // Renueva la cookie antes de expirar si hay actividad
     });
 
 var app = builder.Build();

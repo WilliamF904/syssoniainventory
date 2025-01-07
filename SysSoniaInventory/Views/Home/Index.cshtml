@@ -72,20 +72,26 @@
                         <table class="table table-bordered table-striped">
                             <thead>
                                 <tr>
+                                    <th>#</th> <!-- Nueva columna para el índice -->
                                     <th>Usuario</th>
                                     <th>Total Ventas</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach (var usuario in ViewBag.VentasPorUsuario)
-
-
-
+                                @if (ViewBag.VentasPorUsuario != null)
                                 {
-                                    <tr>
-                                        <td>@usuario.NameUser</td>
-                                        <td>@usuario.TotalFacturas.ToString("C")</td>
-                                    </tr>
+                                    int index = 1;
+                                    <!-- Contador para el índice -->
+                                    foreach (var usuario in ViewBag.VentasPorUsuario)
+                                    {
+                                        <tr>
+                                            <td>@index</td> <!-- Mostrar índice -->
+                                            <td>@usuario.NameUser</td>
+                                            <td>@usuario.TotalFacturas.ToString("C")</td>
+                                        </tr>
+                                        index++;
+                                        <!-- Incrementar índice -->
+                                    }
                                 }
                             </tbody>
                         </table>
@@ -94,9 +100,6 @@
                     <nav>
                         <ul class="pagination">
                             @for (int i = 1; i <= ViewBag.TotalPages; i++)
-
-
-
                             {
                                 <li class="page-item @(i == ViewBag.Page ? "active" : "")">
                                     <a class="page-link" href="@Url.Action("Index", new { page = i })">@i</a>
@@ -107,7 +110,66 @@
                 </div>
             </div>
         </div>
+
+
     }
+
+     @if (User.HasClaim("AccessTipe", "Nivel 4") || User.HasClaim("AccessTipe", "Nivel 5"))
+                        {
+    <div class="col-lg-6 grid-margin stretch-card">
+        <div class="card">
+            <div class="card-body">
+                <h4 class="card-title">Reportes Pendientes</h4>
+
+                <div class="table-responsive">
+                    <table class="table table-bordered table-striped">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Tipo</th>
+                                <th>Fecha Inicio</th>
+                                <th>Estatus</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (ViewBag.Reportes != null)
+                            {
+                                int index = 1;
+                                foreach (var reporte in ViewBag.Reportes)
+                                {
+                                    <tr>
+                                        <td>@index</td>
+                                        <td>@reporte.TypeReport</td>
+                                        <td>@reporte.StarDate.ToShortDateString()</td>
+                                            <td>
+                                                <a href="@Url.Action("Edit", "Report", new { id = reporte.Id })"
+                                                   class="btn badge
+           @(reporte.Estatus == "Pendiente" ? "badge-outline-danger" :
+             reporte.Estatus == "En Proceso" ? "badge-outline-warning" :
+             "badge-outline-success")">
+                                                    @(reporte.Estatus == "Pendiente" ? "Pendiente" :
+                                                        reporte.Estatus == "En Proceso" ? "En progreso" :
+                                                        "Finalizado")
+                                                </a>
+                                            </td>
+
+                                    </tr>
+                                    index++;
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+                @if (ViewBag.MostrarBotonVerTodos != null && ViewBag.MostrarBotonVerTodos)
+                {
+                    <a href="@Url.Action("Index", "Report")" class="btn btn-primary">Ver todos los reportes</a>
+                }
+            </div>
+        </div>
+    </div>
+
+                        }
 
 </div>
 

@@ -143,6 +143,8 @@ namespace SysSoniaInventory.Controllers
             factura.Date = DateOnly.FromDateTime(DateTime.Now);
             factura.Time = TimeOnly.FromDateTime(DateTime.Now);
             // Validar que los datos son correctos
+
+            ModelState.Remove("PurchasePriceUnitario");
             if (!ModelState.IsValid)
             {
                 ViewBag.Productos = _context.modelProduct.ToList();
@@ -203,6 +205,7 @@ namespace SysSoniaInventory.Controllers
 
                         // Asignar valores al detalle de factura
                         detalle.IdFactura = factura.Id;
+                        detalle.PurchasePriceUnitario = producto.PurchasePrice;
                         detalle.CodigoProducto = producto.Codigo;
                         detalle.NameProducto = producto.Name;
                         detalle.SalePriceUnitario = producto.SalePrice;

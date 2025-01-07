@@ -125,6 +125,7 @@ namespace SysSoniaInventory.DataAccess
                 entity.Property(e => e.SalePriceUnitario).HasColumnType("decimal(18, 2)").IsRequired();
                 entity.Property(e => e.ValorDescuento).HasColumnType("decimal(18, 2)").HasDefaultValue(0);
                 entity.Property(e => e.SalePriceDescuento).HasColumnType("decimal(18, 2)").IsRequired();
+                entity.Property(e => e.PurchasePriceUnitario).HasColumnType("decimal(18, 2)").IsRequired();
                 entity.Property(e => e.PriceTotal).HasColumnType("decimal(18, 2)").IsRequired();
                 entity.HasOne(d => d.IdFacturaNavigation).WithMany(p => p.DetalleFactura)
                   .OnDelete(DeleteBehavior.ClientSetNull)

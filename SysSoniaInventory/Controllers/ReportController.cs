@@ -89,13 +89,39 @@ namespace SysSoniaInventory.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,TypeReport,Description,Estatus,NameUser,ComentaryUser,StarDate,StarTime,EndDate,EndTime,IdRelation")] ModelReport modelReport)
-        { 
+        {
+
+            const string reportCookieName = "ReportCreationCooldown";
+
+            // Validar si la cookie existe y aún no ha expirado
+            if (Request.Cookies.TryGetValue(reportCookieName, out string existingCookie))
+            {
+                ViewBag.ErrorMessage = "Solo puedes crear un reporte cada 24 horas.";
+                return View(modelReport); // O redirigir a una página diferente si prefieres
+            }
+
             if (ModelState.IsValid)
             {
                 _context.Add(modelReport);
                 await _context.SaveChangesAsync();
+            
+
+
+
+                // Crear la cookie con tiempo de expiración de 24 horas
+                var cookieOptions = new CookieOptions
+                {
+                    Expires = DateTime.UtcNow.AddHours(24),
+                    HttpOnly = true, // La cookie no puede ser accedida por JavaScript
+                    SameSite = SameSiteMode.Strict // Para mayor seguridad
+                };
+                Response.Cookies.Append(reportCookieName, "1", cookieOptions);
+
                 return RedirectToAction(nameof(Index));
             }
+
+
+
             return View(modelReport);
         }
 

@@ -69,17 +69,7 @@ else
                         </div>
                         <a href="#" id="profile-dropdown" data-toggle="dropdown"><i class="mdi mdi-dots-vertical"></i></a>
                         <div class="dropdown-menu dropdown-menu-right sidebar-dropdown preview-list" aria-labelledby="profile-dropdown">
-                            <a href="#" class="dropdown-item preview-item">
-                                <div class="preview-thumbnail">
-                                    <div class="preview-icon bg-dark rounded-circle">
-                                        <i class="mdi mdi-settings text-primary"></i>
-                                    </div>
-                                </div>
-                                <div class="preview-item-content">
-                                    <p class="preview-subject ellipsis mb-1 text-small">Ajustes</p>
-                                </div>
-                            </a>
-                            <div class="dropdown-divider"></div>
+                            
                             <a asp-controller="Auth" asp-action="ChangePassword" class="dropdown-item preview-item">
                                 <div class="preview-thumbnail">
                                     <div class="preview-icon bg-dark rounded-circle">
@@ -95,17 +85,7 @@ else
                                     </p>
                                 </div>
                             </a>
-                            <div class="dropdown-divider"></div>
-                            <a href="#" class="dropdown-item preview-item">
-                                <div class="preview-thumbnail">
-                                    <div class="preview-icon bg-dark rounded-circle">
-                                        <i class="mdi mdi-calendar-today text-success"></i>
-                                    </div>
-                                </div>
-                                <div class="preview-item-content">
-                                    <p class="preview-subject ellipsis mb-1 text-small">To-do list</p>
-                                </div>
-                            </a>
+                            
                         </div>
                     </div>
                 </li>
@@ -531,7 +511,7 @@ else
                                             @if (ViewBag.CasoPendiente != null)
                                             {
                                                 <div class="text-center">
-                                                    <img src="~/imgSystem/LogoCaballero1.png" class="img-fluid custom-img mb-2" alt="Imagen de caso">
+                                                    <img src="~/imgSystem/adver.png" class="img-fluid custom-img mb-2" alt="Imagen de caso" style="max-width: 200px; max-height: 200px;">
                                                     <div class="alert alert-warning">
                                                         <strong>Mensaje:</strong> @ViewBag.CasoPendiente
                                                     </div>
@@ -540,7 +520,7 @@ else
                                             @if (ViewBag.ErrorMessage != null)
                                             {
                                                 <div class="text-center">
-                                                    <img src="~/imgSystem/nou.png" class="img-fluid custom-img mb-2" alt="Imagen de error">
+                                                    <img src="~/imgSystem/nou.png" class="img-fluid custom-img mb-2" alt="Imagen de error" style="max-width: 200px; max-height: 200px;">
                                                     <div class="alert alert-danger">
                                                         <strong>Error:</strong> @ViewBag.ErrorMessage
                                                     </div>
@@ -550,7 +530,7 @@ else
                                             {
                                                 <div class="text-center">
                                                    
-                                                    <img src="~/imgSystem/yes.png" class="img-fluid custom-img mb-2" alt="Imagen de validación">
+                                                    <img src="~/imgSystem/yes.png" class="img-fluid custom-img mb-2" alt="Imagen de validación" style="max-width: 200px; max-height: 200px;">
                                                     <div class="alert alert-info">
                                                         @TempData["Message"]
                                                     </div>
@@ -559,7 +539,7 @@ else
                                             @if (TempData["Error"] != null)
                                             {
                                                 <div class="text-center">
-                                                    <img src="~/imgSystem/nou.png" class="img-fluid custom-img mb-2" alt="Imagen de error">
+                                                    <img src="~/imgSystem/nou.png" class="img-fluid custom-img mb-2" alt="Imagen de error" style="max-width: 200px; max-height: 200px;">
                                                     <div class="alert alert-danger">
                                                         @TempData["Error"]
                                                     </div>
@@ -568,7 +548,7 @@ else
                                             @if (TempData["Success"] != null)
                                             {
                                                 <div class="text-center">
-                                                    <img src="~/imgSystem/yes.png" class="img-fluid custom-img mb-2" alt="Imagen de validación">
+                                                    <img src="~/imgSystem/yes.png" class="img-fluid custom-img mb-2" alt="Imagen de validación" style="max-width: 200px; max-height: 200px;">
                                                     <div class="alert alert-success">
                                                         @TempData["Success"]
                                                     </div>
@@ -577,6 +557,10 @@ else
 
                                         </div>
                                         <div class="modal-footer">
+                                            @if (ViewBag.CasoPendiente != null && ViewBag.ReporteId != null)
+                                            {
+                                                <a href="@Url.Action("Edit", "Report", new { id = ViewBag.ReporteId })" class="btn btn-success">Ir al Reporte</a>
+                                            }
                                             @if (TempData["Error"] != null)
                                             {
                                                 <a href="@Url.Action("Create", "Report")" class="btn btn-danger">Reportar Error</a>

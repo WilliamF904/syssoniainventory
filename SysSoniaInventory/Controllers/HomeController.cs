@@ -30,6 +30,41 @@ namespace SysSoniaInventory.Controllers
             var currentYear = DateTime.Now.Year;
             var userName = User.Identity.Name;
 
+
+
+
+            if (User.HasClaim("AccessTipe", "Nivel 5") || User.HasClaim("AccessTipe", "Nivel 4"))
+            {
+
+                var reportesNoFinalizados = await _context.modelReport
+    .Where(r => r.Estatus != "Finalizado")
+    .OrderBy(r => r.StarDate).ThenBy(r => r.StarTime)
+    .Take(5)
+    .ToListAsync();
+
+            var reportesFinalizados = await _context.modelReport
+                .Where(r => r.Estatus == "Finalizado")
+                .OrderBy(r => r.StarDate).ThenBy(r => r.StarTime)
+                .Take(5 - reportesNoFinalizados.Count)
+                .ToListAsync();
+         
+                var reportesCombinados = reportesNoFinalizados.Concat(reportesFinalizados).ToList();
+
+                ViewBag.Reportes = reportesCombinados;
+                ViewBag.MostrarBotonVerTodos = reportesNoFinalizados.Count > 5;
+
+            }
+
+
+
+
+
+
+
+
+
+
+
             var facturas = _context.modelFactura
                 .Include(f => f.DetalleFactura)
                 .Where(f => f.Date.Year == currentYear && f.Date.Month == currentMonth)

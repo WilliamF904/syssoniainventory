@@ -26,6 +26,9 @@ namespace SysSoniaInventory.Models
         [Required, Column(TypeName = "decimal(18, 2)")]
         public decimal SalePriceUnitario { get; set; }
 
+        [Required, Column(TypeName = "decimal(18, 2)")]
+        public decimal PurchasePriceUnitario { get; set; }
+
         [Column(TypeName = "decimal(18, 2)")]
         public decimal ValorDescuento { get; set; } = 0;
 

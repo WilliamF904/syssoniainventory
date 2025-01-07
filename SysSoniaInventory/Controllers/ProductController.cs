@@ -10,6 +10,8 @@ using SysSoniaInventory.DataAccess;
 using SysSoniaInventory.Models;
 using SysSoniaInventory.Task;
 using System.IO;
+using iText.Commons.Actions.Contexts;
+using SysSoniaInventory.ViewModels;
 
 
 namespace SysSoniaInventory.Controllers
@@ -101,66 +103,76 @@ namespace SysSoniaInventory.Controllers
         }
 
 
-        // GET: Product/Details/5
-        [HttpGet]
-        public async Task<IActionResult> Details(int? id)
+
+
+    [HttpGet]
+    public async Task<IActionResult> Details(int? id)
+    {
+        // Verificar niveles de acceso
+        if (!User.HasClaim("AccessTipe", "Nivel 2") &&
+            !User.HasClaim("AccessTipe", "Nivel 3") &&
+            !User.HasClaim("AccessTipe", "Nivel 4") &&
+            !User.HasClaim("AccessTipe", "Nivel 5"))
         {
-            // Verificar niveles de acceso
-            if (User.HasClaim("AccessTipe", "Nivel 4"))
-            { // Nivel 4 tiene acceso
-
-            }
-            else if (User.HasClaim("AccessTipe", "Nivel 3"))
-            {
-                // Nivel 3 tiene acceso
-
-            }
-            else if (User.HasClaim("AccessTipe", "Nivel 5"))
-            { // Nivel 5 tiene acceso
-
-            }
-            else if (User.HasClaim("AccessTipe", "Nivel 2"))
-            { // Nivel 2 tiene acceso
-
-            }
-            else
-            {
-                // Redirigir con mensaje de error si el usuario no tiene acceso
-                TempData["Error"] = "No tienes acceso a esta sección. Requerido: Nivel 2 o superior.";
-                return RedirectToAction("Index", "Home");
-            }
-            if (id == null)
-            {
-                TempData["Error"] = "Debese seleccionar un producto.";
-                return RedirectToAction(nameof(Index));
-            }
-
-            var modelProduct = await _context.modelProduct
-                .Include(m => m.IdCategoryNavigation)
-                .Include(m => m.IdProveedorNavigation)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (modelProduct == null)
-            {
-                TempData["Error"] = "Producto no encontrado.";
-                return RedirectToAction(nameof(Index));
-            }
-
-            // Verificar si hay reportes pendientes para el producto del tipo "Stock Bajo"
-            var reportesPendientes = await _context.modelReport
-                .Where(r => r.IdRelation == id && r.TypeReport == "Stock Bajo" && r.Estatus != "Finalizado")
-                .ToListAsync();
-
-            if (reportesPendientes.Any())
-            {
-                // Enviar mensaje a la vista si hay reportes pendientes de tipo "Stock Bajo"
-                ViewBag.CasoPendiente = "Reporte de este producto: Stock bajo; Estado: Pendiente.";
-            }
-
-            return View(modelProduct);
+            TempData["Error"] = "No tienes acceso a esta sección. Requerido: Nivel 2 o superior.";
+            return RedirectToAction("Index", "Home");
         }
 
-        // GET: Product/Create
-        [HttpGet]
+        if (id == null)
+        {
+            TempData["Error"] = "Debes seleccionar un producto.";
+            return RedirectToAction(nameof(Index));
+        }
+
+        var modelProduct = await _context.modelProduct
+            .Include(m => m.IdCategoryNavigation)
+            .Include(m => m.IdProveedorNavigation)
+            .FirstOrDefaultAsync(m => m.Id == id);
+
+        if (modelProduct == null)
+        {
+            TempData["Error"] = "Producto no encontrado.";
+            return RedirectToAction(nameof(Index));
+        }
+
+        // Verificar si hay reportes pendientes para el producto del tipo "Stock Bajo"
+        var reportePendiente = await _context.modelReport
+            .FirstOrDefaultAsync(r => r.IdRelation == id && r.TypeReport == "Stock Bajo" && r.Estatus != "Finalizado");
+
+        if (reportePendiente != null)
+        {
+            ViewBag.CasoPendiente = "Reporte de este producto: Stock bajo; Estado: Pendiente.";
+            ViewBag.ReporteId = reportePendiente.Id; // Pasar el ID del reporte
+        }
+
+        // Calcular las ganancias mensuales para los últimos 12 meses
+        var detallesFactura = await _context.modelDetalleFactura
+            .Include(d => d.IdFacturaNavigation)
+            .Where(d => d.IdProduct == id &&
+                        d.IdFacturaNavigation.Date >= DateOnly.FromDateTime(DateTime.Now.AddMonths(-12)))
+            .ToListAsync();
+
+        var gananciasPorMes = detallesFactura
+            .GroupBy(d => new { d.IdFacturaNavigation.Date.Year, d.IdFacturaNavigation.Date.Month })
+            .Select(g => new ProductoViewModel.GananciaMensualViewModel
+            {
+                Año = g.Key.Year,
+                Mes = g.Key.Month,
+                Fecha = $"{g.Key.Year}-{g.Key.Month:00}",
+                Ganancia = g.Sum(d => (d.SalePriceDescuento - d.PurchasePriceUnitario) * d.CantidadProduct),
+                Cantidad = g.Sum(d => d.CantidadProduct)
+            })
+            .OrderByDescending(g => g.Fecha) // Más reciente primero
+            .ToList();
+
+        ViewBag.GananciasPorMes = gananciasPorMes;
+
+        return View(modelProduct);
+    }
+
+
+    // GET: Product/Create
+    [HttpGet]
         public IActionResult Create()
         {
             // Verificar niveles de acceso

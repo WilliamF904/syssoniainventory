@@ -108,6 +108,7 @@ CREATE TABLE ModelDetalleFactura (
     NameProducto VARCHAR(100) NOT NULL,
     CodigoProducto VARCHAR(25),
     CantidadProduct INT NOT NULL,
+    PurchasePriceUnitario DECIMAL(18,2) NOT NULL,
     SalePriceUnitario DECIMAL(18,2) NOT NULL,
     ValorDescuento DECIMAL(18,2) DEFAULT 0,
     SalePriceDescuento DECIMAL(18,2) NOT NULL,
@@ -167,7 +168,7 @@ CREATE TABLE ModelReport (
 
 -- Insertar datos en la tabla ModelRol
 INSERT INTO ModelRol (Name, AccessTipe) VALUES ('Administrador', 'Nivel 5');
-INSERT INTO ModelRol (Name, AccessTipe) VALUES ('Administrador', 'Nivel 4');
+INSERT INTO ModelRol (Name, AccessTipe) VALUES ('Gerente', 'Nivel 4');
 INSERT INTO ModelRol (Name, AccessTipe) VALUES ('Supervisor', 'Nivel 3');
 INSERT INTO ModelRol (Name, AccessTipe) VALUES ('Empleado', 'Nivel 2');
 INSERT INTO ModelRol (Name, AccessTipe) VALUES ('Interno', 'Nivel 1');
@@ -178,5 +179,5 @@ INSERT INTO ModelSucursal (Name, Address) VALUES ('Sucursal Central', 'Av. Princ
 
 -- Insertar datos en la tabla ModelUser  contraseña :  brytani
 INSERT INTO ModelUser (IdRol, IdSucursal, Tel, Name, LastName, Email, Password, Estatus, RegistrationDate) 
-VALUES (1, 1, 12345678, 'Bryan Alexander', 'Portillo Moran', 'Bryan2004@gmail.com', '189a616412c5ead039747eb98bd4e4b9d49146a4226dbfc3c0af859c7026e3dc', 1, '2024-12-26');
+VALUES (1, 1, 12345678, 'William Alberto', 'Brito Flamenco', 'Brito503@gmail.com', '6cf00319fd41a374a2badeeb321a5e28b5bf75dfbda438dd550383985743d164', 1, '2024-12-26');
 
