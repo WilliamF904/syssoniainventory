@@ -21,9 +21,9 @@
                     <!-- Columna izquierda con los campos de detalle -->
                     <div class="col-md-6">
                         <div class="justify-content-center">
-                            <h3 class="card-title font-weight-bold">Editar Producto</h3>
+                            <h3 class="card-title text-warning font-weight-bold">Editar Producto</h3>
                         </div>
-                        <hr class="linea-blanca" />
+                        <hr class="linea-warning" />
                         <div class="form-group row">
                             <label class="col-sm-3 col-form-label" asp-for="IdCategory">Categoría: </label>
                             <div class="col-sm-9">
@@ -157,9 +157,13 @@
                         </div>
                     </div>
                 </div>
-                <hr class="linea-blanca" />
+                <hr class="linea-warning" />
                 <div class="d-flex justify-content-end">
-                    <button type="button" class="btn btn-outline-primary font-weight-bold" data-toggle="modal" data-target="#descriptionModal">Guardar</button>
+                    <button type="button" class="btn btn-outline-warning font-weight-bold" data-toggle="modal" data-target="#descriptionModal"><i class="mdi mdi-file-check btn-icon-prepend"></i>Guardar</button>
+                    <a asp-action="Stock" asp-route-id="@Model.Id" class="btn btn-outline-success font-weight-bold ml-2">
+                        <i class="mdi mdi-view-dashboard btn-icon-prepend"></i> Stock
+                    </a>
+
                     <a asp-action="Index" class="btn btn-outline-secondary font-weight-bold ml-2">Volver a la lista</a>
                 </div>
             </form>
@@ -181,8 +185,9 @@
                             </div>
                         </div>
                         <div class="modal-footer">
+                            <button type="button" class="btn btn-outline-warning" onclick="submitForm()"><i class="mdi mdi-file-check btn-icon-prepend"></i>Guardar</button>
                             <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancelar</button>
-                            <button type="button" class="btn btn-outline-primary" onclick="submitForm()">Guardar</button>
+                           
                         </div>
                     </div>
                 </div>

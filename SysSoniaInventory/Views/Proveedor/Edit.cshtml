@@ -7,7 +7,8 @@
 <div class="col-12 grid-margin">
     <div class="card">
         <div class="card-body">
-            <h3 class="card-title font-weight-bold">Editar Proveedor</h3>
+            <h3 class="card-title text-warning font-weight-bold">Editar Proveedor</h3>
+            <hr class="linea-warning" />
             <form asp-action="Edit">
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                 <input type="hidden" asp-for="Id" />
@@ -15,7 +16,7 @@
                 <div class="row">
                     <div class="col-md-6">
                         <div class="form-group row">
-                            <label class="col-sm-3 col-form-label text-light" asp-for="Name">Nombre de la Sucursal</label>
+                            <label class="col-sm-3 col-form-label text-light" asp-for="Name">Nombre de la Sucursal:</label>
                             <div class="col-sm-9">
                                 <input type="text" class="form-control" asp-for="Name" />
                                 <span asp-validation-for="Name" class="text-danger"></span>
@@ -25,7 +26,7 @@
 
                     <div class="col-md-6">
                         <div class="form-group row">
-                            <label class="col-sm-3 col-form-label text-light" asp-for="Description">Descripción</label>
+                            <label class="col-sm-3 col-form-label text-light" asp-for="Description">Descripción:</label>
                             <div class="col-sm-9">
                                 <input type="text" class="form-control" asp-for="Description" />
                                 <span asp-validation-for="Description" class="text-danger"></span>
@@ -37,7 +38,7 @@
                 <div class="row">
                     <div class="col-md-6">
                         <div class="form-group row">
-                            <label class="col-sm-3 col-form-label text-light" asp-for="Tel">Número de teléfono</label>
+                            <label class="col-sm-3 col-form-label text-light" asp-for="Tel">Número de teléfono:</label>
                             <div class="col-sm-9">
                                 <input type="tel" class="form-control" asp-for="Tel" />
                                 <span asp-validation-for="Tel" class="text-danger"></span>
@@ -47,7 +48,7 @@
 
                     <div class="col-md-6">
                         <div class="form-group row">
-                            <label class="col-sm-3 col-form-label text-light" asp-for="Email">Email</label>
+                            <label class="col-sm-3 col-form-label text-light" asp-for="Email">Email:</label>
                             <div class="col-sm-9">
                                 <input type="text" class="form-control" asp-for="Email" />
                                 <span asp-validation-for="Email" class="text-danger"></span>
@@ -55,9 +56,9 @@
                         </div>
                     </div>
                 </div>
-
+                <hr class="linea-warning" />
                 <div class="d-flex justify-content-end">
-                    <input type="submit" value="Guardar" class="btn btn-primary font-weight-bold" />
+                    <button type="submit" class="btn btn-outline-warning font-weight-bold"><i class="mdi mdi-file-check btn-icon-prepend"></i>Guardar</button>
                     <a asp-action="Index" class="btn btn-outline-secondary font-weight-bold ml-2">Volver a la lista</a>
                 </div>
             </form>

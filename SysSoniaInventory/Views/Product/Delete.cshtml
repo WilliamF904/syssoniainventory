@@ -13,9 +13,11 @@
                     <!-- Columna izquierda con los detalles del producto -->
                     <div class="col-md-6">
                         <div class="justify-content-center">
-                             <h3 class="card-title font-weight-bold text-danger">Eliminar Producto</h3>
+                             <h3 class="card-title text-danger font-weight-bold text-danger">Eliminar Producto</h3>
+                          
+                            <hr class="linea-danger" />
                         </div>
-                        <hr class="linea-blanca"/>
+                     
                         
                         <!-- Categoría -->
                         <div class="form-group row">
@@ -132,10 +134,11 @@
                             </div>
                         </div>
                         <br />
-                        <hr class="linea-blanca" />
+
+                      <hr class="linea-danger" />
                         <!-- Botones de acción al final, alineados a la derecha -->
                         <div class="d-flex justify-content-end">
-                            <button type="button" class="btn btn-outline-danger font-weight-bold" data-toggle="modal" data-target="#descriptionModal">Eliminar</button>
+                            <button type="button" class="btn btn-outline-danger font-weight-bold" data-toggle="modal" data-target="#descriptionModal"><i class="mdi mdi-delete-forever btn-icon-prepend"></i>Eliminar</button>
                             <a asp-action="Index" class="btn btn-outline-secondary font-weight-bold ml-2">Volver a la lista</a>
                         </div>
                     </div>
@@ -161,8 +164,9 @@
                             </div>
                         </div>
                         <div class="modal-footer">
+                            <button type="button" class="btn btn-outline-danger" onclick="submitForm()"><i class="mdi mdi-delete-forever btn-icon-prepend"></i>Eliminar</button>
                             <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancelar</button>
-                            <button type="button" class="btn btn-outline-danger" onclick="submitForm()">Eliminar</button>
+                         
                         </div>
                     </div>
                 </div>

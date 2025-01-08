@@ -9,8 +9,8 @@
         <div class="card-body">
 
             <form id="createProductForm" asp-action="Create" class="form-sample" enctype="multipart/form-data">
-                <h3 class="card-title font-weight-bold">Crear Producto</h3>
-                <hr class="linea-blanca" />
+                <h3 class="card-title text-primary font-weight-bold">Crear Producto</h3>
+                <hr class="linea-primary" />
                 <div class="row">
                     <!-- Fila 1: Categoría y Proveedor -->
                     <div class="col-md-6">
@@ -121,9 +121,9 @@
                     </div>
                 </div>
 
-                <hr class="linea-blanca" />
+                <hr class="linea-primary" />
                 <div class="d-flex justify-content-end">
-                    <button type="button" class="btn btn-outline-primary font-weight-bold" data-toggle="modal" data-target="#descriptionModal">Guardar</button>
+                    <button type="button" class="btn btn-outline-primary font-weight-bold" data-toggle="modal" data-target="#descriptionModal"><i class="mdi mdi-file-check btn-icon-prepend"></i>Guardar</button>
                     <a asp-action="Index" class="btn btn-outline-secondary font-weight-bold ml-2">Volver a la lista</a>
                 </div>
             </form>
@@ -146,8 +146,8 @@
                             </div>
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancelar</button>
-                            <button type="button" class="btn btn-outline-primary" onclick="submitForm()">Guardar</button>
+                            <button type="button" class="btn btn-outline-primary" onclick="submitForm()"><i class="mdi mdi-file-check btn-icon-prepend"></i>Guardar</button>
+                            <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancelar</button>    
                         </div>
                     </div>
                 </div>

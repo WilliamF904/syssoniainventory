@@ -10,7 +10,7 @@
 
             <h3 class="card-title font-weight-bold text-danger">Eliminar Rol</h3>
             <p class="text-warning font-weight-bold">¿Está seguro de que desea eliminar este rol?</p>
-
+            <hr class="linea-danger" />
             <form asp-action="Delete" class="mt-4">
                 <div class="row">
                     <div class="col-12">
@@ -38,9 +38,9 @@
                 </div>
 
                 <input type="hidden" asp-for="Id" />
-
+                <hr class="linea-danger" />
                 <div class="d-flex justify-content-end">
-                    <button type="submit" class="btn btn-danger font-weight-bold">Eliminar</button>
+                    <button type="submit" class="btn btn-outline-danger font-weight-bold"><i class="mdi mdi-delete-forever btn-icon-prepend"></i>Eliminar</button>
                     <a asp-action="Index" class="btn btn-outline-secondary font-weight-bold ml-2">Volver a la lista</a>
                 </div>
             </form>

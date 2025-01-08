@@ -18,9 +18,9 @@
                     <!-- Columna izquierda con los campos principales -->
                     <div class="col-md-6">
                         <div class="justify-content-center">
-                            <h3 class="card-title font-weight-bold">Editar Stock</h3>
+                            <h3 class="card-title text-success font-weight-bold">Editar Stock</h3>
                         </div>
-                        <hr class="linea-blanca" />
+                      <hr class="linea-success" />
 
                         <div class="form-group row">
                             <label class="col-sm-3 col-form-label" asp-for="Name">Nombre: </label>
@@ -86,16 +86,17 @@
                                 var fallbackImages = new string[] { "/imgSystem/nou.png", "/imgSystem/LogoProductos1.jfif", "/imgSystem/LogoProductos2.jfif", "/imgSystem/LogoProductos3.jfif" };
                                 var randomIndex = new Random().Next(fallbackImages.Length);
                                 var selectedImage = fallbackImages[randomIndex];
-
-                                <img src="@selectedImage" alt="Imagen de reemplazo" class="img-fluid img-thumbnail" style="max-width: 250px; max-height: 250px; object-fit: cover;" />
+                                <img src="@selectedImage" alt="Imagen de remplazo" class="img-fluid custom-img mb-2" style="max-width: 250px; max-height: 250px; object-fit: cover;" />
+                              
                             }
+
                         </div>
                     </div>
                 </div>
 
-                <hr class="linea-blanca" />
+                <hr class="linea-success" />
                 <div class="d-flex justify-content-end">
-                    <button type="button" class="btn btn-outline-primary font-weight-bold" data-toggle="modal" data-target="#descriptionModal">Guardar</button>
+                    <button type="button" class="btn btn-outline-success font-weight-bold" data-toggle="modal" data-target="#descriptionModal"><i class="mdi mdi-file-check btn-icon-prepend"></i>Modificar</button>
                     <a asp-action="Index" class="btn btn-outline-secondary font-weight-bold ml-2">Volver a la lista</a>
                 </div>
             </form>
@@ -117,8 +118,9 @@
                             </div>
                         </div>
                         <div class="modal-footer">
+                            <button type="button" class="btn btn-outline-success" onclick="submitForm()"><i class="mdi mdi-file-check btn-icon-prepend"></i>Guardar</button>
                             <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancelar</button>
-                            <button type="button" class="btn btn-outline-primary" onclick="submitForm()">Guardar</button>
+                           
                         </div>
                     </div>
                 </div>

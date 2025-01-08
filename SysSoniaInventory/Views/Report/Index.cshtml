@@ -4,86 +4,67 @@
     ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
+<div class="row">
+    <div class="col-lg-6 grid-margin stretch-card">
+        <div class="card">
+            <div class="card-body">
+                <h3 class="card-title text-info font-weight-bold">Lista de Reportes</h3>
+                <hr class="linea-info" />
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6 grid-margin stretch-card">
+        <div class="card">
+            <div class="card-body">
+            </div>
+        </div>
+    </div>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.TypeReport)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Description)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Estatus)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.NameUser)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.ComentaryUser)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.StarDate)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.StarTime)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.EndDate)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.EndTime)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.IdRelation)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.TypeReport)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Description)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Estatus)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.NameUser)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ComentaryUser)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.StarDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.StarTime)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.EndDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.EndTime)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.IdRelation)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+    <div class="col-12 grid-margin">
+        <div class="card">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover">
+                        <thead>
+                            <tr>
+                                <th>Tipo de Reporte</th>
+                                <th>Descripción</th>
+                                <th>Estatus</th>
+                                <th>Usuario</th>
+                                <th>Comentario del Usuario</th>
+                                <th>Fecha de Inicio</th>
+                                <th>Hora de Inicio</th>
+                                <th>Fecha de Finalización</th>
+                                <th>Hora de Finalización</th>
+                                <th>Id de Relación</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td class="text-light">@Html.DisplayFor(modelItem => item.TypeReport)</td>
+                                    <td class="text-light">@Html.DisplayFor(modelItem => item.Description)</td>
+                                    <td class="text-light">@Html.DisplayFor(modelItem => item.Estatus)</td>
+                                    <td class="text-light">@Html.DisplayFor(modelItem => item.NameUser)</td>
+                                    <td class="text-light">@Html.DisplayFor(modelItem => item.ComentaryUser)</td>
+                                    <td class="text-light">@Html.DisplayFor(modelItem => item.StarDate)</td>
+                                    <td class="text-light">@Html.DisplayFor(modelItem => item.StarTime)</td>
+                                    <td class="text-light">@Html.DisplayFor(modelItem => item.EndDate)</td>
+                                    <td class="text-light">@Html.DisplayFor(modelItem => item.EndTime)</td>
+                                    <td class="text-light">@Html.DisplayFor(modelItem => item.IdRelation)</td>
+                                    <td>
+                                        <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-outline-info primary">Detalles</a>
+                                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-outline-warning">Editar</a>
+                                        <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-outline-danger">Eliminar</a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

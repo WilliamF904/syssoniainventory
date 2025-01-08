@@ -4,75 +4,126 @@
     ViewData["Title"] = "Details";
 }
 
-<h1>Details</h1>
+<div class="row">
+    <div class="col-lg-6 grid-margin stretch-card">
+        <div class="card">
+            <div class="card-body">
+                <h3 class="card-title text-info font-weight-bold">Detalles del Reporte</h3>
+                <hr class="linea-info" />
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6 grid-margin stretch-card">
+        <div class="card">
+            <div class="card-body">
+            </div>
+        </div>
+    </div>
 
-<div>
-    <h4>ModelReport</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.TypeReport)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.TypeReport)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Description)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Description)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Estatus)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Estatus)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.NameUser)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.NameUser)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.ComentaryUser)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.ComentaryUser)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.StarDate)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.StarDate)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.StarTime)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.StarTime)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.EndDate)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.EndDate)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.EndTime)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.EndTime)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.IdRelation)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.IdRelation)
-        </dd>
-    </dl>
-</div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+    <div class="col-12 grid-margin">
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">Tipo de Reporte:</label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control readonly-input" asp-for="TypeReport" readonly />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">Descripción:</label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control readonly-input" asp-for="Description" readonly />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">Estatus:</label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control readonly-input" asp-for="Estatus" readonly />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">Usuario:</label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control readonly-input" asp-for="NameUser" readonly />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">Comentario del Usuario:</label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control readonly-input" asp-for="ComentaryUser" readonly />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">Fecha de Inicio:</label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control readonly-input" asp-for="StarDate" readonly />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">Hora de Inicio:</label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control readonly-input" asp-for="StarTime" readonly />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">Fecha de Finalización:</label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control readonly-input" asp-for="EndDate" readonly />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">Hora de Finalización:</label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control readonly-input" asp-for="EndTime" readonly />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">Id de Relación:</label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control readonly-input" asp-for="IdRelation" readonly />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="linea-info" />
+                <div class="d-flex justify-content-end">
+                    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-outline-warning font-weight-bold"><i class="mdi mdi-file-restore btn-icon-prepend"></i>Editar</a>
+                    <a asp-action="Index" class="btn btn-outline-secondary font-weight-bold ml-2">Volver a la lista</a>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>

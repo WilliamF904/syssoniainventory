@@ -8,8 +8,8 @@
     <div class="card">
         <div class="card-body">
 
-            <h3 class="card-title font-weight-bold">Editar Rol</h3>
-
+            <h3 class="card-title text-warning font-weight-bold">Editar Rol</h3>
+            <hr class="linea-warning" />
             <form asp-action="Edit">
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                 <div class="row">
@@ -40,8 +40,9 @@
                         </div>
                     </div>
                 </div>
+                <hr class="linea-warning" />
                 <div class="d-flex justify-content-end">
-                    <button type="submit" class="btn btn-outline-primary font-weight-bold">Guardar</button>
+                    <button type="submit" class="btn btn-outline-warning font-weight-bold"><i class="mdi mdi-file-check btn-icon-prepend"></i>Guardar</button>
                     <a asp-action="Index" class="btn btn-outline-secondary font-weight-bold ml-2">Volver a la lista</a>
                 </div>
             </form>

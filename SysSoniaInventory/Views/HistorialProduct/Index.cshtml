@@ -56,26 +56,26 @@
                             @foreach (var item in Model)
                             {
                                 <tr>
-                                    <td>
+                                    <td class=" text-light">
                                         @Html.DisplayFor(modelItem => item.NameUser)
                                     </td>
-                                    <td>
+                                    <td class=" text-light">
                                         @Html.DisplayFor(modelItem => item.IdProduct)
                                     </td>
-                                    
-                                    <td>
+
+                                    <td class=" text-light">
                                         @Html.DisplayFor(modelItem => item.Date)
                                     </td>
-                                    <td>
+                                    <td class=" text-light">
                                         @Html.DisplayFor(modelItem => item.Time)
                                     </td>
-                                    <td>
+                                    <td class=" text-light">
                                         @Html.DisplayFor(modelItem => item.RazonCambioAuto)
                                     </td>
                                   
                                     <td>
-                                       
-                                        <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-primary">Detalles</a>
+
+                                        <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-outline-info primary">Detalles</a>
                                        
                                     </td>
                                 </tr>

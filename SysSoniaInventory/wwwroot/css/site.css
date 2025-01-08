@@ -103,6 +103,29 @@ body {
 .linea-blanca {
     background-color: white; /* Color de la línea */
 }
+.linea-info {
+    background-color: #9860ff !important;
+}
+
+.linea-warning {
+    background-color: #ffc107 !important; /* Color de Warning */
+}
+
+.linea-danger {
+    background-color: #dc3545 !important; /* Color de Danger */
+}
+
+.linea-primary {
+    background-color: #007bff !important; /* Color de Primary */
+}
+
+.linea-success {
+    background-color: #28a745 !important; /* Color de Success */
+}
+
+.linea-dark {
+    background-color: #343a40 !important; /* Color de Dark */
+}
 
 .dropdown-itemPer:hover {
     color: #ffffff;

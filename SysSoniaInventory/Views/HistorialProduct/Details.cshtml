@@ -9,12 +9,13 @@
 <div class="col-12 grid-margin">
     <div class="card">
         <div class="card-body">
-            <h3 class="card-title font-weight-bold">Historial de Producto</h3>
+            <h3 class="card-title text-info font-weight-bold">Historial de Producto</h3>
+            <hr class="linea-info" />
             <form>
                 <div class="row">
                     <div class="col-md-6">
                         <div class="form-group row">
-                            <label class="col-sm-3 col-form-label text-light" for="NameUser">Usuario</label>
+                            <label class="col-sm-3 col-form-label text-light" for="NameUser">Usuario:</label>
                             <div class="col-sm-9">
                                 <input type="text" class="form-control readonly-input" id="NameUser" value="@Model.NameUser" readonly />
                             </div>
@@ -23,18 +24,19 @@
 
                     <div class="col-md-6">
                         <div class="form-group row">
-                            <label class="col-sm-3 col-form-label text-light" for="IdProduct">Producto</label>
+                            <label class="col-sm-3 col-form-label text-light" for="IdProduct">Id del producto:</label>
                             <div class="col-sm-9">
                                 <input type="text" class="form-control readonly-input" id="IdProduct" value="@Model.IdProduct" readonly />
                             </div>
                         </div>
                     </div>
                 </div>
-
+                @if (!string.IsNullOrEmpty(Model.AfterNameProduct))
+{
                 <div class="row">
                     <div class="col-md-6">
                         <div class="form-group row">
-                            <label class="col-sm-3 col-form-label text-light" for="BeforeNameProduct">Nombre antes del cambio</label>
+                            <label class="col-sm-3 col-form-label text-light" for="BeforeNameProduct">Nombre antes del cambio:</label>
                             <div class="col-sm-9">
                                 <input type="text" class="form-control readonly-input" id="BeforeNameProduct" value="@Model.BeforeNameProduct" readonly />
                             </div>
@@ -43,18 +45,20 @@
 
                     <div class="col-md-6">
                         <div class="form-group row">
-                            <label class="col-sm-3 col-form-label text-light" for="AfterNameProduct">Nombre después del cambio</label>
+                            <label class="col-sm-3 col-form-label text-light" for="AfterNameProduct">Nombre después del cambio:</label>
                             <div class="col-sm-9">
                                 <input type="text" class="form-control readonly-input" id="AfterNameProduct" value="@Model.AfterNameProduct" readonly />
                             </div>
                         </div>
                     </div>
                 </div>
-
+}
+                @if (Model.AfterPurchasePrice.HasValue && Model.AfterPurchasePrice.Value != 0)
+{
                 <div class="row">
                     <div class="col-md-6">
                         <div class="form-group row">
-                            <label class="col-sm-3 col-form-label text-light" for="BeforePurchasePrice">Precio de compra antes del cambio</label>
+                            <label class="col-sm-3 col-form-label text-light" for="BeforePurchasePrice">Precio de compra antes del cambio:</label>
                             <div class="col-sm-9">
                                 <input type="text" class="form-control readonly-input" id="BeforePurchasePrice" value="@Model.BeforePurchasePrice" readonly />
                             </div>
@@ -63,18 +67,20 @@
 
                     <div class="col-md-6">
                         <div class="form-group row">
-                            <label class="col-sm-3 col-form-label text-light" for="AfterPurchasePrice">Precio de compra después del cambio</label>
+                            <label class="col-sm-3 col-form-label text-light" for="AfterPurchasePrice">Precio de compra después del cambio:</label>
                             <div class="col-sm-9">
                                 <input type="text" class="form-control readonly-input" id="AfterPurchasePrice" value="@Model.AfterPurchasePrice" readonly />
                             </div>
                         </div>
                     </div>
                 </div>
-
+}
+                @if (Model.AfterSalePrice.HasValue && Model.AfterSalePrice.Value != 0)
+{
                 <div class="row">
                     <div class="col-md-6">
                         <div class="form-group row">
-                            <label class="col-sm-3 col-form-label text-light" for="BeforeSalePrice">Precio de venta antes del cambio</label>
+                            <label class="col-sm-3 col-form-label text-light" for="BeforeSalePrice">Precio de venta antes del cambio:</label>
                             <div class="col-sm-9">
                                 <input type="text" class="form-control readonly-input" id="BeforeSalePrice" value="@Model.BeforeSalePrice" readonly />
                             </div>
@@ -83,18 +89,20 @@
 
                     <div class="col-md-6">
                         <div class="form-group row">
-                            <label class="col-sm-3 col-form-label text-light" for="AfterSalePrice">Precio de venta después del cambio</label>
+                            <label class="col-sm-3 col-form-label text-light" for="AfterSalePrice">Precio de venta después del cambio:</label>
                             <div class="col-sm-9">
                                 <input type="text" class="form-control readonly-input" id="AfterSalePrice" value="@Model.AfterSalePrice" readonly />
                             </div>
                         </div>
                     </div>
                 </div>
-
+}
+                @if (Model.AfterStock.HasValue && Model.AfterStock.Value != 0)
+{
                 <div class="row">
                     <div class="col-md-6">
                         <div class="form-group row">
-                            <label class="col-sm-3 col-form-label text-light" for="BeforeStock">Stock antes del cambio</label>
+                            <label class="col-sm-3 col-form-label text-light" for="BeforeStock">Stock antes del cambio:</label>
                             <div class="col-sm-9">
                                 <input type="text" class="form-control readonly-input" id="BeforeStock" value="@Model.BeforeStock" readonly />
                             </div>
@@ -103,18 +111,20 @@
 
                     <div class="col-md-6">
                         <div class="form-group row">
-                            <label class="col-sm-3 col-form-label text-light" for="AfterStock">Stock después del cambio</label>
+                            <label class="col-sm-3 col-form-label text-light" for="AfterStock">Stock después del cambio:</label>
                             <div class="col-sm-9">
                                 <input type="text" class="form-control readonly-input" id="AfterStock" value="@Model.AfterStock" readonly />
                             </div>
                         </div>
                     </div>
                 </div>
-
+}
+                @if (!string.IsNullOrEmpty(Model.AfterCodigo))
+{
                 <div class="row">
                     <div class="col-md-6">
                         <div class="form-group row">
-                            <label class="col-sm-3 col-form-label text-light" for="BeforeCodigo">Código antes del cambio</label>
+                            <label class="col-sm-3 col-form-label text-light" for="BeforeCodigo">Código antes del cambio:</label>
                             <div class="col-sm-9">
                                 <input type="text" class="form-control readonly-input" id="BeforeCodigo" value="@Model.BeforeCodigo" readonly />
                             </div>
@@ -123,18 +133,18 @@
 
                     <div class="col-md-6">
                         <div class="form-group row">
-                            <label class="col-sm-3 col-form-label text-light" for="AfterCodigo">Código después del cambio</label>
+                            <label class="col-sm-3 col-form-label text-light" for="AfterCodigo">Código después del cambio:</label>
                             <div class="col-sm-9">
                                 <input type="text" class="form-control readonly-input" id="AfterCodigo" value="@Model.AfterCodigo" readonly />
                             </div>
                         </div>
                     </div>
                 </div>
-
+}
                 <div class="row">
                     <div class="col-md-6">
                         <div class="form-group row">
-                            <label class="col-sm-3 col-form-label text-light" for="Date">Fecha del cambio</label>
+                            <label class="col-sm-3 col-form-label text-light" for="Date">Fecha del cambio:</label>
                             <div class="col-sm-9">
                                 <input type="text" class="form-control readonly-input" id="Date" value="@Model.Date" readonly />
                             </div>
@@ -143,7 +153,7 @@
 
                     <div class="col-md-6">
                         <div class="form-group row">
-                            <label class="col-sm-3 col-form-label text-light" for="Time">Hora del cambio</label>
+                            <label class="col-sm-3 col-form-label text-light" for="Time">Hora del cambio:</label>
                             <div class="col-sm-9">
                                 <input type="text" class="form-control readonly-input" id="Time" value="@Model.Time" readonly />
                             </div>
@@ -154,7 +164,7 @@
                 <div class="row">
                     <div class="col-md-6">
                         <div class="form-group row">
-                            <label class="col-sm-3 col-form-label text-light" for="RazonCambioAuto">Razón del cambio automático</label>
+                            <label class="col-sm-3 col-form-label text-light" for="RazonCambioAuto">Acción:</label>
                             <div class="col-sm-9">
                                 <input type="text" class="form-control readonly-input" id="RazonCambioAuto" value="@Model.RazonCambioAuto" readonly />
                             </div>
@@ -163,14 +173,14 @@
 
                     <div class="col-md-6">
                         <div class="form-group row">
-                            <label class="col-sm-3 col-form-label text-light" for="DescriptionCambio">Descripción del cambio</label>
+                            <label class="col-sm-3 col-form-label text-light" for="DescriptionCambio">Descripción del cambio:</label>
                             <div class="col-sm-9">
                                 <input type="text" class="form-control readonly-input" id="DescriptionCambio" value="@Model.DescriptionCambio" readonly />
                             </div>
                         </div>
                     </div>
                 </div>
-
+                <hr class="linea-info" />
                 <div class="d-flex justify-content-end">
                     <a asp-action="Index" class="btn btn-outline-secondary font-weight-bold ml-2">Volver a la lista</a>
                 </div>

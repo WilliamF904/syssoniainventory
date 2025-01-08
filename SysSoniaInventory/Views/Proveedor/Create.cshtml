@@ -8,7 +8,8 @@
     <div class="card">
         <div class="card-body">
 
-            <h3 class="card-title font-weight-bold">Crear Proveedor</h3>
+            <h3 class="card-title text-primary font-weight-bold">Crear Proveedor</h3>
+            <hr class="linea-primary" />
         <form asp-action="Create">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                 <div class="row">
@@ -58,8 +59,9 @@
 
                   
                 </div>
+                <hr class="linea-primary" />
                 <div class="d-flex justify-content-end">
-                    <button type="submit" value="Create" class="btn btn-outline-primary font-weight-bold">Guardar</button>
+                    <button type="submit" value="Create" class="btn btn-outline-primary font-weight-bold"><i class="mdi mdi-file-check btn-icon-prepend"></i>Guardar</button>
                     <a asp-action="Index" class="btn btn-outline-secondary font-weight-bold ml-2">Volver a la lista</a>
                 </div>
         </form>

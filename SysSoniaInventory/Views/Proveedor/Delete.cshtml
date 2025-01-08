@@ -7,39 +7,52 @@
 <div class="col-12 grid-margin">
     <div class="card">
         <div class="card-body">
-            <h3 class="card-title font-weight-bold">Eliminar Proveedor</h3>
-            <h4>¿Está seguro de que desea eliminar este proveedor?</h4>
-            <hr />
-            <dl class="row">
-                <dt class="col-sm-3">
-                    @Html.DisplayNameFor(model => model.Name)
-                </dt>
-                <dd class="col-sm-9">
-                    @Html.DisplayFor(model => model.Name)
-                </dd>
-                <dt class="col-sm-3">
-                    @Html.DisplayNameFor(model => model.Description)
-                </dt>
-                <dd class="col-sm-9">
-                    @Html.DisplayFor(model => model.Description)
-                </dd>
-                <dt class="col-sm-3">
-                    @Html.DisplayNameFor(model => model.Tel)
-                </dt>
-                <dd class="col-sm-9">
-                    @Html.DisplayFor(model => model.Tel)
-                </dd>
-                <dt class="col-sm-3">
-                    @Html.DisplayNameFor(model => model.Email)
-                </dt>
-                <dd class="col-sm-9">
-                    @Html.DisplayFor(model => model.Email)
-                </dd>
-            </dl>
+            <h3 class="card-title font-weight-bold text-danger">Eliminar Proveedor</h3>
+            <p class="text-warning font-weight-bold">¿Está seguro de que desea eliminar este proveedor?</p>
+            <hr class="linea-danger" />
             <form asp-action="Delete">
                 <input type="hidden" asp-for="Id" />
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">Nombre:</label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control readonly-input" value="@Model.Name" readonly />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">Descripción:</label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control readonly-input" value="@Model.Description" readonly />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">Teléfono:</label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control readonly-input" value="@Model.Tel" readonly />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">Correo Electrónico:</label>
+                            <div class="col-sm-9">
+                                <input type="email" class="form-control readonly-input" value="@Model.Email" readonly />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="linea-danger" />
                 <div class="d-flex justify-content-end">
-                    <input type="submit" value="Eliminar" class="btn btn-danger font-weight-bold" />
+                    <button type="submit" class="btn btn-outline-danger font-weight-bold"><i class="mdi mdi-delete-forever btn-icon-prepend"></i>Eliminar</button>
                     <a asp-action="Index" class="btn btn-outline-secondary font-weight-bold ml-2">Volver a la lista</a>
                 </div>
             </form>

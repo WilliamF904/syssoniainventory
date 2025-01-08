@@ -7,7 +7,8 @@
 <div class="col-12 grid-margin">
     <div class="card">
         <div class="card-body">
-            <h3 class="card-title font-weight-bold">Editar mi información</h3>
+            <h3 class="card-title text-success font-weight-bold">Editar mi información</h3>
+            <hr class="linea-success" />
             <form id="editUserForm" asp-action="EditInfoPerso" class="form-sample" enctype="multipart/form-data">
                 <input type="hidden" asp-for="Id" />
                 <input type="hidden" asp-for="RegistrationDate" />
@@ -81,7 +82,7 @@
                 <div class="row">
                     <div class="col-md-6">
                         <div class="form-group row">
-                            <label class="col-sm-3 col-form-label" for="currentPasswordIdentity">Contraseña de validación</label>
+                            <label class="col-sm-3 col-form-label" for="currentPasswordIdentity">Contraseña de validación:</label>
 
                             <div class="col-sm-9">
                                 <input type="password" class="form-control" id="currentPasswordIdentity" name="currentPasswordIdentity" placeholder="Contraseña para validar identidad" required />
@@ -92,16 +93,17 @@
 
                     <div class="col-md-6">
                         <div class="form-group row">
-                            <a asp-controller="Auth" asp-action="ChangePassword" class="dropdown-item preview-item">Modificar contraseña</a>
+                           
                         </div>
                     </div>
 
 
                    
                 </div>
-
+                <hr class="linea-success" />
                 <div class="d-flex justify-content-end">
-                    <button type="submit" class="btn btn-outline-primary font-weight-bold">Guardar</button>
+                    <button type="submit" class="btn btn-outline-success font-weight-bold"><i class="mdi mdi-minecraft btn-icon-prepend"></i> Guardar</button>
+                    <a asp-controller="Auth" asp-action="ChangePassword" class="btn btn-outline-info font-weight-bold ml-2"><i class="mdi mdi-key-change btn-icon-prepend"></i>Modificar contraseña</a>
                     <a asp-action="Index" class="btn btn-outline-secondary font-weight-bold ml-2">Volver a la lista</a>
                 </div>
             </form>

@@ -7,9 +7,9 @@
 <div class="col-12 grid-margin">
     <div class="card">
         <div class="card-body">
-            <h3 class="card-title font-weight-bold">Eliminar Usuario</h3>
-            <p class="text-danger">¿Está seguro de que desea eliminar este usuario?</p>
-
+            <h3 class="card-title text-danger font-weight-bold">Eliminar Usuario</h3>
+            <p class="text-warning">¿Está seguro de que desea eliminar este usuario?</p>
+            <hr class="linea-danger" />
             <form asp-action="Delete">
                 <input type="hidden" asp-for="Id" />
 
@@ -35,7 +35,7 @@
                 <div class="row">
                     <div class="col-md-6">
                         <div class="form-group row">
-                            <label class="col-sm-3 col-form-label font-weight-bold">Teléfono</label>
+                            <label class="col-sm-3 col-form-label ">Teléfono:</label>
                             <div class="col-sm-9">
                                 <input type="text" class="form-control readonly-input" asp-for="Tel" readonly />
                             </div>
@@ -44,7 +44,7 @@
 
                     <div class="col-md-6">
                         <div class="form-group row">
-                            <label class="col-sm-3 col-form-label font-weight-bold">Nombre</label>
+                            <label class="col-sm-3 col-form-label ">Nombre:</label>
                             <div class="col-sm-9">
                                 <input type="text" class="form-control readonly-input" asp-for="Name" readonly />
                             </div>
@@ -55,7 +55,7 @@
                 <div class="row">
                     <div class="col-md-6">
                         <div class="form-group row">
-                            <label class="col-sm-3 col-form-label font-weight-bold">Apellido</label>
+                            <label class="col-sm-3 col-form-label ">Apellido:</label>
                             <div class="col-sm-9">
                                 <input type="text" class="form-control readonly-input" asp-for="LastName" readonly />
                             </div>
@@ -64,7 +64,7 @@
 
                     <div class="col-md-6">
                         <div class="form-group row">
-                            <label class="col-sm-3 col-form-label font-weight-bold">Correo Electrónico</label>
+                            <label class="col-sm-3 col-form-label ">Correo Electrónico:</label>
                             <div class="col-sm-9">
                                 <input type="email" class="form-control readonly-input" asp-for="Email" readonly />
                             </div>
@@ -75,7 +75,7 @@
                 <div class="row">
                     <div class="col-md-6">
                         <div class="form-group row">
-                            <label class="col-sm-3 col-form-label font-weight-bold">Estatus</label>
+                            <label class="col-sm-3 col-form-label ">Estatus:</label>
                             <div class="col-sm-9">
                                 <input type="text" class="form-control readonly-input" value="@(Model.Estatus == 1 ? "Activo" : "Inactivo")" readonly />
                             </div>
@@ -84,7 +84,7 @@
 
                     <div class="col-md-6">
                         <div class="form-group row">
-                            <label class="col-sm-3 col-form-label font-weight-bold">Fecha de Registro</label>
+                            <label class="col-sm-3 col-form-label ">Fecha de Registro:</label>
                             <div class="col-sm-9">
                                 <input type="text" class="form-control readonly-input" value="@Model.RegistrationDate" readonly />
                             </div>
@@ -94,7 +94,7 @@
                 <div class="row">
                     <div class="col-md-6">
                         <div class="form-group row">
-                            <label class="col-sm-3 col-form-label" for="currentPasswordIdentity">Contraseña de validación</label>
+                            <label class="col-sm-3 col-form-label" for="currentPasswordIdentity">Contraseña de validación:</label>
 
                             <div class="col-sm-9">
                                 <input type="password" class="form-control" id="currentPasswordIdentity" name="currentPasswordIdentity" placeholder="Contraseña para validar identidad" required />
@@ -102,9 +102,11 @@
                             </div>
                         </div>
                     </div>
+                </div>
+                    <hr class="linea-danger" />
                 <div class="d-flex justify-content-end">
-                    <button type="submit" class="btn btn-danger font-weight-bold">Eliminar</button>
-                    <a asp-action="Index" class="btn btn-outline-secondary font-weight-bold ml-2">Cancelar</a>
+                    <button type="submit" class="btn btn-outline-danger font-weight-bold"><i class="mdi mdi-delete-forever btn-icon-prepend"></i>Eliminar</button>
+                    <a asp-action="Index" class="btn btn-outline-secondary font-weight-bold ml-2"><i class="mdi mdi-close-circle-outline  btn-icon-prepend"></i>Cancelar</a>
                 </div>
             </form>
         </div>

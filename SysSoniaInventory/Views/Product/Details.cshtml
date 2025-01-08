@@ -103,9 +103,10 @@
                 <!-- Columna izquierda con los detalles del producto (campos) -->
                 <div class="col-md-6">
                     <div class="justify-content-center">
-                        <h3 class="card-title font-weight-bold">Detalles del Producto</h3>
+                        <h3 class="card-title text-info font-weight-bold">Detalles del Producto</h3>
                     </div>
-                    <hr class="linea-blanca"/>
+                    <hr class="linea-info" />
+                 
                     <div class="form-group row">
                         <label class="col-sm-3 col-form-label" asp-for="IdCategory">Categoría:</label>
                         <div class="col-sm-9">
@@ -217,10 +218,10 @@
                         </div>
                     </div>
                     <br />
-                    <hr class="linea-blanca" />
+                    <hr class="linea-info" />
                     <!-- Botones de acción al final, alineados a la derecha -->
                     <div class="d-flex justify-content-end">
-                        <a asp-action="Edit" asp-route-id="@Model?.Id" class="btn btn-outline-primary font-weight-bold">Editar</a>
+                        <a asp-action="Edit" asp-route-id="@Model?.Id" class="btn btn-outline-warning font-weight-bold"><i class="mdi mdi-file-restore btn-icon-prepend"></i>Editar</a>
                         <a asp-action="Index" class="btn btn-outline-secondary font-weight-bold ml-2">Volver a la lista</a>
                     </div>
                 </div>

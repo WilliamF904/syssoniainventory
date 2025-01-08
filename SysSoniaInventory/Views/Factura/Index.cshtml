@@ -113,7 +113,7 @@
                                     <td>@factura.Time.ToString("hh\\:mm")</td>
                                     <td>@factura.DetalleFactura.Sum(d => d.PriceTotal)</td>
                                     <td>
-                                        <a asp-action="Details" asp-route-id="@factura.Id" class="btn btn-primary">Detalles</a>
+                                        <a asp-action="Details" asp-route-id="@factura.Id" class="btn btn-outline-info">Detalles</a>
                                     </td>
                                 </tr>
                             }

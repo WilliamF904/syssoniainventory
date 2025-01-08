@@ -8,8 +8,8 @@
     <div class="card">
         <div class="card-body">
 
-            <h3 class="card-title font-weight-bold">Detalles del Rol</h3>
-
+            <h3 class="card-title text-info  font-weight-bold">Detalles del Rol</h3>
+            <hr class="linea-info" />
             <form>
                 <div class="row">
                     <div class="col-12">
@@ -37,9 +37,9 @@
                 </div>
             </form>
 
-
+            <hr class="linea-info" />
             <div class="d-flex justify-content-end">
-                <a asp-action="Edit" asp-route-id="@Model?.Id" class="btn btn-outline-primary font-weight-bold">Editar</a>
+                <a asp-action="Edit" asp-route-id="@Model?.Id" class="btn btn-outline-warning font-weight-bold"><i class="mdi mdi-file-restore btn-icon-prepend"></i>Editar</a>
                 <a asp-action="Index" class="btn btn-outline-secondary font-weight-bold ml-2">Volver a la lista</a>
             </div>
 
