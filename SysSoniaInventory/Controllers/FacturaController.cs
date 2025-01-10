@@ -45,6 +45,8 @@ namespace SysSoniaInventory.Controllers
             {
                 facturasQuery = facturasQuery.Where(f => f.NameUser == userName);
             }
+            // Ordenar las facturas en orden descendente por IdFactura (o cualquier otra propiedad)
+            facturasQuery = facturasQuery.OrderByDescending(f => f.Id);  // O usa otro campo como f.FechaFactura si es necesario
 
             var facturas = facturasQuery.ToList();
             return View(facturas);

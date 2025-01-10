@@ -42,7 +42,7 @@ namespace SysSoniaInventory.Controllers
                 TempData["Error"] = "No tienes acceso a esta sección. Requerido: Nivel 4.";
                 return RedirectToAction("Index", "Home");
             }
-            var roles = _context.modelRol.ToList();
+            var roles = _context.modelRol.OrderByDescending(r => r.Id).ToList();
             return View(roles);
         }
 

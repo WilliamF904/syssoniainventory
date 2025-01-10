@@ -40,7 +40,9 @@ namespace SysSoniaInventory.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
-            return View(await _context.modelReport.ToListAsync());
+
+            return View(await _context.modelReport.OrderByDescending(r => r.Id).ToListAsync());
+
         }
 
         // GET: Report/Details/5

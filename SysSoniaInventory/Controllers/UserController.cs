@@ -91,7 +91,7 @@ namespace SysSoniaInventory.Controllers
             var allUsers = await _context.modelUser
                 .Include(m => m.IdRolNavigation)
                 .Include(m => m.IdSucursalNavigation)
-                .ToListAsync();
+                .OrderByDescending(r => r.Id).ToListAsync();
 
             // Eliminar registros con nivel de acceso superior
             allUsers.RemoveAll(m => nivelesAcceso[m.IdRolNavigation.AccessTipe] >= nivelUsuario && nivelUsuario != 4);
