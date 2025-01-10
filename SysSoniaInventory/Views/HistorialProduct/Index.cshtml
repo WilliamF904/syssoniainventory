@@ -28,7 +28,7 @@
             <div class="card-body">
 
                 <div class="table-responsive">
-                    <table class="table table-striped table-hover">
+                    <table class="table table-striped table-bordered table-hover">
                         <thead>
                             <tr>
                                 <th>
@@ -52,24 +52,24 @@
                                 <th>Acciones</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody class="txt-whithe">
                             @foreach (var item in Model)
                             {
                                 <tr>
-                                    <td class=" text-light">
+                                    <td >
                                         @Html.DisplayFor(modelItem => item.NameUser)
                                     </td>
-                                    <td class=" text-light">
+                                    <td >
                                         @Html.DisplayFor(modelItem => item.IdProduct)
                                     </td>
 
-                                    <td class=" text-light">
+                                    <td>
                                         @Html.DisplayFor(modelItem => item.Date)
                                     </td>
-                                    <td class=" text-light">
+                                    <td >
                                         @Html.DisplayFor(modelItem => item.Time)
                                     </td>
-                                    <td class=" text-light">
+                                    <td >
                                         @Html.DisplayFor(modelItem => item.RazonCambioAuto)
                                     </td>
                                   

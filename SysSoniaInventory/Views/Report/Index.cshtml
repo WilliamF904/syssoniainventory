@@ -8,8 +8,8 @@
     <div class="col-lg-6 grid-margin stretch-card">
         <div class="card">
             <div class="card-body">
-                <h3 class="card-title text-info font-weight-bold">Lista de Reportes</h3>
-                <hr class="linea-info" />
+                <h3 class="card-title  font-weight-bold">Lista de Reportes</h3>
+              
             </div>
         </div>
     </div>
@@ -24,36 +24,49 @@
         <div class="card">
             <div class="card-body">
                 <div class="table-responsive">
-                    <table class="table table-striped table-hover">
+                    <table class="table table-striped table-bordered table-hover">
                         <thead>
                             <tr>
-                                <th>Tipo de Reporte</th>
-                                <th>Descripción</th>
+                                <th>Id</th>
+                                <th>Tipo de Reporte</th>                       
                                 <th>Estatus</th>
-                                <th>Usuario</th>
-                                <th>Comentario del Usuario</th>
                                 <th>Fecha de Inicio</th>
-                                <th>Hora de Inicio</th>
-                                <th>Fecha de Finalización</th>
-                                <th>Hora de Finalización</th>
+                                <th>Fecha de Finalización</th>          
                                 <th>Id de Relación</th>
                                 <th>Acciones</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody class="txt-whithe">
                             @foreach (var item in Model)
                             {
                                 <tr>
-                                    <td class="text-light">@Html.DisplayFor(modelItem => item.TypeReport)</td>
-                                    <td class="text-light">@Html.DisplayFor(modelItem => item.Description)</td>
-                                    <td class="text-light">@Html.DisplayFor(modelItem => item.Estatus)</td>
-                                    <td class="text-light">@Html.DisplayFor(modelItem => item.NameUser)</td>
-                                    <td class="text-light">@Html.DisplayFor(modelItem => item.ComentaryUser)</td>
-                                    <td class="text-light">@Html.DisplayFor(modelItem => item.StarDate)</td>
-                                    <td class="text-light">@Html.DisplayFor(modelItem => item.StarTime)</td>
-                                    <td class="text-light">@Html.DisplayFor(modelItem => item.EndDate)</td>
-                                    <td class="text-light">@Html.DisplayFor(modelItem => item.EndTime)</td>
-                                    <td class="text-light">@Html.DisplayFor(modelItem => item.IdRelation)</td>
+                                    <td>@Html.DisplayFor(modelItem => item.Id)</td>
+                                    <td>@Html.DisplayFor(modelItem => item.TypeReport)</td>   
+                                    <td>@Html.DisplayFor(modelItem => item.Estatus)</td>  
+                                    <td>@Html.DisplayFor(modelItem => item.StarDate)</td>
+                                    @if (item.EndDate >= item.StarDate)
+                                    {
+                                        <td>@Html.DisplayFor(modelItem => item.EndDate)</td>
+                                    }
+                                    else{
+                                    <td></td>
+                                    }
+
+                                    <td>
+                                        @if (item.TypeReport == "Stock Bajo")
+                                        {
+                                            <span>Id Producto: @item.IdRelation</span>
+                                        }
+                                        else if (item.TypeReport == "Reporte Usuario")
+                                        {
+                                            <span>Id Usuario: @item.IdRelation</span>
+                                        }
+                                        else
+                                        {
+                                            @Html.DisplayFor(modelItem => item.IdRelation)
+                                        }
+                                    </td>
+
                                     <td>
                                         <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-outline-info primary">Detalles</a>
                                         <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-outline-warning">Editar</a>

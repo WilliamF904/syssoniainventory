@@ -6,116 +6,203 @@
 
 <div class="container-fluid">
     <form asp-action="Create" method="post">
+        <input type="hidden" asp-for="NameSucursal" id="NameSucursal" value="@ViewBag.NameSucursal" />
         <div class="row">
             <!-- Columna izquierda -->
-            <div class="col-md-5">
-                <h1 class="display-5 font-weight-bold">Nueva Factura</h1>
-                <hr>
-                <div class="form-group">
-                    <label for="NameSucursal" class="h5 font-weight-bold">Sucursal:</label>
-                    <input asp-for="NameSucursal" class="form-control font-weight-bold form-control-lg readonly-input" id="NameSucursal" value="@ViewBag.NameSucursal" readonly />
-                </div>
-                <div class="form-group">
-                    <label for="NameUser" class="h5 font-weight-bold">Usuario:</label>
-                    <input asp-for="NameUser" class="form-control font-weight-bold form-control-lg readonly-input" id="NameUser" value="@ViewBag.NameUser" readonly />
-                </div>
+            <div class="col-md-4 stretch-card">
+                <div class="card dropdown-container">
+                    <div class="card-body">
+                        <h1 class="display-5 font-weight-bold">Nueva Factura</h1>
+                        <hr class="linea-blanca" />
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="Date" class="h5 font-weight-bold">Fecha:</label>
+                                    <input asp-for="Date" class="form-control font-weight-bold form-control-lg readonly-input" id="Date" type="date" value="@DateTime.Now.ToString("yyyy-MM-dd")" readonly />
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="Time" class="h5 font-weight-bold">Hora:</label>
+                                    <input asp-for="Time" class="form-control font-weight-bold form-control-lg readonly-input" id="Time" type="time" value="@DateTime.Now.ToString("HH:mm")" readonly />
+                                </div>
+                            </div>
+                        </div>
 
-                <div class="form-group">
-                    <label for="NameClient" class="h5 font-weight-bold">Nombre del Cliente:</label>
-                    <input asp-for="NameClient" class="form-control font-weight-bold form-control-lg" id="NameClient" placeholder="Escriba el nombre del cliente" />
-                </div>
-                <div class="row">
-                    <div class="col-md-6">
                         <div class="form-group">
-                            <label for="Date" class="h5 font-weight-bold">Fecha:</label>
-                            <input asp-for="Date" class="form-control font-weight-bold form-control-lg readonly-input" id="Date" type="date" value="@DateTime.Now.ToString("yyyy-MM-dd")" readonly />
+                            <label for="NameUser" class="h5 font-weight-bold">Usuario:</label>
+                            <input asp-for="NameUser" class="form-control font-weight-bold form-control-lg readonly-input" id="NameUser" value="@ViewBag.NameUser" readonly />
                         </div>
-                    </div>
-                    <div class="col-md-6">
+
                         <div class="form-group">
-                            <label for="Time" class="h5 font-weight-bold">Hora:</label>
-                            <input asp-for="Time" class="form-control font-weight-bold form-control-lg readonly-input" id="Time" type="time" value="@DateTime.Now.ToString("HH:mm")" readonly />
+                            <label for="NameClient" class="h5 font-weight-bold">Nombre/Descripción del Cliente:</label>
+                            <input asp-for="NameClient" class="form-control font-weight-bold form-control-lg" id="NameClient" placeholder="Opcional" />
                         </div>
+
+                 
+
+                        <!-- Contenedor oculto para los inputs dinámicos -->
+                        <div id="HiddenInputsContainer"></div>
+
+                        <hr class="linea-blanca" />
+                        <button type="submit" class="btn btn-outline-primary ">Guardar</button>
+                        <a asp-action="Index" class="btn btn-outline-danger ">Cancelar</a>
                     </div>
                 </div>
             </div>
 
             <!-- Columna derecha -->
-            <div class="col-md-7">
-                <h4 class="font-weight-bold">Productos</h4>
-                <div class="form-group">
-                    <label for="ProductSelect" class="h5 font-weight-bold">Seleccionar Productos:</label>
-                    <select id="ProductSelect" class="form-control font-weight-bold form-control-lg">
-                        @foreach (var product in ViewBag.Productos)
+            <div class="col-md-8   stretch-card">
+                <div class="card dropdown-container">
+                    <div class="card-body">
+                        <h4 class="font-weight-bold">Productos:</h4>
+                        <div class="form-group">
+                            <select id="ProductSelect" class="form-control font-weight-bold form-control-lg text-light">
+                                <option value="" disabled selected>Seleccione un producto</option>
+                                @foreach (var product in ViewBag.Productos)
 
-                        {
-                            <option value="@product.Id" data-name="@product.Name" data-price="@product.SalePrice" data-stock="@product.Stock" data-codigo="@product.Codigo">
-                                @product.Name - Precio: $@product.SalePrice - @product.Codigo
-                            </option>
-                        }
-                    </select>
+                                {
+                                    <option value="@product.Id" data-name="@product.Name" data-price="@product.SalePrice" data-stock="@product.Stock" data-codigo="@product.Codigo">
+                                        @product.Name - Precio: $@product.SalePrice - @product.Codigo
+                                    </option>
+                                }
+                            </select>
+                            <hr class="linea-blanca" />
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table table-bordered  table-striped table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Producto</th>
+                                        <th>Unid.</th>
+                                        <th>Precio Unid.</th>
+                                        <th>Descuento(%)</th>
+                                        <th>Subtotal</th>
+                                        <th>Accion</th>
+                                    </tr>
+                                </thead>
+
+                                <tbody id="ProductTableBody" class="txt-whithe">
+                                    <!-- Filas dinámicas -->
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <td colspan="4" class="text-right font-weight-bold txt-whithe">Total General:</td>
+                                        <td colspan="2" id="TotalGeneral" class=" txt-whithe">$0.00</td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+
+                        </div>
+
+                    </div>
+
+                  
+                  
                 </div>
-                <table class="table table-bordered">
-                    <thead>
-                        <tr>
-                            <th>Producto</th>
-                            <th>Cantidad</th>
-                            <th>Precio Unitario</th>
-                            <th>Descuento (%)</th>
-                            <th>Subtotal</th>
-                            <th>Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody id="ProductTableBody">
-                        <!-- Filas dinámicas -->
-                    </tbody>
-                    <tfoot>
-                        <tr>
-                            <td colspan="4" class="text-right font-weight-bold">Total General:</td>
-                            <td colspan="2" id="TotalGeneral">$0.00</td>
-                        </tr>
-                    </tfoot>
-                </table>
             </div>
+
         </div>
 
-        <!-- Contenedor oculto para los inputs dinámicos -->
-        <div id="HiddenInputsContainer"></div>
-
-        <hr />
-        <button type="submit" class="btn btn-primary btn-lg">Guardar</button>
-        <a asp-action="Index" class="btn btn-danger btn-lg">Cancelar</a>
     </form>
 </div>
 
+
+<div class="modal fade" id="productModal" tabindex="-1" aria-labelledby="productModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="productModalLabel">Añadir Producto</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="productForm">
+                    <div class="mb-3">
+                        <label class="form-label" id="productDetails"></label>
+
+                    </div>
+                    <div class="mb-3">
+                        <label for="quantityInput" class="form-label">Cantidad</label>
+                        <input type="number" class="form-control" id="quantityInput" placeholder="Ingrese cantidad" required>
+                        <div class="form-text">Máximo disponible: <span id="maxStock"></span></div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="discountInput" class="form-label">Descuento (%)</label>
+                        <input type="number" class="form-control" id="discountInput" placeholder="Ingrese descuento" required>
+                        <div class="form-text">Entre 0% y 100%.</div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" id="saveProductBtn">Guardar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
 <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Asumiendo que el modal tiene el ID 'myModal'
+        const modal = document.getElementById('myModal');
+
+        if (modal) {
+            // Detectar el cierre del modal por cualquier método
+            modal.addEventListener('hidden.bs.modal', function () {
+                resetSelect();
+            });
+        }
+    });
+
     document.addEventListener('DOMContentLoaded', function () {
         const productsSelect = document.getElementById('ProductSelect');
         const productTableBody = document.getElementById('ProductTableBody');
         const totalGeneral = document.getElementById('TotalGeneral');
         const hiddenInputsContainer = document.getElementById('HiddenInputsContainer');
         let products = [];
-        let productIndex = 0;
 
+        // Modal y campos del formulario
+        const productModal = new bootstrap.Modal(document.getElementById('productModal'));
+        const quantityInput = document.getElementById('quantityInput');
+        const discountInput = document.getElementById('discountInput');
+        const maxStockSpan = document.getElementById('maxStock');
+        const saveProductBtn = document.getElementById('saveProductBtn');
+        let currentProduct = null;
+
+        // Función para restablecer la selección del campo select
+        function resetSelect() {
+            productsSelect.selectedIndex = 0;
+        }
+
+        // Función para actualizar los campos ocultos
+        function updateHiddenInputs() {
+            hiddenInputsContainer.innerHTML = '';
+            products.forEach((product, index) => {
+                const baseName = `detalles[${index}]`;
+                hiddenInputsContainer.innerHTML += `
+                            <input type="hidden" name="${baseName}.IdProduct" value="${product.id}" />
+                            <input type="hidden" name="${baseName}.CodigoProducto" value="${product.codigo}" />
+                            <input type="hidden" name="${baseName}.CantidadProduct" value="${product.quantity}" />
+                            <input type="hidden" name="${baseName}.ValorDescuento" value="${product.discount}" />
+                            <input type="hidden" name="${baseName}.SalePriceUnitario" value="${product.price}" />
+                            <input type="hidden" name="${baseName}.PriceTotal" value="${product.subtotal}" />
+                            <input type="hidden" name="${baseName}.NameProducto" value="${product.name}" />
+                        `;
+            });
+        }
+
+        // Función para calcular el total general
         function updateTotal() {
-            let total = products.reduce((sum, product) => sum + product.subtotal, 0);
+            const total = products.reduce((sum, product) => sum + product.subtotal, 0);
             totalGeneral.textContent = `$${total.toFixed(2)}`;
         }
-
-        function addHiddenInputs(product) {
-            const baseName = `detalles[${productIndex}]`;
-            hiddenInputsContainer.innerHTML += `
-                    <input type="hidden" name="${baseName}.IdProduct" value="${product.id}" />
-                    <input type="hidden" name="${baseName}.CodigoProducto" value="${product.codigo}" />
-                    <input type="hidden" name="${baseName}.CantidadProduct" value="${product.quantity}" />
-                    <input type="hidden" name="${baseName}.ValorDescuento" value="${product.discount}" />
-                    <input type="hidden" name="${baseName}.SalePriceUnitario" value="${product.price}" />
-                    <input type="hidden" name="${baseName}.PriceTotal" value="${product.subtotal}" />
-                        <input type="hidden" name="${baseName}.NameProducto" value="${product.name}" />
-                `;
-            productIndex++;
-        }
-
+        // Obtener referencia al elemento donde se mostrarán los detalles del producto
+        const productDetails = document.getElementById('productDetails');
+        // Mostrar modal para ingresar datos
         productsSelect.addEventListener('change', function () {
             const selectedOption = productsSelect.options[productsSelect.selectedIndex];
             const productId = selectedOption.value;
@@ -126,46 +213,82 @@
 
             if (products.some(p => p.id === productId)) {
                 alert("Este producto ya está agregado.");
+                resetSelect();
                 return;
             }
 
-            const quantity = prompt(`Ingrese la cantidad para ${productName} (Máximo: ${productStock}):`, "1");
-            if (!quantity || isNaN(quantity) || quantity <= 0 || quantity > productStock) {
-                alert("Cantidad inválida.");
+            // Configurar datos del modal
+            currentProduct = {
+                id: productId,
+                name: productName,
+                price: productPrice,
+                stock: productStock,
+                codigo: productCodigo
+            };
+            // Mostrar el nombre y el código en el modal
+            productDetails.textContent = `${currentProduct.name} (Código: ${currentProduct.codigo})`;
+            maxStockSpan.textContent = productStock;
+            quantityInput.value = 1;
+            discountInput.value = 0;
+            productModal.show();
+        });
+
+        // Guardar producto al confirmar
+        saveProductBtn.addEventListener('click', function () {
+            const quantity = parseInt(quantityInput.value, 10);
+            const discount = parseFloat(discountInput.value);
+
+            if (isNaN(quantity) || quantity <= 0 || quantity > currentProduct.stock) {
+                alert("Cantidad inválida. Verifique los límites.");
                 return;
             }
 
-            const discount = prompt(`Ingrese el porcentaje de descuento para ${productName}:`, "0");
-            if (!discount || isNaN(discount) || discount < 0 || discount > 100) {
-                alert("Descuento inválido.");
+            if (isNaN(discount) || discount < 0 || discount > 100) {
+                alert("Descuento inválido. Debe estar entre 0% y 100%.");
                 return;
             }
 
-            const discountedPrice = productPrice - (productPrice * discount / 100);
+            const discountedPrice = currentProduct.price - (currentProduct.price * discount / 100);
             const subtotal = discountedPrice * quantity;
-            const product = { id: productId, codigo: productCodigo, name: productName, quantity, price: productPrice, discount, subtotal };
+
+            const product = {
+                id: currentProduct.id,
+                codigo: currentProduct.codigo,
+                name: currentProduct.name,
+                quantity,
+                price: currentProduct.price,
+                discount,
+                subtotal
+            };
             products.push(product);
 
             const row = document.createElement('tr');
             row.innerHTML = `
-                    <td>${productName}</td>
-                    <td>${quantity}</td>
-                    <td>$${productPrice.toFixed(2)}</td>
-                    <td>${discount}%</td>
-                    <td>$${subtotal.toFixed(2)}</td>
-                    <td>
-                        <button class="btn btn-danger btn-sm" onclick="removeProduct('${productId}', this)">Eliminar</button>
-                    </td>`;
+                          <td style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 150px;" title="${product.name}">${product.name}</td>
+
+                        <td>${quantity}</td>
+                        <td>$${product.price.toFixed(2)}</td>
+                        <td>${discount}%</td>
+                        <td>$${subtotal.toFixed(2)}</td>
+                        <td>
+                            <button class="btn btn-danger btn-sm" onclick="removeProduct('${product.id}', this)"> X </button>
+                        </td>
+                    `;
             productTableBody.appendChild(row);
-            addHiddenInputs(product);
+
+            updateHiddenInputs();
             updateTotal();
+            resetSelect();
+            productModal.hide();
         });
 
+        // Eliminar un producto de la tabla
         window.removeProduct = function (productId, button) {
             products = products.filter(p => p.id !== productId);
             button.parentElement.parentElement.remove();
+            updateHiddenInputs();
             updateTotal();
         };
     });
-</script>
 
+</script>

@@ -51,49 +51,23 @@ namespace SysSoniaInventory.Controllers
         }
 
 
-        public IActionResult BuscarProducto(string query)
+        [HttpPost]
+        public IActionResult FiltrarProductos(string nombre, string codigo)
         {
-            // Verificar niveles de acceso
-            if (User.HasClaim("AccessTipe", "Nivel 4"))
-            { // Nivel 4 tiene acceso
+            // Filtrar productos según los parámetros proporcionados
+            var productosFiltrados = _context.modelProduct.AsQueryable();
 
-            }
-            else if (User.HasClaim("AccessTipe", "Nivel 3"))
+            if (!string.IsNullOrEmpty(nombre))
             {
-                // Nivel 3 tiene acceso
-
+                productosFiltrados = productosFiltrados.Where(p => p.Name.Contains(nombre));
             }
-            else if (User.HasClaim("AccessTipe", "Nivel 2"))
+
+            if (!string.IsNullOrEmpty(codigo))
             {
-                // Nivel 2 tiene acceso
-
-            }
-            else if (User.HasClaim("AccessTipe", "Nivel 5"))
-            {
-                // Nivel 5 tiene acceso
-
-            }
-            else
-            {
-                // Redirigir con mensaje de error si el usuario no tiene acceso
-                TempData["Error"] = "No tienes acceso a esta sección. Requerido: Nivel 2 o superior.";
-                return RedirectToAction("Index", "Home");
+                productosFiltrados = productosFiltrados.Where(p => p.Codigo.Contains(codigo));
             }
 
-            var productos = _context.modelProduct
-                                    .Where(p => p.Estatus == 1 &&
-                                                (p.Name.Contains(query) || p.Codigo.ToString().Contains(query)))
-                                    .Select(p => new
-                                    {
-                                        p.Id,
-                                        p.Name,
-                                        p.Codigo,
-                                        p.SalePrice,
-                                        p.Stock
-                                    })
-                                    .ToList();
-
-            return Json(productos);
+            return PartialView("_ProductosFiltrados", productosFiltrados.ToList());
         }
 
 

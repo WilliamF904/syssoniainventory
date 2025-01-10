@@ -127,6 +127,13 @@ body {
     background-color: #343a40 !important; /* Color de Dark */
 }
 
+.txt-whithe {
+    color: #d3d3d3 !important;
+}
+
+.table-hover tbody tr:hover {
+    color: #ffffff !important;
+}
 .dropdown-itemPer:hover {
     color: #ffffff;
     text-decoration: none;

@@ -108,7 +108,7 @@
 
 
                 <div class="table-responsive">
-                    <table class="table table-bordered table-striped" id="userTable">
+                    <table class="table table-bordered table-hover table-striped" id="userTable">
                         <thead>
                             <tr>
                                 <th scope="col">@Html.DisplayNameFor(model => model.Name)</th>
@@ -118,7 +118,7 @@
                                 <th scope="col">Acciones</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody class="txt-whithe">
                             @foreach (var item in Model)
                             {
                                 <tr>

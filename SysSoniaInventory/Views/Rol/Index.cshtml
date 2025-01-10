@@ -70,7 +70,7 @@
                 <h4 class="card-title">Tabla de roles</h4>
 
                 <div class="table-responsive">
-                    <table class="table table-bordered table-striped" id="roleTable">
+                    <table class="table table-bordered table-striped  table-hover" id="roleTable">
                         <thead>
                             <tr>
                                 <th scope="col">@Html.DisplayNameFor(model => model.Name)</th>
@@ -78,7 +78,7 @@
                                 <th scope="col">Acciones</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody class="txt-whithe">
                             @foreach (var item in Model)
                             {
                                 <tr>
