@@ -1,18 +1,41 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 using SysSoniaInventory.DataAccess;
+using System.Text.Json;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Cargar configuración del archivo appsettings.json
 builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
 
+// Obtener la ruta del archivo dbconfig.json desde la variable de entorno
+string dbConfigPath = Environment.GetEnvironmentVariable("DB_CONFIG_PATH");
+Console.WriteLine($"Ruta del archivo de configuración: {dbConfigPath}");  // Depuración
+
+if (string.IsNullOrEmpty(dbConfigPath))
+{
+    throw new Exception("La ruta de la configuración de la base de datos no está definida.");
+}
+
+// Obtener la cadena de conexión desde dbconfig.json
+string dbConfigFullPath = Path.Combine(Directory.GetCurrentDirectory(), dbConfigPath);
+if (!File.Exists(dbConfigFullPath))
+{
+    throw new Exception($"El archivo de configuración de la base de datos no se encontró en la ruta: {dbConfigFullPath}");
+}
+
+string dbConfigContent = File.ReadAllText(dbConfigFullPath);
+
+// Parsear el contenido del archivo dbconfig.json para obtener la cadena de conexión
+var dbConfig = JsonSerializer.Deserialize<Dictionary<string, string>>(dbConfigContent);
+string connectionString = dbConfig["ConnectionString"];  // Asumimos que el archivo dbconfig.json tiene la clave "ConnectionString"
+
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
 // Configurar el DbContext con la cadena de conexión
 builder.Services.AddDbContext<DBContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseSqlServer(connectionString));  // Usamos la cadena de conexión obtenida desde dbconfig.json
 
 // Configurar autenticación con cookies
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
