@@ -177,7 +177,7 @@ INSERT INTO ModelRol (Name, AccessTipe) VALUES ('Interno', 'Nivel 1');
 INSERT INTO ModelSucursal (Name, Address) VALUES ('Sucursal Central', 'Av. Principal 123');
 
 
--- Insertar datos en la tabla ModelUser  contraseña :  brytani
+-- Insertar datos en la tabla ModelUser  contraseña :  Ediel904
 INSERT INTO ModelUser (IdRol, IdSucursal, Tel, Name, LastName, Email, Password, Estatus, RegistrationDate) 
 VALUES (1, 1, 12345678, 'William Alberto', 'Brito Flamenco', 'Brito503@gmail.com', '6cf00319fd41a374a2badeeb321a5e28b5bf75dfbda438dd550383985743d164', 1, '2024-12-26');
 
