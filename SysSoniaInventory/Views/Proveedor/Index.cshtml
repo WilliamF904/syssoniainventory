@@ -4,21 +4,53 @@
     ViewData["Title"] = "Index";
 }
 
+
 <div class="row">
-    <!-- Encabezado con el título y botón para crear nuevo proveedor -->
+
+
     <div class="col-lg-6 grid-margin stretch-card">
         <div class="card">
             <div class="card-body">
                 <h1 class="card-title">Lista de Proveedores</h1>
-                @if (User.HasClaim("AccessTipe", "Nivel 4") || User.HasClaim("AccessTipe", "Nivel 5"))
-                {
-                    <a asp-action="Create" class="btn btn-outline-primary font-weight-bold ml-2">
-                        <i class="fas fa-plus"></i> Nuevo proveedor
-                    </a>
-                }
+                <div class="d-flex align-items-center justify-content-start">
+                    @if (User.HasClaim("AccessTipe", "Nivel 4") || User.HasClaim("AccessTipe", "Nivel 5"))
+                    {
+                        <!-- Botón Nuevo Usuario -->
+                        <a asp-action="Create" class="btn btn-outline-primary font-weight-bold ml-2">
+                            <i class="fas fa-plus"></i> Nuevo proveedor
+                        </a>
+
+
+                        <!-- Línea decorativa -->
+                        <div class="separator mx-3"></div>
+                    }
+                    @if (User.HasClaim("AccessTipe", "Nivel 4") || User.HasClaim("AccessTipe", "Nivel 5"))
+                    {
+                        <!-- Contenedor del Botón Descargar PDF -->
+                        <div class="dropdown-container">
+                            <!-- Botón principal para abrir el menú -->
+                            <button id="dropdownButton" class="dropdown-button btn btn-outline-secondary">
+                                <i class="mdi mdi-download"></i> Descargar PDF
+                            </button>
+
+                            <!-- Menú desplegable -->
+                            <ul id="dropdownMenu" class="dropdown-menu">
+                                <li>
+
+                                    <a asp-action="GeneratePdf" asp-controller="GeneratePdfProveedores" class="btn btn-primary">
+                                        <i class="mdi mdi-download"></i> Descargar Todos los Proveedores
+                                    </a>
+
+                                </li>
+                            </ul>
+                        </div>
+                    }
+
+                </div>
             </div>
         </div>
     </div>
+
 
     <!-- Filtrado de Proveedores -->
     <div class="col-lg-6 grid-margin stretch-card">
@@ -29,20 +61,7 @@
                     <div class="form-group d-flex align-items-center">
                         <input type="text" id="filterText" class="form-control" placeholder="Filtrar por nombre, descripción, email, etc." style="width: auto;">
                     </div>
-                    <div class="form-group d-flex align-items-center">
-                        <select id="filterRole" class="form-control" style="width: auto;">
-                            <option value="">Todos</option>
-                            <option value="Activo">Activo</option>
-                            <option value="Inactivo">Inactivo</option>
-                        </select>
-                    </div>
-                    <div class="form-group d-flex align-items-center">
-                        <select id="sortOrder" class="form-control" style="width: auto;">
-                            <option value="">Sin orden</option>
-                            <option value="asc">Ascendente (A-Z)</option>
-                            <option value="desc">Descendente (Z-A)</option>
-                        </select>
-                    </div>
+                                     
                 </form>
             </div>
         </div>
@@ -146,11 +165,9 @@
             }
 </style>
 
-<script>
-          document.addEventListener('DOMContentLoaded', function () {
+    <script>
+               document.addEventListener('DOMContentLoaded', function () {
             const filterText = document.getElementById('filterText');
-            const filterRole = document.getElementById('filterRole');
-            const sortOrder = document.getElementById('sortOrder');
             const providerTable = document.getElementById('providerTable');
             const rows = Array.from(providerTable.getElementsByTagName('tbody')[0].getElementsByTagName('tr'));
             const paginationControls = document.getElementById('paginationControls');
@@ -158,34 +175,14 @@
             let currentPage = 1;
             let filteredRows = rows;
 
-            // Filtrar y ordenar filas
+            // Filtrar filas
             function filterTable() {
                 const filterValue = filterText.value.toLowerCase();
-                const roleValue = filterRole.value;
-                const orderValue = sortOrder.value;
 
                 filteredRows = rows.filter(row => {
                     const cells = Array.from(row.getElementsByTagName('td'));
-                    const matchesText = !filterValue || cells.some(cell => cell.textContent.toLowerCase().includes(filterValue));
-                    const statusCell = cells[1]?.textContent.trim(); // Ajusta el índice según la columna de estado en tu tabla
-                    let matchesRole = true;
-
-                    if (roleValue === "Activo") {
-                        matchesRole = statusCell === "Activo";
-                    } else if (roleValue === "Inactivo") {
-                        matchesRole = statusCell === "Inactivo";
-                    }
-
-                    return matchesText && matchesRole;
+                    return cells.some(cell => cell.textContent.toLowerCase().includes(filterValue));
                 });
-
-                if (orderValue) {
-                    filteredRows.sort((a, b) => {
-                        const nameA = a.getElementsByTagName('td')[0].textContent.toLowerCase();
-                        const nameB = b.getElementsByTagName('td')[0].textContent.toLowerCase();
-                        return orderValue === 'asc' ? nameA.localeCompare(nameB) : nameB.localeCompare(nameA);
-                    });
-                }
 
                 currentPage = 1;
                 displayRows();
@@ -209,7 +206,7 @@
                 for (let i = 1; i <= totalPages; i++) {
                     const button = document.createElement('button');
                     button.textContent = i;
-                    button.className = 'pagination-button';
+                    button.className = 'pagination-button btn btn-outline-primary';
                     if (i === currentPage) {
                         button.classList.add('active');
                     }
@@ -226,12 +223,129 @@
 
             // Eventos
             filterText.addEventListener('input', filterTable);
-            filterRole.addEventListener('change', filterTable);
-            sortOrder.addEventListener('change', filterTable);
 
             // Inicialización
             displayRows();
             setupPagination();
         });
 
-</script>
+    </script>
+
+
+
+    <!-- Estilos Actualizados maneja los estilos del filtrado de usuarios-->
+
+    <style>
+        .form-group label {
+            width: 150px; /* Ancho fijo para etiquetas */
+            text-align: right; /* Alineación del texto */
+        }
+
+        .form-group input,
+        .form-group select {
+            flex-grow: 1; /* Los inputs ocuparán el resto del espacio disponible */
+        }
+
+    </style>
+
+    <style>
+        <style >
+        .pagination-button {
+            margin: 0 5px;
+            padding: 5px 10px;
+            border: 1px solid #ddd;
+            background-color: #fff;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        .pagination-button.active {
+            background-color: #007bff;
+            color: #fff;
+            border-color: #007bff;
+        }
+
+        .pagination-button:hover {
+            background-color: #0056b3;
+            color: #fff;
+        }
+    </style>
+
+    </style>
+
+    <!-- Estilos Actualizados maneja los estilos del imput descargar pdf entre otros-->
+    <style>
+
+
+
+        .d-flex {
+            display: flex;
+        }
+
+        .separator {
+            width: 2px;
+            height: 30px;
+            background-color: #ddd; /* Color de la línea decorativa */
+        }
+
+
+        .dropdown-container {
+            position: relative; /* Asegura que el menú se alinee respecto al contenedor */
+        }
+
+            .dropdown-container .dropdown-menu {
+                position: absolute;
+                top: 100%; /* Despliega justo debajo del botón */
+                left: 0;
+                display: none;
+                list-style: none;
+                padding: 10px;
+                margin: 0;
+                background-color: #f8f9fa;
+                border: 1px solid #ddd;
+                border-radius: 5px;
+                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+                width: 250px;
+                opacity: 0;
+                transform: translateY(-10px);
+                transition: opacity 0.3s ease, transform 0.3s ease;
+                z-index: 1000;
+            }
+
+                .dropdown-container .dropdown-menu.show {
+                    display: block;
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+    </style>
+
+
+    <!-- Script para manejar el menú desplegable -->
+    <!-- Script para manejar el menú desplegable -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const dropdownButton = document.getElementById("dropdownButton");
+            const dropdownMenu = document.getElementById("dropdownMenu");
+
+            // Alternar visibilidad y clase de animación
+            dropdownButton.addEventListener("click", function (event) {
+                event.stopPropagation(); // Evitar propagación
+                dropdownMenu.classList.toggle("show");
+            });
+
+            // Cerrar el menú si se hace clic fuera
+            document.addEventListener("click", function (event) {
+                if (!dropdownMenu.contains(event.target)) {
+                    dropdownMenu.classList.remove("show");
+                }
+            });
+        });
+
+    </script>
+
+
+
+
+
+
+   
