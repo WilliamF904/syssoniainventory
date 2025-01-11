@@ -2,27 +2,21 @@
 
 @{
     ViewData["Title"] = "Details";
-}
+}   <style>
+        .readonly-textarea {
+            resize: none; /* Desactiva el redimensionamiento manual */
+            height: 300px !important; /* Altura fija */
+            overflow-y: auto; /* Barra de desplazamiento vertical */
+            word-wrap: break-word; /* Ajusta el texto */
+        }
+</style>
 
 <div class="row">
-    <div class="col-lg-6 grid-margin stretch-card">
+    <div class="col-12 grid-margin">
         <div class="card">
             <div class="card-body">
                 <h3 class="card-title text-info font-weight-bold">Detalles del Reporte</h3>
                 <hr class="linea-info" />
-            </div>
-        </div>
-    </div>
-    <div class="col-lg-6 grid-margin stretch-card">
-        <div class="card">
-            <div class="card-body">
-            </div>
-        </div>
-    </div>
-
-    <div class="col-12 grid-margin">
-        <div class="card">
-            <div class="card-body">
                 <div class="row">
                     <div class="col-md-6">
                         <div class="form-group row">
@@ -32,17 +26,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-6">
-                        <div class="form-group row">
-                            <label class="col-sm-3 col-form-label">Descripción:</label>
-                            <div class="col-sm-9">
-                                <input type="text" class="form-control readonly-input" asp-for="Description" readonly />
-                            </div>
-                        </div>
-                    </div>
-                </div>
 
-                <div class="row">
                     <div class="col-md-6">
                         <div class="form-group row">
                             <label class="col-sm-3 col-form-label">Estatus:</label>
@@ -51,72 +35,105 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-6">
-                        <div class="form-group row">
-                            <label class="col-sm-3 col-form-label">Usuario:</label>
-                            <div class="col-sm-9">
-                                <input type="text" class="form-control readonly-input" asp-for="NameUser" readonly />
-                            </div>
-                        </div>
-                    </div>
                 </div>
 
                 <div class="row">
                     <div class="col-md-6">
-                        <div class="form-group row">
-                            <label class="col-sm-3 col-form-label">Comentario del Usuario:</label>
-                            <div class="col-sm-9">
-                                <input type="text" class="form-control readonly-input" asp-for="ComentaryUser" readonly />
+                        <div class="row mb-3">
+                            <!-- Sub-columna 1: Stock -->
+                            <div class="col-md-6 d-flex flex-column flex-md-row align-items-start align-items-md-center">
+                                <label class="form-label me-md-2 mb-1 mb-md-0 w-100 w-md-55" asp-for="StarDate">Fecha de Inicio:</label>
+                                <input type="text" class="form-control w-100 w-md-45 readonly-input" asp-for="StarDate" placeholder="Fecha de Inicio:" readonly />
+                                <span asp-validation-for="StarDate" class="text-danger mt-1 mt-md-0 ms-md-2"></span>
+                            </div>
+                            <!-- Sub-columna 2: LowStock -->
+                            <div class="col-md-6 d-flex flex-column flex-md-row align-items-start align-items-md-center">
+                                <label class="form-label me-md-2 mb-1 mb-md-0 w-100 w-md-55" asp-for="StarTime">Hora de Inicio:</label>
+                                <input type="text" class="form-control w-100 w-md-45  readonly-input" asp-for="StarTime" placeholder="Hora de Inicio: " readonly />
+                                <span asp-validation-for="StarTime" class="text-danger mt-1 mt-md-0 ms-md-2"></span>
                             </div>
                         </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="form-group row">
-                            <label class="col-sm-3 col-form-label">Fecha de Inicio:</label>
-                            <div class="col-sm-9">
-                                <input type="text" class="form-control readonly-input" asp-for="StarDate" readonly />
-                            </div>
-                        </div>
-                    </div>
-                </div>
 
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="form-group row">
-                            <label class="col-sm-3 col-form-label">Hora de Inicio:</label>
-                            <div class="col-sm-9">
-                                <input type="text" class="form-control readonly-input" asp-for="StarTime" readonly />
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="form-group row">
-                            <label class="col-sm-3 col-form-label">Fecha de Finalización:</label>
-                            <div class="col-sm-9">
-                                <input type="text" class="form-control readonly-input" asp-for="EndDate" readonly />
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="form-group row">
-                            <label class="col-sm-3 col-form-label">Hora de Finalización:</label>
-                            <div class="col-sm-9">
-                                <input type="text" class="form-control readonly-input" asp-for="EndTime" readonly />
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
                         <div class="form-group row">
                             <label class="col-sm-3 col-form-label">Id de Relación:</label>
                             <div class="col-sm-9">
                                 <input type="text" class="form-control readonly-input" asp-for="IdRelation" readonly />
                             </div>
                         </div>
+                     
+                            <div class="form-group row">
+                                <label class="col-sm-3 col-form-label">Descripción:</label>
+                                <div class="col-sm-9">
+                                    <textarea class="form-control  readonly-input readonly-textarea" asp-for="Description" readonly></textarea>
+                                </div>
+                            </div>
+                     
+
                     </div>
+              
+                        <div class="col-md-6">
+                        <div class="row mb-3">
+                            <!-- Sub-columna 1: EndDate -->
+                            <div class="col-md-6 d-flex flex-column flex-md-row align-items-start align-items-md-center">
+                                <label class="form-label me-md-2 mb-1 mb-md-0 w-100 w-md-55" asp-for="EndDate">Fecha de Finalización:</label>
+                                @if (Model.StarDate > Model.EndDate)
+                                {
+                                    <input type="text"
+                                           class="form-control w-100 w-md-45 readonly-input"
+                                      
+                                           readonly />
+                                }
+                                else
+                                {
+                                    <input type="text" class="form-control w-100 w-md-45 readonly-input"  asp-for="EndDate" placeholder="Fecha de Finalización:" readonly />
+                                }
+
+                                <span asp-validation-for="EndDate" class="text-danger mt-1 mt-md-0 ms-md-2"></span>
+                            </div>
+                            <!-- Sub-columna 2: LowStock -->
+                            <div class="col-md-6 d-flex flex-column flex-md-row align-items-start align-items-md-center">
+                                <label class="form-label me-md-2 mb-1 mb-md-0 w-100 w-md-55" asp-for="EndTime">Hora de Finalización</label>
+                                @if (Model.StarDate > Model.EndDate)
+                                {
+                                    <input type="text"
+                                           class="form-control w-100 w-md-45 readonly-input"
+                                       
+                                           readonly />
+                                }
+                                else
+                                {
+                                    <input type="text" class="form-control w-100 w-md-45  readonly-input" asp-for="EndTime" placeholder="Hora de Finalización: " readonly />
+                                }
+
+                                
+                                <span asp-validation-for="EndTime" class="text-danger mt-1 mt-md-0 ms-md-2"></span>
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">Usuario:</label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control readonly-input" asp-for="NameUser" readonly />
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                                <label class="col-sm-3 col-form-label">Comentario del Usuario:</label>
+                                <div class="col-sm-9">
+                                <textarea class="form-control  readonly-input readonly-textarea" asp-for="ComentaryUser" readonly></textarea>
+                                </div>
+                            </div>
+
+                     
+
+
+
+                        </div>            
                 </div>
+
+             
+
+              
 
                 <hr class="linea-info" />
                 <div class="d-flex justify-content-end">

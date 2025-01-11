@@ -4,75 +4,124 @@
     ViewData["Title"] = "Edit";
 }
 
-<h1>Edit</h1>
+<style>
+    .textarea-edit {
+        resize: none;
+        height: 300px !important;
+        overflow-y: auto;
+        word-wrap: break-word;
+    }
+</style>
 
-<h4>ModelReport</h4>
-<hr />
 <div class="row">
-    <div class="col-md-4">
-        <form asp-action="Edit">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="Id" />
-            <div class="form-group">
-                <label asp-for="TypeReport" class="control-label"></label>
-                <input asp-for="TypeReport" class="form-control" />
-                <span asp-validation-for="TypeReport" class="text-danger"></span>
+    <div class="col-12 grid-margin">
+        <div class="card">
+            <div class="card-body">
+                <h3 class="card-title text-warning font-weight-bold">Editar Reporte</h3>
+                <hr class="linea-warning" />
+                <form asp-action="Edit">
+                    <input type="hidden" asp-for="Id" />
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group row">
+                                <label class="col-sm-3 col-form-label">Tipo de Reporte:</label>
+                                <div class="col-sm-9">
+                                    <input type="text" class="form-control" asp-for="TypeReport" />
+                                    <span asp-validation-for="TypeReport" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="form-group row">
+                                <label class="col-sm-3 col-form-label">Estatus:</label>
+                                <div class="col-sm-9">
+                                    <input type="text" class="form-control" asp-for="Estatus" />
+                                    <span asp-validation-for="Estatus" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="row mb-3">
+                                <div class="col-md-6 d-flex flex-column flex-md-row align-items-start align-items-md-center">
+                                    <label class="form-label me-md-2 mb-1 mb-md-0 w-100 w-md-55" asp-for="StarDate">Fecha de Inicio:</label>
+                                    <input type="text" class="form-control w-100 w-md-45" asp-for="StarDate" />
+                                    <span asp-validation-for="StarDate" class="text-danger"></span>
+                                </div>
+
+                                <div class="col-md-6 d-flex flex-column flex-md-row align-items-start align-items-md-center">
+                                    <label class="form-label me-md-2 mb-1 mb-md-0 w-100 w-md-55" asp-for="StarTime">Hora de Inicio:</label>
+                                    <input type="text" class="form-control w-100 w-md-45" asp-for="StarTime" />
+                                    <span asp-validation-for="StarTime" class="text-danger"></span>
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <label class="col-sm-3 col-form-label">Id de Relación:</label>
+                                <div class="col-sm-9">
+                                    <input type="text" class="form-control" asp-for="IdRelation" />
+                                    <span asp-validation-for="IdRelation" class="text-danger"></span>
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <label class="col-sm-3 col-form-label">Descripción:</label>
+                                <div class="col-sm-9">
+                                    <textarea class="form-control textarea-edit" asp-for="Description"></textarea>
+                                    <span asp-validation-for="Description" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="row mb-3">
+                                <div class="col-md-6 d-flex flex-column flex-md-row align-items-start align-items-md-center">
+                                    <label class="form-label me-md-2 mb-1 mb-md-0 w-100 w-md-55" asp-for="EndDate">Fecha de Finalización:</label>
+                                    <input type="text" class="form-control w-100 w-md-45" asp-for="EndDate" />
+                                    <span asp-validation-for="EndDate" class="text-danger"></span>
+                                </div>
+
+                                <div class="col-md-6 d-flex flex-column flex-md-row align-items-start align-items-md-center">
+                                    <label class="form-label me-md-2 mb-1 mb-md-0 w-100 w-md-55" asp-for="EndTime">Hora de Finalización:</label>
+                                    <input type="text" class="form-control w-100 w-md-45" asp-for="EndTime" />
+                                    <span asp-validation-for="EndTime" class="text-danger"></span>
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <label class="col-sm-3 col-form-label">Usuario:</label>
+                                <div class="col-sm-9">
+                                    <input type="text" class="form-control" asp-for="NameUser" />
+                                    <span asp-validation-for="NameUser" class="text-danger"></span>
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <label class="col-sm-3 col-form-label">Comentario del Usuario:</label>
+                                <div class="col-sm-9">
+                                    <textarea class="form-control textarea-edit" asp-for="ComentaryUser"></textarea>
+                                    <span asp-validation-for="ComentaryUser" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr class="linea-warning" />
+                    <div class="d-flex justify-content-end">
+                        <button type="submit" class="btn btn-outline-warning font-weight-bold"><i class="mdi mdi-file-check btn-icon-prepend"></i>Guardar</button>
+                            @if (Model.TypeReport == "Stock Bajo")
+    {
+                        <a href="@Url.Action("Stock", "Product", new { id = Model.IdRelation })" class="btn btn-outline-success">Ir a Stock del Producto</a>
+                                        }
+                        <a asp-action="Index" class="btn btn-outline-secondary font-weight-bold ml-2">Cancelar</a>
+                    </div>
+                </form>
             </div>
-            <div class="form-group">
-                <label asp-for="Description" class="control-label"></label>
-                <input asp-for="Description" class="form-control" />
-                <span asp-validation-for="Description" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Estatus" class="control-label"></label>
-                <input asp-for="Estatus" class="form-control" />
-                <span asp-validation-for="Estatus" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="NameUser" class="control-label"></label>
-                <input asp-for="NameUser" class="form-control" />
-                <span asp-validation-for="NameUser" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="ComentaryUser" class="control-label"></label>
-                <input asp-for="ComentaryUser" class="form-control" />
-                <span asp-validation-for="ComentaryUser" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="StarDate" class="control-label"></label>
-                <input asp-for="StarDate" class="form-control" />
-                <span asp-validation-for="StarDate" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="StarTime" class="control-label"></label>
-                <input asp-for="StarTime" class="form-control" />
-                <span asp-validation-for="StarTime" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="EndDate" class="control-label"></label>
-                <input asp-for="EndDate" class="form-control" />
-                <span asp-validation-for="EndDate" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="EndTime" class="control-label"></label>
-                <input asp-for="EndTime" class="form-control" />
-                <span asp-validation-for="EndTime" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="IdRelation" class="control-label"></label>
-                <input asp-for="IdRelation" class="form-control" />
-                <span asp-validation-for="IdRelation" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
-            </div>
-        </form>
+        </div>
     </div>
-</div>
-
-<div>
-    <a href="@Url.Action("Stock", "Product", new { id = Model.IdRelation })" class="btn btn-success">Ir a Stock del Producto</a>
-
-    <a asp-action="Index">Back to List</a>
 </div>
 

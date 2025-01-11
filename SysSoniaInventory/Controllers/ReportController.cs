@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -95,13 +96,47 @@ namespace SysSoniaInventory.Controllers
 
             const string reportCookieName = "ReportCreationCooldown";
 
-            // Validar si la cookie existe y aún no ha expirado
-            if (Request.Cookies.TryGetValue(reportCookieName, out string existingCookie))
+            // Verificar niveles de acceso
+            if (User.HasClaim("AccessTipe", "Nivel 4"))
+            { // Nivel 4 tiene acceso
+
+            }
+            else if (User.HasClaim("AccessTipe", "Nivel 5"))
+            { // Nivel 5 tiene acceso
+
+            }
+            else
             {
-                ViewBag.ErrorMessage = "Solo puedes crear un reporte cada 24 horas.";
-                return View(modelReport); // O redirigir a una página diferente si prefieres
+                // Validar si la cookie existe y aún no ha expirado
+                if (Request.Cookies.TryGetValue(reportCookieName, out string existingCookie))
+                {
+                    ViewBag.ErrorMessage = "Solo puedes crear un reporte cada 24 horas.";
+                    return View(modelReport); // O redirigir a una página diferente si prefieres
+                }
+            }
+           
+
+            ModelState.Remove("NameUser");
+            ModelState.Remove("ComentaryUser");
+            // Verifica si el usuario está autenticado
+            if (User.Identity?.IsAuthenticated == true)
+            {
+                // Obtiene el valor del claim y lo convierte a int
+                int userId;
+                bool isParsed = int.TryParse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value, out userId);
+
+                // Si el claim se pudo convertir, asigna el valor, de lo contrario deja en 0
+                modelReport.IdRelation = isParsed ? userId : 0;
+            }
+            else
+            {
+              
             }
 
+            modelReport.NameUser = User.Identity?.IsAuthenticated == true ? User.Identity.Name : "Usuario no autenticado";
+            modelReport.StarDate = DateOnly.FromDateTime(DateTime.Now);
+            modelReport.StarTime = TimeOnly.FromDateTime(DateTime.Now);
+            modelReport.ComentaryUser = "";
             if (ModelState.IsValid)
             {
                 _context.Add(modelReport);

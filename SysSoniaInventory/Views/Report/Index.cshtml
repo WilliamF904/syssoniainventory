@@ -57,14 +57,18 @@
                                         {
                                             <span>Id Producto: @item.IdRelation</span>
                                         }
-                                        else if (item.TypeReport == "Reporte Usuario")
-                                        {
-                                            <span>Id Usuario: @item.IdRelation</span>
-                                        }
                                         else
                                         {
-                                            @Html.DisplayFor(modelItem => item.IdRelation)
+                                            @if(item.IdRelation > 0){
+                                                <span>Id Usuario: @item.IdRelation</span>
+                                            }
+                                            else
+                                            {
+                                                <span>No autenticado</span>
+                                            
+                                            }
                                         }
+                                       
                                     </td>
 
                                     <td>

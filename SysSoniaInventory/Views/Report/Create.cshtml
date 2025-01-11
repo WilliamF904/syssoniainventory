@@ -4,72 +4,111 @@
     ViewData["Title"] = "Create";
 }
 
-<h1>Create</h1>
+<style>
+    .textarea-create {
+        resize: none;
+        height: 150px !important;
+        overflow-y: auto;
+        word-wrap: break-word;
+    }
+</style>
 
-<h4>ModelReport</h4>
-<hr />
 <div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="TypeReport" class="control-label"></label>
-                <input asp-for="TypeReport" class="form-control" />
-                <span asp-validation-for="TypeReport" class="text-danger"></span>
+    <div class="col-12 grid-margin">
+        <div class="card">
+            <div class="card-body">
+                <h3 class="card-title text-success font-weight-bold">Crear Nuevo Reporte</h3>
+                <hr class="linea-success" />
+                <form asp-action="Create">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group row">
+                                <label class="col-sm-3 col-form-label">Tipo de Reporte:</label>
+                                <div class="col-sm-9">
+                               
+                                    <select class="form-control text-light" asp-for="TypeReport" required>
+                                        <option value="" disabled selected>Seleccione el tipo de reporte</option>
+                                        <option value="Error de sistema" title="Reporta fallos técnicos como errores al cargar o problemas de funcionamiento.">
+                                            1 - Error de sistema.
+                                        </option>
+                                        <option value="Reporte Inventario" title="Detalles sobre el estado del inventario, o proveedores.">
+                                            2 - Reporte Inventario.
+                                        </option>
+                                        <option value="Reporte Ventas" title="Análisis de ventas, incluyendo productos más vendidos y tendencias.">
+                                            3 - Reporte Ventas.
+                                        </option>
+                                        <option value="Reporte Financiero" title="Resúmenes de ingresos, egresos, y estado financiero.">
+                                           4 - Reporte Financiero.
+                                        </option>
+                                        <option value="Reporte Usuario" title="Seguimiento de actividad, auditoría y estado de los usuarios del sistema.">
+                                            5 - Reporte Usuario.
+                                        </option>
+                                        <option value="Reporte Quejas" title="Registro de reclamaciones, problemas reportados por clientes o usuarios.">
+                                            6 - Reporte Quejas.
+                                        </option>
+                                        <option value="Ayuda y asistencia" title="Problemas con alguna acción o dificultades para acceder al sistema.">
+                                            7 - Ayuda y asistencia.
+                                        </option>
+                                        <option value="Mensaje o recordatorio" title="Un reporte personal que no sera visible para nadie más.">
+                                            8 - Mensaje o recordatorio.
+                                        </option>
+                                        <option value="Perzonalizado" title="Describe/detalla tu caso en el cuadro de descripción.">
+                                            9 - Personalizado.
+                                        </option>
+                                    </select>
+
+
+                                    <span asp-validation-for="TypeReport" class="text-danger"></span>
+                                </div>
+                           
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="form-group row">
+                                <label class="col-sm-3 col-form-label">Estatus:</label>
+                                <div class="col-sm-9">
+                                   <select class="form-control text-light" asp-for="Estatus" required>
+                                        <option value="Pendiente" title="Reporte que necesita ser atendido.">
+                                           1 - Pendiente.
+                                        </option>
+                                        <option value="En Proceso" title="Reporte tomado por un usuario y al pendiente de cambios.">
+                                            2 - En Proceso.
+                                        </option>
+                                        <option value="Finalizado" title="Reporte que ha sido resuelto y cerrado sin requerir más acciones.">
+                                            3 - Finalizado.
+                                        </option>
+                                      
+                                    </select>
+
+
+                                </div>
+                            </div>
+                        </div>
+
+                    
+                    
+                    </div>
+                    <div class="col-md-12">
+
+                        <div class="form-group row">
+                            <label class="col-sm-12 col-form-label">Descripción:</label>
+                            <div class="col-sm-12">
+                                <textarea class="form-control textarea-create" asp-for="Description"></textarea>
+                                <span asp-validation-for="Description" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr class="linea-success" />
+                    <div class="d-flex justify-content-end">
+                        <button type="submit" class="btn btn-outline-success font-weight-bold"><i class="mdi mdi-file-check btn-icon-prepend"></i>Guardar</button>
+                        <a asp-action="Index" class="btn btn-outline-secondary font-weight-bold ml-2">Cancelar</a>
+                    </div>
+                </form>
             </div>
-            <div class="form-group">
-                <label asp-for="Description" class="control-label"></label>
-                <input asp-for="Description" class="form-control" />
-                <span asp-validation-for="Description" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Estatus" class="control-label"></label>
-                <input asp-for="Estatus" class="form-control" />
-                <span asp-validation-for="Estatus" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="NameUser" class="control-label"></label>
-                <input asp-for="NameUser" class="form-control" />
-                <span asp-validation-for="NameUser" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="ComentaryUser" class="control-label"></label>
-                <input asp-for="ComentaryUser" class="form-control" />
-                <span asp-validation-for="ComentaryUser" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="StarDate" class="control-label"></label>
-                <input asp-for="StarDate" class="form-control" />
-                <span asp-validation-for="StarDate" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="StarTime" class="control-label"></label>
-                <input asp-for="StarTime" class="form-control" />
-                <span asp-validation-for="StarTime" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="EndDate" class="control-label"></label>
-                <input asp-for="EndDate" class="form-control" />
-                <span asp-validation-for="EndDate" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="EndTime" class="control-label"></label>
-                <input asp-for="EndTime" class="form-control" />
-                <span asp-validation-for="EndTime" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="IdRelation" class="control-label"></label>
-                <input asp-for="IdRelation" class="form-control" />
-                <span asp-validation-for="IdRelation" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
-        </form>
+        </div>
     </div>
 </div>
-
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
-
