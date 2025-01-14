@@ -37,7 +37,7 @@
                         <div class="form-group row">
                             <label class="col-sm-3 col-form-label" asp-for="Name">Nombre:</label>
                             <div class="col-sm-9">
-                                <input type="text" class="form-control" asp-for="Name" placeholder="Ingrese el nombre" required />
+                                <input type="text" maxlength="100" class="form-control" asp-for="Name" placeholder="Ingrese el nombre" required />
                                 <span asp-validation-for="Name" class="text-danger"></span>
                             </div>
                         </div>
@@ -46,7 +46,7 @@
                         <div class="form-group row">
                             <label class="col-sm-3 col-form-label" asp-for="Codigo">Código:</label>
                             <div class="col-sm-9">
-                                <input type="text" class="form-control" asp-for="Codigo" placeholder="Ingrese el código de producto" />
+                                <input type="text" maxlength="25" class="form-control" asp-for="Codigo" placeholder="Ingrese el código de producto" />
                                 <span asp-validation-for="Codigo" class="text-danger"></span>
                             </div>
                         </div>
@@ -114,7 +114,7 @@
                         <div class="form-group row">
                             <label class="col-sm-3 col-form-label" asp-for="LowStock">Reportar Stock bajo:</label>
                             <div class="col-sm-9">
-                                <input type="number" class="form-control text-light" asp-for="LowStock" placeholder="Reportar cuando stock llegue a..." required />
+                                <input type="number" class="form-control text-light" asp-for="LowStock" value="10" placeholder="Reportar cuando stock llegue a..." required />
                                 <span asp-validation-for="LowStock" class="text-danger"></span>
                             </div>
                         </div>
@@ -142,7 +142,7 @@
                         <div class="modal-body">
                             <div class="form-group">
                                 <label for="DescriptionCambio" class="h4">Descripción para el registro (opcional):</label>
-                                <textarea class="form-control" id="DescriptionCambio" name="DescriptionCambio"></textarea>
+                                <textarea class="form-control" maxlength="250" id="DescriptionCambio" name="DescriptionCambio" ></textarea>
                             </div>
                         </div>
                         <div class="modal-footer">

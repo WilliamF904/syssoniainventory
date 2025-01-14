@@ -17,7 +17,7 @@
                         <div class="form-group row">
                             <label class="col-sm-2 col-form-label" asp-for="Name">Nombre:</label>
                             <div class="col-sm-10">
-                                <input type="text" class="form-control" asp-for="Name" placeholder="Ingrese el nombre de la sucursal" required />
+                                <input type="text" class="form-control" maxlength="75" asp-for="Name" placeholder="Ingrese el nombre de la sucursal" required />
                                 <span asp-validation-for="Name" class="text-danger"></span>
                             </div>
                         </div>
@@ -27,7 +27,7 @@
                         <div class="form-group row">
                             <label class="col-sm-2 col-form-label" asp-for="Address">Dirección:</label>
                             <div class="col-sm-10">
-                                <input type="text" class="form-control" asp-for="Address" placeholder="Ingrese la dirección" required />
+                                <input type="text" class="form-control" asp-for="Address" maxlength="100" placeholder="Ingrese la dirección" required />
                                 <span asp-validation-for="Address" class="text-danger"></span>
                             </div>
                         </div>

@@ -18,7 +18,7 @@
                         <div class="form-group row">
                             <label class="col-sm-3 col-form-label text-light" asp-for="Name">Nombre de la Sucursal:</label>
                             <div class="col-sm-9">
-                                <input type="text" class="form-control" asp-for="Name" />
+                                <input type="text" maxlength="75" class="form-control" asp-for="Name" />
                                 <span asp-validation-for="Name" class="text-danger"></span>
                             </div>
                         </div>
@@ -28,7 +28,7 @@
                         <div class="form-group row">
                             <label class="col-sm-3 col-form-label text-light" asp-for="Description">Descripción:</label>
                             <div class="col-sm-9">
-                                <input type="text" class="form-control" asp-for="Description" />
+                                <input type="text" maxlength="250" class="form-control" asp-for="Description" />
                                 <span asp-validation-for="Description" class="text-danger"></span>
                             </div>
                         </div>
@@ -40,7 +40,7 @@
                         <div class="form-group row">
                             <label class="col-sm-3 col-form-label text-light" asp-for="Tel">Número de teléfono:</label>
                             <div class="col-sm-9">
-                                <input type="tel" class="form-control" asp-for="Tel" />
+                                <input type="tel" minlength="8" class="form-control" asp-for="Tel" />
                                 <span asp-validation-for="Tel" class="text-danger"></span>
                             </div>
                         </div>
@@ -50,7 +50,7 @@
                         <div class="form-group row">
                             <label class="col-sm-3 col-form-label text-light" asp-for="Email">Email:</label>
                             <div class="col-sm-9">
-                                <input type="text" class="form-control" asp-for="Email" />
+                                <input type="text" maxlength="75" class="form-control" asp-for="Email" />
                                 <span asp-validation-for="Email" class="text-danger"></span>
                             </div>
                         </div>

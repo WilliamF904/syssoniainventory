@@ -18,7 +18,7 @@
                             <div class="form-group row">
                                 <label class="col-sm-3 col-form-label text-light" asp-for="Name">Nombre de la categoria:</label>
                                 <div class="col-sm-9">
-                                    <input type="text" class="form-control" asp-for="Name" placeholder="Ingrese la categoria" />
+                            <input type="text" maxlength="60" class="form-control" asp-for="Name" placeholder="Ingrese la categoria" />
                                     <span asp-validation-for="Name" class="text-danger"></span>
                                 </div>
                             </div>

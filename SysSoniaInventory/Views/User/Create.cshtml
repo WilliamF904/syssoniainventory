@@ -34,7 +34,7 @@
                         <div class="form-group row">
                             <label class="col-sm-3 col-form-label" asp-for="Name">Nombre: </label>
                             <div class="col-sm-9">
-                                <input type="text" class="form-control" asp-for="Name" placeholder="Ingrese el nombre" required />
+                                <input type="text" maxlength="50" class="form-control" asp-for="Name" placeholder="Ingrese el nombre" required />
                                 <span asp-validation-for="Name" class="text-danger"></span>
                             </div>
                         </div>
@@ -43,7 +43,7 @@
                         <div class="form-group row">
                             <label class="col-sm-3 col-form-label" asp-for="LastName">Apellido: </label>
                             <div class="col-sm-9">
-                                <input type="text" class="form-control" asp-for="LastName" placeholder="Ingrese el apellido" required />
+                                <input type="text" maxlength="50" class="form-control" asp-for="LastName" placeholder="Ingrese el apellido" required />
                                 <span asp-validation-for="LastName" class="text-danger"></span>
                             </div>
                         </div>
@@ -55,7 +55,7 @@
                         <div class="form-group row">
                             <label class="col-sm-3 col-form-label" asp-for="Email">Correo: </label>
                             <div class="col-sm-9">
-                                <input type="email" class="form-control" asp-for="Email" placeholder="Ingrese el correo" required />
+                                <input type="email" maxlength="75" class="form-control" asp-for="Email" placeholder="Ingrese el correo" required />
                                 <span asp-validation-for="Email" class="text-danger"></span>
                             </div>
                         </div>
@@ -64,7 +64,7 @@
                         <div class="form-group row">
                             <label class="col-sm-3 col-form-label" asp-for="Tel">Teléfono: </label>
                             <div class="col-sm-9">
-                                <input type="tel" class="form-control" asp-for="Tel" placeholder="Ingrese el teléfono" />
+                                <input type="tel" minlength="8" class="form-control" asp-for="Tel" placeholder="Ingrese el teléfono" />
                                 <span asp-validation-for="Tel" class="text-danger"></span>
                             </div>
                         </div>
@@ -76,7 +76,7 @@
                         <div class="form-group row">
                             <label class="col-sm-3 col-form-label" asp-for="Password">Contraseña: </label>
                             <div class="col-sm-9">
-                                <input type="password" class="form-control" asp-for="Password" placeholder="Ingrese la contraseña" required />
+                                <input type="password" maxlength="20" minlength="8" class="form-control" asp-for="Password" placeholder="Ingrese la contraseña" required />
                                 <span asp-validation-for="Password" class="text-danger"></span>
                             </div>
                         </div>

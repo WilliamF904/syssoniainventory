@@ -71,7 +71,7 @@
                             <div class="form-group row">
                                 <label class="col-sm-3 col-form-label">Descripción:</label>
                                 <div class="col-sm-9">
-                                    <textarea class="form-control textarea-edit" asp-for="Description"></textarea>
+                                    <textarea class="form-control textarea-edit"  maxlength="250" asp-for="Description"></textarea>
                                     <span asp-validation-for="Description" class="text-danger"></span>
                                 </div>
                             </div>
@@ -103,7 +103,7 @@
                             <div class="form-group row">
                                 <label class="col-sm-3 col-form-label">Comentario del Usuario:</label>
                                 <div class="col-sm-9">
-                                    <textarea class="form-control textarea-edit" asp-for="ComentaryUser"></textarea>
+                                    <textarea class="form-control textarea-edit" maxlength="100" asp-for="ComentaryUser"></textarea>
                                     <span asp-validation-for="ComentaryUser" class="text-danger"></span>
                                 </div>
                             </div>
