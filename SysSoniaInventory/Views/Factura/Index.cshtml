@@ -14,16 +14,36 @@
                         <i class="fas fa-plus"></i> Nueva factura
                     </a>
                     <div class="separator mx-3"></div>
+
                     <div class="dropdown-container">
-                        <button id="dropdownButton" class="dropdown-button btn btn-outline-secondary">
+                        <button id="dropdownButton" class="dropdown-button btn btn-outline-secondary styled-btn">
                             <i class="mdi mdi-download"></i> Descargar PDF
                         </button>
                         <ul id="dropdownMenu" class="dropdown-menu">
-                            <li><a asp-action="GeneratePdf" asp-route-active="true"><i class="mdi mdi-download"></i> Descargar Facturas Activas</a></li>
-                            <li><a asp-action="GeneratePdf" asp-route-active="false"><i class="mdi mdi-download"></i> Descargar Facturas Inactivas</a></li>
-                            <li><a asp-action="GeneratePdf"><i class="mdi mdi-download"></i> Descargar Todas las Facturas</a></li>
+                            <li>
+                                <a asp-action="GeneratePdf" class="btn btn-outline-dark btn-block mt-2 download-all-btn">
+                                    <i class="mdi mdi-download"></i> Descargar Todas las Facturas
+                                </a>
+                            </li>
+                            <li>
+                                <form asp-action="GeneratePdf" method="get" class="p-2 download-form">
+                                    <div class="form-group range-field">
+                                        <label for="startDate">Fecha Inicio</label>
+                                        <input type="date" name="startDate" class="form-control range-input">
+                                    </div>
+                                    <div class="form-group range-field">
+                                        <label for="endDate">Fecha Fin</label>
+                                        <input type="date" name="endDate" class="form-control range-input">
+                                    </div>
+                                    <button type="submit" class="btn btn-success btn-block mt-2 download-date-btn">Descargar Facturas por Fecha</button>
+                                </form>
+
+                            </li>
                         </ul>
                     </div>
+
+
+
                 </div>
             </div>
         </div>
@@ -82,6 +102,131 @@
         </div>
     </div>
 </div>
+
+<style>
+    /* General button styling para estilos de descarga por fecha */
+    /* Estilo para el formulario de descarga por fecha */
+    .download-form {
+        border: 2px solid #007bff;
+        border-radius: 10px;
+        padding: 15px;
+        margin-top: 15px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+        .download-form label {
+            font-weight: bold;
+        }
+
+        .download-form .range-field {
+            margin-bottom: 10px;
+        }
+
+        .download-form .range-input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ced4da;
+            border-radius: 5px;
+        }
+
+            .download-form .range-input:focus {
+                border-color: #80bdff;
+                outline: none;
+            }
+
+        .download-form .btn {
+            font-weight: bold;
+        }
+
+        .download-form .download-date-btn {
+            background-color: #28a745;
+            color: #fff;
+            border: none;
+        }
+
+            .download-form .download-date-btn:hover {
+                background-color: #218838;
+                color: #f8f9fa;
+            }
+
+    
+    
+    
+    
+    
+    
+    .styled-btn {
+        font-size: 1.2rem;
+        border-radius: 8px;
+    }
+
+    /* Button for all invoices */
+    .download-all-btn {
+        background-color: #343a40;
+        color: #fff;
+        border: none;
+        font-weight: bold;
+    }
+
+        .download-all-btn:hover {
+            background-color: #495057;
+            color: #e9ecef;
+        }
+
+    /* Button for date range */
+    .download-date-btn {
+        background-color: #28a745;
+        color: #fff;
+        font-weight: bold;
+        border: none;
+    }
+
+        .download-date-btn:hover {
+            background-color: #218838;
+            color: #f8f9fa;
+        }
+
+    /* Date range field styling */
+    .range-field {
+        display: flex;
+        align-items: center;
+        margin-bottom: 10px;
+    }
+
+        .range-field label {
+            width: 120px;
+            margin-right: 10px;
+            font-weight: bold;
+        }
+
+    .range-input {
+        flex-grow: 1;
+        border: 2px solid #dee2e6;
+        border-radius: 5px;
+    }
+
+        .range-input:focus {
+            border-color: #80bdff;
+            outline: none;
+        }
+
+    /* Dropdown menu styles */
+    .dropdown-container .dropdown-menu {
+        padding: 15px;
+        background-color: #ffffff;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+        .dropdown-container .dropdown-menu.show {
+            display: block;
+        }
+</style>
+
+
+
+
+
 
 <style>
     .form-group label {
