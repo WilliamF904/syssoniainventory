@@ -10,63 +10,37 @@
             <div class="card-body">
                 <h1 class="card-title">Lista de Facturas</h1>
                 <div class="d-flex align-items-center justify-content-start">
-                    <!-- Botón Nueva Factura -->
                     <a asp-action="Create" class="btn btn-outline-primary font-weight-bold ml-2">
                         <i class="fas fa-plus"></i> Nueva factura
                     </a>
-
-                    <!-- Línea decorativa -->
                     <div class="separator mx-3"></div>
-
-                    <!-- Contenedor del Botón Descargar PDF -->
                     <div class="dropdown-container">
-                        <!-- Botón principal para abrir el menú -->
                         <button id="dropdownButton" class="dropdown-button btn btn-outline-secondary">
                             <i class="mdi mdi-download"></i> Descargar PDF
                         </button>
-
-                        <!-- Menú desplegable -->
                         <ul id="dropdownMenu" class="dropdown-menu">
-                            <li>
-                                <a asp-action="GeneratePdf" asp-route-active="true">
-                                    <i class="mdi mdi-download"></i> Descargar Facturas Activas
-                                </a>
-                            </li>
-                            <li>
-                                <a asp-action="GeneratePdf" asp-route-active="false">
-                                    <i class="mdi mdi-download"></i> Descargar Facturas Inactivas
-                                </a>
-                            </li>
-                            <li>
-                                <a asp-action="GeneratePdf">
-                                    <i class="mdi mdi-download"></i> Descargar Todas las Facturas
-                                </a>
-                            </li>
+                            <li><a asp-action="GeneratePdf" asp-route-active="true"><i class="mdi mdi-download"></i> Descargar Facturas Activas</a></li>
+                            <li><a asp-action="GeneratePdf" asp-route-active="false"><i class="mdi mdi-download"></i> Descargar Facturas Inactivas</a></li>
+                            <li><a asp-action="GeneratePdf"><i class="mdi mdi-download"></i> Descargar Todas las Facturas</a></li>
                         </ul>
                     </div>
-
                 </div>
             </div>
         </div>
     </div>
 
     <div class="col-lg-6 grid-margin stretch-card">
-        <!-- Contenedor específico para el dropdown -->
         <div class="card dropdown-container">
             <div class="card-body">
                 <h1 class="card-title">Filtrado de Facturas</h1>
-
-                <!-- Campos de filtrado -->
                 <form>
                     <div class="form-group d-flex align-items-center">
                         <input type="text" id="filterText" class="form-control" placeholder="Filtrar por usuario, fecha, etc." style="width: auto;">
                     </div>
-
                     <div class="form-group d-flex align-items-center">
                         <input type="date" id="filterDate" class="form-control" style="width: auto;">
                     </div>
                 </form>
-
             </div>
         </div>
     </div>
@@ -77,9 +51,8 @@
         <div class="card">
             <div class="card-body">
                 <h4 class="card-title">Tabla de Facturas</h4>
-
                 <div class="table-responsive">
-                    <table class="table table-bordered table-hover table-striped " id="invoiceTable">
+                    <table class="table table-bordered table-hover table-striped" id="invoiceTable">
                         <thead>
                             <tr>
                                 <th scope="col">ID</th>
@@ -92,7 +65,6 @@
                         </thead>
                         <tbody class="txt-whithe">
                             @foreach (var factura in Model)
-
                             {
                                 <tr>
                                     <td>@factura.Id</td>
@@ -114,21 +86,17 @@
     </div>
 </div>
 
-<!-- Estilos Actualizados maneja los estilos del filtrado de facturas-->
 <style>
     .form-group label {
-        width: 150px; /* Ancho fijo para etiquetas */
-        text-align: right; /* Alineación del texto */
+        width: 150px;
+        text-align: right;
     }
 
     .form-group input,
     .form-group select {
-        flex-grow: 1; /* Los inputs ocuparán el resto del espacio disponible */
+        flex-grow: 1;
     }
-</style>
 
-<!-- Estilos Actualizados maneja los estilos del input para descargar PDF entre otros-->
-<style>
     .d-flex {
         display: flex;
     }
@@ -136,16 +104,16 @@
     .separator {
         width: 2px;
         height: 30px;
-        background-color: #ddd; /* Color de la línea decorativa */
+        background-color: #ddd;
     }
 
     .dropdown-container {
-        position: relative; /* Asegura que el menú se alinee respecto al contenedor */
+        position: relative;
     }
 
         .dropdown-container .dropdown-menu {
             position: absolute;
-            top: 100%; /* Despliega justo debajo del botón */
+            top: 100%;
             left: 0;
             display: none;
             list-style: none;
@@ -169,70 +137,90 @@
             }
 </style>
 
-<!-- Script para manejar el menú desplegable -->
 <script>
     document.addEventListener("DOMContentLoaded", function () {
         const dropdownButton = document.getElementById("dropdownButton");
         const dropdownMenu = document.getElementById("dropdownMenu");
 
-        // Alternar visibilidad y clase de animación
         dropdownButton.addEventListener("click", function (event) {
-            event.stopPropagation(); // Evitar propagación
+            event.stopPropagation();
             dropdownMenu.classList.toggle("show");
         });
 
-        // Cerrar el menú si se hace clic fuera
         document.addEventListener("click", function (event) {
             if (!dropdownMenu.contains(event.target)) {
                 dropdownMenu.classList.remove("show");
             }
         });
-    });
-</script>
 
-<!-- Script para el filtrado de facturas -->
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
-        const filterText = document.getElementById("filterText"); // Input de texto
-        const filterDate = document.getElementById("filterDate"); // Input de fecha
-        const rows = Array.from(document.querySelectorAll("#invoiceTable tbody tr")); // Filas de la tabla
+        const filterText = document.getElementById("filterText");
+        const filterDate = document.getElementById("filterDate");
+        const rows = Array.from(document.querySelectorAll("#invoiceTable tbody tr"));
 
-        // Función para aplicar el filtrado
         filterText.addEventListener("input", filterTable);
         filterDate.addEventListener("change", filterTable);
 
         function filterTable() {
-            const filterValue = filterText.value.toLowerCase(); // Texto de búsqueda
-            const dateValue = filterDate.value;                // Filtro por fecha
+            const filterValue = filterText.value.toLowerCase();
+            const dateValue = filterDate.value;
 
-            // Filtrar las filas
             const filteredRows = rows.filter(row => {
                 const cells = Array.from(row.getElementsByTagName('td'));
                 const matchesText = !filterValue || cells.some(cell => {
                     return cell.textContent.toLowerCase().includes(filterValue);
                 });
 
-                // Filtrar por fecha
-                const dateCell = row.getElementsByTagName('td')[2].textContent.trim(); // Columna de fecha
-                const formattedDateCell = new Date(dateCell).toLocaleDateString('en-CA'); // Formato ISO
-                const formattedFilterDate = new Date(dateValue).toLocaleDateString('en-CA'); // Formato ISO
-                const matchesDate = !dateValue || formattedDateCell === formattedFilterDate;
+                const dateCell = row.getElementsByTagName('td')[2].textContent.trim();
+                const formattedDateCell = new Date(dateCell).toLocaleDateString('en-CA');
+                const matchesDate = !dateValue || formattedDateCell === new Date(dateValue).toLocaleDateString('en-CA');
 
                 return matchesText && matchesDate;
             });
 
-            // Mostrar las filas filtradas
             displayRows(filteredRows);
         }
 
-        // Función para mostrar las filas filtradas
         function displayRows(filteredRows) {
             const tbody = document.querySelector("#invoiceTable tbody");
-            tbody.innerHTML = ""; // Limpiar filas previas
+            tbody.innerHTML = "";
             filteredRows.forEach(row => {
+                tbody.appendChild(row);
+            });
+
+            // Paginar después de aplicar el filtrado
+            paginate(filteredRows);
+        }
+
+        function paginate(filteredRows) {
+            const rowsPerPage = 5;
+            const pageCount = Math.ceil(filteredRows.length / rowsPerPage);
+            const paginationControls = document.getElementById("paginationControls");
+            paginationControls.innerHTML = '';
+
+            for (let i = 1; i <= pageCount; i++) {
+                const pageButton = document.createElement("button");
+                pageButton.textContent = i;
+                pageButton.classList.add("btn", "btn-outline-primary", "mr-2");
+                pageButton.addEventListener("click", function () {
+                    showPage(i, filteredRows);
+                });
+                paginationControls.appendChild(pageButton);
+            }
+
+            showPage(1, filteredRows); // Mostrar la primera página por defecto
+        }
+
+        function showPage(pageNumber, filteredRows) {
+            const rowsPerPage = 5;
+            const startIndex = (pageNumber - 1) * rowsPerPage;
+            const endIndex = startIndex + rowsPerPage;
+            const rowsToDisplay = filteredRows.slice(startIndex, endIndex);
+
+            const tbody = document.querySelector("#invoiceTable tbody");
+            tbody.innerHTML = "";
+            rowsToDisplay.forEach(row => {
                 tbody.appendChild(row);
             });
         }
     });
 </script>
-
