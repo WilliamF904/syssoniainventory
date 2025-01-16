@@ -35,10 +35,7 @@
                 <h1 class="card-title">Filtrado de Facturas</h1>
                 <form>
                     <div class="form-group d-flex align-items-center">
-                        <input type="text" id="filterText" class="form-control" placeholder="Filtrar por usuario, fecha, etc." style="width: auto;">
-                    </div>
-                    <div class="form-group d-flex align-items-center">
-                        <input type="date" id="filterDate" class="form-control" style="width: auto;">
+                        <input type="text" id="filterText" class="form-control" placeholder="Buscar Facturas por Fecha, Hora, Total etc...." style="width: auto;">
                     </div>
                 </form>
             </div>
@@ -154,73 +151,20 @@
         });
 
         const filterText = document.getElementById("filterText");
-        const filterDate = document.getElementById("filterDate");
         const rows = Array.from(document.querySelectorAll("#invoiceTable tbody tr"));
 
-        filterText.addEventListener("input", filterTable);
-        filterDate.addEventListener("change", filterTable);
-
-        function filterTable() {
+        filterText.addEventListener("input", function () {
             const filterValue = filterText.value.toLowerCase();
-            const dateValue = filterDate.value;
 
             const filteredRows = rows.filter(row => {
-                const cells = Array.from(row.getElementsByTagName('td'));
-                const matchesText = !filterValue || cells.some(cell => {
-                    return cell.textContent.toLowerCase().includes(filterValue);
-                });
-
-                const dateCell = row.getElementsByTagName('td')[2].textContent.trim();
-                const formattedDateCell = new Date(dateCell).toLocaleDateString('en-CA');
-                const matchesDate = !dateValue || formattedDateCell === new Date(dateValue).toLocaleDateString('en-CA');
-
-                return matchesText && matchesDate;
+                return Array.from(row.getElementsByTagName('td')).some(cell =>
+                    cell.textContent.toLowerCase().includes(filterValue)
+                );
             });
-
-            displayRows(filteredRows);
-        }
-
-        function displayRows(filteredRows) {
-            const tbody = document.querySelector("#invoiceTable tbody");
-            tbody.innerHTML = "";
-            filteredRows.forEach(row => {
-                tbody.appendChild(row);
-            });
-
-            // Paginar después de aplicar el filtrado
-            paginate(filteredRows);
-        }
-
-        function paginate(filteredRows) {
-            const rowsPerPage = 5;
-            const pageCount = Math.ceil(filteredRows.length / rowsPerPage);
-            const paginationControls = document.getElementById("paginationControls");
-            paginationControls.innerHTML = '';
-
-            for (let i = 1; i <= pageCount; i++) {
-                const pageButton = document.createElement("button");
-                pageButton.textContent = i;
-                pageButton.classList.add("btn", "btn-outline-primary", "mr-2");
-                pageButton.addEventListener("click", function () {
-                    showPage(i, filteredRows);
-                });
-                paginationControls.appendChild(pageButton);
-            }
-
-            showPage(1, filteredRows); // Mostrar la primera página por defecto
-        }
-
-        function showPage(pageNumber, filteredRows) {
-            const rowsPerPage = 5;
-            const startIndex = (pageNumber - 1) * rowsPerPage;
-            const endIndex = startIndex + rowsPerPage;
-            const rowsToDisplay = filteredRows.slice(startIndex, endIndex);
 
             const tbody = document.querySelector("#invoiceTable tbody");
             tbody.innerHTML = "";
-            rowsToDisplay.forEach(row => {
-                tbody.appendChild(row);
-            });
-        }
+            filteredRows.forEach(row => tbody.appendChild(row));
+        });
     });
 </script>
