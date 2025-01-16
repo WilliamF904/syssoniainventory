@@ -139,10 +139,10 @@ namespace SysSoniaInventory.DataAccess
             {
                 entity.HasKey(e => e.Id).HasName("PK_ModelReport");
                 entity.Property(e => e.TypeReport).IsRequired().HasMaxLength(100).IsUnicode(false);
-                entity.Property(e => e.Description).IsRequired().HasMaxLength(250).IsUnicode(false);
+                entity.Property(e => e.Description).IsRequired().HasMaxLength(1000).IsUnicode(false);
                 entity.Property(e => e.Estatus).IsRequired().HasMaxLength(30).IsUnicode(false);
                 entity.Property(e => e.NameUser).HasMaxLength(100).IsUnicode(false);
-                entity.Property(e => e.ComentaryUser).HasMaxLength(100).IsUnicode(false);
+                entity.Property(e => e.ComentaryUser).HasMaxLength(1000).IsUnicode(false);
                 entity.Property(e => e.StarDate).IsRequired().HasColumnType("date");
                 entity.Property(e => e.StarTime).IsRequired().HasColumnType("time");
                 entity.Property(e => e.EndDate).HasColumnType("date");

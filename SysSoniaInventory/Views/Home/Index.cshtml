@@ -39,13 +39,123 @@
                     </div>
                 </div>
 
-                    <div class="col-12">
-                        <canvas id="pieChart"></canvas>
-                    </div>
-               
+                <div class="col-12">
+                    <canvas id="pieChart"></canvas>
+                </div>
+
             </div>
         </div>
     </div>
+
+    <div class="col-lg-6 grid-margin stretch-card">
+        <div class="card">
+            <div class="card-body">
+                <h4 class="card-title">Reportes de Mensaje o Recordatorio</h4>
+
+                <div class="table-responsive">
+                    <table class="table table-bordered table-striped">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Descripción</th>
+                               
+                                <th>Estatus</th>
+                            </tr>
+                        </thead>
+                        <tbody class="txt-whithe">
+                            @if (ViewBag.ReportesMensaje != null)
+                            {
+                                int index = 1;
+                                foreach (var reporte in ViewBag.ReportesMensaje)
+                                {
+                                    <tr>
+                                        <td>@index</td>
+                                        <td>  @(reporte.Description.Length > 30 ? reporte.Description.Substring(0, 30) + "..." : reporte.Description)</td>
+                                       
+                                        <td>
+                                            <a href="@Url.Action("Edit", "Report", new { id = reporte.Id })"
+                                               class="btn badge
+                                           @(reporte.Estatus == "Pendiente" ? "badge-outline-danger" :
+                                             reporte.Estatus == "En Proceso" ? "badge-outline-warning" :
+                                             "badge-outline-success")">
+                                                @(reporte.Estatus == "Pendiente" ? "Pendiente" :
+                                                    reporte.Estatus == "En Proceso" ? "En progreso" :
+                                                    "Finalizado")
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    index++;
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+                @if (ViewBag.MostrarBotonVerTodos != null && ViewBag.MostrarBotonVerTodos)
+                {
+                    <a href="@Url.Action("Index", "Report")" class="btn btn-primary">Ver todos los reportes</a>
+                }
+            </div>
+        </div>
+    </div>
+
+    @if (User.HasClaim("AccessTipe", "Nivel 4") || User.HasClaim("AccessTipe", "Nivel 5"))
+    {
+        <div class="col-lg-6 grid-margin stretch-card">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title">Reportes Pendientes</h4>
+
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-striped">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Tipo</th>
+                                    <th>Fecha Inicio</th>
+                                    <th>Estatus</th>
+                                </tr>
+                            </thead>
+                            <tbody class="txt-whithe">
+                                @if (ViewBag.Reportes != null)
+                                {
+                                    int index = 1;
+                                    foreach (var reporte in ViewBag.Reportes)
+                                    {
+                                        <tr>
+                                            <td>@index</td>
+                                            <td>@reporte.TypeReport</td>
+                                            <td>@reporte.StarDate.ToShortDateString()</td>
+                                            <td>
+                                                <a href="@Url.Action("Edit", "Report", new { id = reporte.Id })"
+                                                   class="btn badge
+           @(reporte.Estatus == "Pendiente" ? "badge-outline-danger" :
+             reporte.Estatus == "En Proceso" ? "badge-outline-warning" :
+             "badge-outline-success")">
+                                                    @(reporte.Estatus == "Pendiente" ? "Pendiente" :
+                                                        reporte.Estatus == "En Proceso" ? "En progreso" :
+                                                        "Finalizado")
+                                                </a>
+                                            </td>
+
+                                        </tr>
+                                        index++;
+                                    }
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+
+                    @if (ViewBag.MostrarBotonVerTodos != null && ViewBag.MostrarBotonVerTodos)
+                    {
+                        <a href="@Url.Action("Index", "Report")" class="btn btn-primary">Ver todos los reportes</a>
+                    }
+                </div>
+            </div>
+        </div>
+
+    }
+
 
     <!-- Gráfico de barras + Tabla de Ventas por Usuario -->
     @if (ViewBag.ProductosGrafico != null && ViewBag.ProductosGrafico.Count > 0)
@@ -63,7 +173,7 @@
         </div>
 
         <!-- Tabla de Ventas por Usuario -->
-        <div class="col-lg-6 grid-margin stretch-card">
+        <div class="col-lg-12 grid-margin stretch-card">
             <div class="card">
                 <div class="card-body">
                     <h4 class="card-title">Ventas Totales por Usuario del Mes</h4>
@@ -74,6 +184,7 @@
                                 <tr>
                                     <th>#</th> <!-- Nueva columna para el índice -->
                                     <th>Usuario</th>
+                                    <th>Total cantidad</th>
                                     <th>Total Ventas</th>
                                 </tr>
                             </thead>
@@ -87,6 +198,7 @@
                                         <tr>
                                             <td>@index</td> <!-- Mostrar índice -->
                                             <td>@usuario.NameUser</td>
+                                            <td>@usuario.TotalProducts</td>
                                             <td>@usuario.TotalFacturas.ToString("C")</td>
                                         </tr>
                                         index++;
@@ -113,63 +225,6 @@
 
 
     }
-
-     @if (User.HasClaim("AccessTipe", "Nivel 4") || User.HasClaim("AccessTipe", "Nivel 5"))
-                        {
-    <div class="col-lg-6 grid-margin stretch-card">
-        <div class="card">
-            <div class="card-body">
-                <h4 class="card-title">Reportes Pendientes</h4>
-
-                <div class="table-responsive">
-                    <table class="table table-bordered table-striped">
-                        <thead>
-                            <tr>
-                                <th>#</th>
-                                <th>Tipo</th>
-                                <th>Fecha Inicio</th>
-                                <th>Estatus</th>
-                            </tr>
-                        </thead>
-                            <tbody class="txt-whithe">
-                            @if (ViewBag.Reportes != null)
-                            {
-                                int index = 1;
-                                foreach (var reporte in ViewBag.Reportes)
-                                {
-                                    <tr>
-                                        <td>@index</td>
-                                        <td>@reporte.TypeReport</td>
-                                        <td>@reporte.StarDate.ToShortDateString()</td>
-                                            <td>
-                                                <a href="@Url.Action("Edit", "Report", new { id = reporte.Id })"
-                                                   class="btn badge
-           @(reporte.Estatus == "Pendiente" ? "badge-outline-danger" :
-             reporte.Estatus == "En Proceso" ? "badge-outline-warning" :
-             "badge-outline-success")">
-                                                    @(reporte.Estatus == "Pendiente" ? "Pendiente" :
-                                                        reporte.Estatus == "En Proceso" ? "En progreso" :
-                                                        "Finalizado")
-                                                </a>
-                                            </td>
-
-                                    </tr>
-                                    index++;
-                                }
-                            }
-                        </tbody>
-                    </table>
-                </div>
-
-                @if (ViewBag.MostrarBotonVerTodos != null && ViewBag.MostrarBotonVerTodos)
-                {
-                    <a href="@Url.Action("Index", "Report")" class="btn btn-primary">Ver todos los reportes</a>
-                }
-            </div>
-        </div>
-    </div>
-
-                        }
 
 </div>
 
@@ -210,37 +265,37 @@
             labels: productos.map(p => p.NameProduct || "Sin nombre")
         };
 
-      var doughnutPieOptions = {
-    responsive: true,
-    animation: {
-        animateScale: true,
-        animateRotate: true
-    },
-    tooltips: {
-        callbacks: {
-            label: function (tooltipItem, data) {
-                const index = tooltipItem.index;
-                const producto = productos[index];
-                return `Código: ${producto.CodigoProducto || "Sin código"} | Ventas: ${producto.CantidadVendida || 0}`;
+        var doughnutPieOptions = {
+            responsive: true,
+            animation: {
+                animateScale: true,
+                animateRotate: true
+            },
+            tooltips: {
+                callbacks: {
+                    label: function (tooltipItem, data) {
+                        const index = tooltipItem.index;
+                        const producto = productos[index];
+                        return `Código: ${producto.CodigoProducto || "Sin código"} | Ventas: ${producto.CantidadVendida || 0}`;
+                    }
+                }
+            },
+            legend: {
+                labels: {
+                    fontColor: 'white', // Cambia el color de las etiquetas en la leyenda
+                }
+            },
+            plugins: {
+                datalabels: {
+                    color: 'white', // Cambia el color del texto mostrado en la gráfica
+                    formatter: function (value, context) {
+                        const index = context.dataIndex;
+                        const producto = productos[index];
+                        return producto.NameProduct || "Sin nombre"; // Etiqueta personalizada
+                    }
+                }
             }
-        }
-    },
-    legend: {
-        labels: {
-            fontColor: 'white', // Cambia el color de las etiquetas en la leyenda
-        }
-    },
-    plugins: {
-        datalabels: {
-            color: 'white', // Cambia el color del texto mostrado en la gráfica
-            formatter: function (value, context) {
-                const index = context.dataIndex;
-                const producto = productos[index];
-                return producto.NameProduct || "Sin nombre"; // Etiqueta personalizada
-            }
-        }
-    }
-};
+        };
 
         // Bar Chart - Gráfico de Ventas del Mes (Solo para Niveles 3, 4, 5)
         const productosGrafico = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(ViewBag.ProductosGrafico)) || [];
@@ -279,47 +334,47 @@
             }]
         };
 
-var barOptions = {
-    scales: {
-        yAxes: [{
-            ticks: {
-                beginAtZero: true,
-                fontColor: 'white' // Cambiar color del texto del eje Y
+        var barOptions = {
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        beginAtZero: true,
+                        fontColor: 'white' // Cambiar color del texto del eje Y
+                    },
+                    gridLines: {
+                        color: "rgba(204, 204, 204,0.1)"
+                    }
+                }],
+                xAxes: [{
+                    ticks: {
+                        fontColor: 'white' // Cambiar color del texto del eje X
+                    },
+                    gridLines: {
+                        color: "rgba(204, 204, 204,0.1)"
+                    }
+                }]
             },
-            gridLines: {
-                color: "rgba(204, 204, 204,0.1)"
-            }
-        }],
-        xAxes: [{
-            ticks: {
-                fontColor: 'white' // Cambiar color del texto del eje X
+            legend: {
+                display: false,
+                labels: {
+                    fontColor: 'white' // Cambiar color de las etiquetas de la leyenda (si se muestra)
+                }
             },
-            gridLines: {
-                color: "rgba(204, 204, 204,0.1)"
+            elements: {
+                point: {
+                    radius: 0
+                }
+            },
+            tooltips: {
+                callbacks: {
+                    label: function (tooltipItem, data) {
+                        const index = tooltipItem.index;
+                        const producto = productosGrafico[index];
+                        return `Código: ${producto.CodigoProducto || "Sin código"} | Ventas: ${producto.CantidadVendida || 0}`;
+                    }
+                }
             }
-        }]
-    },
-    legend: {
-        display: false,
-        labels: {
-            fontColor: 'white' // Cambiar color de las etiquetas de la leyenda (si se muestra)
-        }
-    },
-    elements: {
-        point: {
-            radius: 0
-        }
-    },
-    tooltips: {
-        callbacks: {
-            label: function (tooltipItem, data) {
-                const index = tooltipItem.index;
-                const producto = productosGrafico[index];
-                return `Código: ${producto.CodigoProducto || "Sin código"} | Ventas: ${producto.CantidadVendida || 0}`;
-            }
-        }
-    }
-};
+        };
 
 
 

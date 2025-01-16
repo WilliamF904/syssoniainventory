@@ -156,30 +156,6 @@ else
                         </a>
                     </li>
                 }
-                @if (User.HasClaim("AccessTipe", "Nivel 4") || User.HasClaim("AccessTipe", "Nivel 5"))
-
-                {
-                    <li class="nav-item menu-items">
-                        <a class="nav-link" asp-controller="HistorialProduct" asp-action="Index">
-                            <span class="menu-icon">
-                                <i class="mdi mdi-history"></i>
-                            </span>
-                            <span class="menu-title">Registros</span>
-                        </a>
-                    </li>
-                }   
-                  @if ( User.HasClaim("AccessTipe", "Nivel 4") ||  User.HasClaim("AccessTipe", "Nivel 5"))
-                {
-                    <li class="nav-item menu-items">
-                        <a class="nav-link" asp-controller="Report" asp-action="Index">
-                            <span class="menu-icon">
-                                <i class="mdi mdi-alert-box"></i>
-                            </span>
-                            <span class="menu-title">Reportes</span>
-                        </a>
-                    </li>
-                }
-                
                 @if (User.HasClaim("AccessTipe", "Nivel 4") || User.HasClaim("AccessTipe", "Nivel 3") || User.HasClaim("AccessTipe", "Nivel 5"))
                 {
                     <li class="nav-item menu-items">
@@ -199,6 +175,18 @@ else
                                 <i class="mdi mdi-cart"></i>
                             </span>
                             <span class="menu-title">Producto</span>
+                        </a>
+                    </li>
+                }
+                @if (User.HasClaim("AccessTipe", "Nivel 4") || User.HasClaim("AccessTipe", "Nivel 5"))
+
+                {
+                    <li class="nav-item menu-items">
+                        <a class="nav-link" asp-controller="HistorialProduct" asp-action="Index">
+                            <span class="menu-icon">
+                                <i class="mdi mdi-history"></i>
+                            </span>
+                            <span class="menu-title">Registros</span>
                         </a>
                     </li>
                 }
@@ -302,7 +290,7 @@ else
                                     <a class="dropdown-item preview-item" asp-area="" asp-controller="Factura" asp-action="Create">
                                         <div class="preview-thumbnail">
                                             <div class="preview-icon bg-dark rounded-circle">
-                                                <i class="mdi mdi-truck text-success"></i>
+                                                <i class="mdi mdi-cart text-success"></i>
                                             </div>
                                         </div>
                                         <div class="preview-item-content">
@@ -328,7 +316,12 @@ else
                           
                         </li>
                         }
+                       
+                            <li class="nav-item dropdown d-none d-lg-block">
+                            <a class="nav-link btn btn-danger create-new-button font-weight-bold" asp-controller="Report" asp-action="Create">          <i class="mdi mdi-tooltip-edit"> </i>Reportar</a>
 
+                            </li>
+                        
 
                         <!---->
 
@@ -535,10 +528,20 @@ else
                 <div>
                     <footer class="footer">
                         <div class="d-sm-flex justify-content-center justify-content-sm-between">
-                            <span class="text-muted d-block text-center text-sm-left d-sm-inline-block">Copyright © bootstrapdash.com 2020</span>
-                            <span class="float-none float-sm-right d-block mt-1 mt-sm-0 text-center"> Free <a href="https://www.bootstrapdash.com/bootstrap-admin-template/" target="_blank">Bootstrap admin templates</a> from Bootstrapdash.com</span>
+                            <span class="text-muted d-block text-center text-sm-left d-sm-inline-block">
+                                Copyright © SysSoniaInventory 2025. Sistema local de gestión de inventarios y pagos.
+                            </span>
+                            <span class="float-none float-sm-right d-block mt-1 mt-sm-0 text-center">
+                                Proyecto de práctica profesional diseñado para optimizar la gestión de inventarios y pagos.
+                            </span>
                         </div>
                     </footer>
+
+                    <script>
+                        // Establecer el año dinámicamente
+                        document.getElementById('year').textContent = new Date().getFullYear();
+                    </script>
+
                 </div>
             </div>
             <!-- main-panel ends -->

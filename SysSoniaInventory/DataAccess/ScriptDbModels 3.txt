@@ -150,10 +150,10 @@ CREATE TABLE ModelDetalleDevolucion (
 CREATE TABLE ModelReport (
     Id INT PRIMARY KEY IDENTITY(1,1),
     TypeReport VARCHAR(100) NOT NULL,
-    Description VARCHAR(250) NOT NULL,
+    Description VARCHAR(1000) NOT NULL,
     Estatus VARCHAR(30) NOT NULL,
     NameUser VARCHAR(100) NULL,
-    ComentaryUser VARCHAR(100),
+    ComentaryUser VARCHAR(1000),
     StarDate DATE NOT NULL,
     StarTime TIME NOT NULL,
     EndDate DATE,
@@ -161,6 +161,11 @@ CREATE TABLE ModelReport (
     IdRelation INT
 );
 
+ALTER TABLE ModelReport
+    ALTER COLUMN Description VARCHAR(1000) NOT NULL;
+
+ALTER TABLE ModelReport
+    ALTER COLUMN ComentaryUser VARCHAR(1000);
 
 
 

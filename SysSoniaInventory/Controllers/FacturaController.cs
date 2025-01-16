@@ -19,7 +19,7 @@ namespace SysSoniaInventory.Controllers
 
 
         // Acción Index para listar facturas
-        public IActionResult Index()
+        public async Task<IActionResult> Index(string searchUser, DateOnly? startDate, DateOnly? endDate, int page = 1)
         {
 
             // Verificar niveles de acceso
@@ -38,17 +38,47 @@ namespace SysSoniaInventory.Controllers
             // Obtener el nombre del usuario autenticado
             var userName = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name)?.Value;
 
-            IQueryable<ModelFactura> facturasQuery = _context.modelFactura.Include(f => f.DetalleFactura);
+            int pageSize = 5; // Número de facturas por página
+            var facturasQuery = _context.modelFactura
+                .Include(f => f.DetalleFactura)
+                .AsQueryable();
 
             // Filtrar facturas según el nivel de acceso
             if (accessLevel == "Nivel 2" || accessLevel == "Nivel 3")
             {
                 facturasQuery = facturasQuery.Where(f => f.NameUser == userName);
             }
-            // Ordenar las facturas en orden descendente por IdFactura (o cualquier otra propiedad)
-            facturasQuery = facturasQuery.OrderByDescending(f => f.Id);  // O usa otro campo como f.FechaFactura si es necesario
 
-            var facturas = facturasQuery.ToList();
+            // Aplicar filtros de búsqueda
+            if (!string.IsNullOrEmpty(searchUser))
+            {
+                facturasQuery = facturasQuery.Where(f => f.NameUser.Contains(searchUser));
+            }
+
+            if (startDate.HasValue)
+            {
+                facturasQuery = facturasQuery.Where(f => f.Date >= startDate.Value);
+            }
+
+            if (endDate.HasValue)
+            {
+                facturasQuery = facturasQuery.Where(f => f.Date <= endDate.Value);
+            }
+
+            // Ordenar y paginar los resultados
+            var facturas = await facturasQuery
+                .OrderByDescending(f => f.Id)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            // Preparar datos para la vista
+            ViewBag.CurrentPage = page;
+            ViewBag.TotalPages = Math.Ceiling((double)facturasQuery.Count() / pageSize);
+            ViewBag.SearchUser = searchUser;
+            ViewBag.StartDate = startDate?.ToString("yyyy-MM-dd");
+            ViewBag.EndDate = endDate?.ToString("yyyy-MM-dd");
+
             return View(facturas);
         }
 

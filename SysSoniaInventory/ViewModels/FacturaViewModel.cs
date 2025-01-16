@@ -7,6 +7,7 @@
         public DateOnly Date { get; set; }
         public TimeOnly Time { get; set; }
         public decimal TotalFactura { get; set; }
+        public int TotalProduct { get; set; }
         public List<DetalleFacturaViewModel> Detalles { get; set; }
     }
     public class DetalleFacturaViewModel
@@ -19,6 +20,7 @@
     {
         public string NameUser { get; set; }
         public decimal TotalFacturas { get; set; }
+        public int TotalProducts { get; set; }
     }
 
 

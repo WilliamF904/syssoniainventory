@@ -9,6 +9,7 @@ using SysSoniaInventory.Models;
 using SysSoniaInventory.Task;
 using SysSoniaInventory.ViewModels;
 using System.Diagnostics;
+using System.Security.Claims;
 
 namespace SysSoniaInventory.Controllers
 {
@@ -32,26 +33,49 @@ namespace SysSoniaInventory.Controllers
 
 
 
+            // Verifica si el usuario está autenticado
+            if (User.Identity?.IsAuthenticated == true)
+            {
+                // Obtiene el valor del claim y lo convierte a int
+                int userId;
+                bool isParsed = int.TryParse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value, out userId);
+
+                // Si el claim se pudo convertir, asigna el valor, de lo contrario deja en 0
+                var reportesMensaje = await _context.modelReport
+                    .Where(r => r.TypeReport == "Mensaje o recordatorio" && r.IdRelation == userId)
+                    .OrderBy(r => r.StarDate).ThenBy(r => r.StarTime)
+                    .Take(5) // Limita la cantidad de reportes si es necesario
+                    .ToListAsync();
+
+                ViewBag.ReportesMensaje = reportesMensaje;
+                ViewBag.MostrarBotonVerTodos = reportesMensaje.Count > 5;
+            }
+
 
             if (User.HasClaim("AccessTipe", "Nivel 5") || User.HasClaim("AccessTipe", "Nivel 4"))
             {
 
+                // Filtrar reportes no finalizados y excluir los de tipo "Mensaje o recordatorio"
                 var reportesNoFinalizados = await _context.modelReport
-    .Where(r => r.Estatus != "Finalizado")
-    .OrderBy(r => r.StarDate).ThenBy(r => r.StarTime)
-    .Take(5)
-    .ToListAsync();
+                    .Where(r => r.Estatus != "Finalizado" && r.TypeReport != "Mensaje o recordatorio")
+                    .OrderBy(r => r.StarDate).ThenBy(r => r.StarTime)
+                    .Take(5)
+                    .ToListAsync();
 
-            var reportesFinalizados = await _context.modelReport
-                .Where(r => r.Estatus == "Finalizado")
-                .OrderBy(r => r.StarDate).ThenBy(r => r.StarTime)
-                .Take(5 - reportesNoFinalizados.Count)
-                .ToListAsync();
-         
+                // Filtrar reportes finalizados y excluir los de tipo "Mensaje o recordatorio"
+                var reportesFinalizados = await _context.modelReport
+                    .Where(r => r.Estatus == "Finalizado" && r.TypeReport != "Mensaje o recordatorio")
+                    .OrderBy(r => r.StarDate).ThenBy(r => r.StarTime)
+                    .Take(5 - reportesNoFinalizados.Count)
+                    .ToListAsync();
+
+                // Combinar ambas listas
                 var reportesCombinados = reportesNoFinalizados.Concat(reportesFinalizados).ToList();
 
+                // Pasar los reportes a la vista
                 ViewBag.Reportes = reportesCombinados;
                 ViewBag.MostrarBotonVerTodos = reportesNoFinalizados.Count > 5;
+
 
             }
 
@@ -75,6 +99,7 @@ namespace SysSoniaInventory.Controllers
                     Date = f.Date,
                     Time = f.Time,
                     TotalFactura = f.DetalleFactura.Sum(d => d.PriceTotal),
+                    TotalProduct = f.DetalleFactura.Sum(d => (int)d.CantidadProduct),
                     Detalles = f.DetalleFactura.Select(d => new DetalleFacturaViewModel
                     {
                         CodigoProducto = d.CodigoProducto,
@@ -91,7 +116,8 @@ namespace SysSoniaInventory.Controllers
                     .Select(g => new UsuariosVentasViewModel
                     {
                         NameUser = g.Key,
-                        TotalFacturas = g.Sum(f => f.TotalFactura)
+                        TotalFacturas = g.Sum(f => f.TotalFactura),
+                        TotalProducts = g.Sum(f => f.TotalProduct)
                     })
                     .OrderByDescending(u => u.TotalFacturas)
                     .ToList();
@@ -107,6 +133,7 @@ namespace SysSoniaInventory.Controllers
                 {
                     Index = index + 1,
                     usuario.NameUser,
+                    usuario.TotalProducts,
                     usuario.TotalFacturas
                 }).ToList();
 

@@ -23,7 +23,7 @@ namespace SysSoniaInventory.Controllers
         }
 
         // GET: Report
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string searchType, string status, DateOnly? startDate, DateOnly? endDate, int page = 1)
         {
             // Verificar niveles de acceso
             if (User.HasClaim("AccessTipe", "Nivel 4"))
@@ -42,7 +42,46 @@ namespace SysSoniaInventory.Controllers
             }
 
 
-            return View(await _context.modelReport.OrderByDescending(r => r.Id).ToListAsync());
+            int pageSize = 5; // Número de reportes por página
+            var query = _context.modelReport.AsQueryable();
+
+            // Aplicar filtros si se proporcionan
+            if (!string.IsNullOrEmpty(searchType))
+            {
+                query = query.Where(r => r.TypeReport.Contains(searchType));
+            }
+
+            if (!string.IsNullOrEmpty(status))
+            {
+                query = query.Where(r => r.Estatus == status);
+            }
+
+            if (startDate.HasValue)
+            {
+                query = query.Where(r => r.StarDate >= startDate.Value);
+            }
+
+            if (endDate.HasValue)
+            {
+                query = query.Where(r => r.StarDate <= endDate.Value);
+            }
+
+            // Ordenar y paginar resultados
+            var reports = await query
+                .OrderByDescending(r => r.Id)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            // Preparar datos para la vista
+            ViewBag.CurrentPage = page;
+            ViewBag.TotalPages = Math.Ceiling((double)query.Count() / pageSize);
+            ViewBag.SearchType = searchType;
+            ViewBag.Status = status;
+            ViewBag.StartDate = startDate?.ToString("yyyy-MM-dd");
+            ViewBag.EndDate = endDate?.ToString("yyyy-MM-dd");
+
+            return View(reports);
 
         }
 
@@ -137,6 +176,8 @@ namespace SysSoniaInventory.Controllers
             modelReport.StarDate = DateOnly.FromDateTime(DateTime.Now);
             modelReport.StarTime = TimeOnly.FromDateTime(DateTime.Now);
             modelReport.ComentaryUser = "";
+            modelReport.Description = modelReport.Description ?? string.Empty;
+
             if (ModelState.IsValid)
             {
                 _context.Add(modelReport);
@@ -189,6 +230,7 @@ namespace SysSoniaInventory.Controllers
             {
                 return NotFound();
             }
+            ViewBag.NameUser = User.Identity?.Name;
             return View(modelReport);
         }
 
@@ -217,7 +259,13 @@ namespace SysSoniaInventory.Controllers
             {
                 return NotFound();
             }
+            modelReport.ComentaryUser = modelReport.ComentaryUser ?? string.Empty;
 
+            modelReport.NameUser = User.Identity?.IsAuthenticated == true ? User.Identity.Name : "Usuario no autenticado";
+            modelReport.EndDate = DateOnly.FromDateTime(DateTime.Now);
+            modelReport.EndTime = TimeOnly.FromDateTime(DateTime.Now);
+
+            ModelState.Remove("ComentaryUser");
             if (ModelState.IsValid)
             {
                 try
@@ -241,66 +289,6 @@ namespace SysSoniaInventory.Controllers
             return View(modelReport);
         }
 
-        // GET: Report/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        { // Verificar niveles de acceso
-            if (User.HasClaim("AccessTipe", "Nivel 4"))
-            { // Nivel 4 tiene acceso
-
-            }
-            else if (User.HasClaim("AccessTipe", "Nivel 5"))
-            { // Nivel 5 tiene acceso
-
-            }
-            else
-            {
-                // Redirigir con mensaje de error si el usuario no tiene acceso
-                TempData["Error"] = "No tienes acceso a esta sección. Requerido: Nivel 4.";
-                return RedirectToAction("Index", "Home");
-            }
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var modelReport = await _context.modelReport
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (modelReport == null)
-            {
-                return NotFound();
-            }
-
-            return View(modelReport);
-        }
-
-        // POST: Report/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        { // Verificar niveles de acceso
-            if (User.HasClaim("AccessTipe", "Nivel 4"))
-            { // Nivel 4 tiene acceso
-
-            }
-            else if (User.HasClaim("AccessTipe", "Nivel 5"))
-            { // Nivel 5 tiene acceso
-
-            }
-            else
-            {
-                // Redirigir con mensaje de error si el usuario no tiene acceso
-                TempData["Error"] = "No tienes acceso a esta sección. Requerido: Nivel 4.";
-                return RedirectToAction("Index", "Home");
-            }
-            var modelReport = await _context.modelReport.FindAsync(id);
-            if (modelReport != null)
-            {
-                _context.modelReport.Remove(modelReport);
-            }
-
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
 
         private bool ModelReportExists(int id)
         {

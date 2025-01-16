@@ -13,7 +13,7 @@ namespace SysSoniaInventory.Models
         [Required, StringLength(100), Unicode(false)]
         public string TypeReport { get; set; }
 
-        [Required, StringLength(250), Unicode(false)]
+        [Required, StringLength(1000), Unicode(false)]
         public string Description { get; set; }
 
         [Required, StringLength(30), Unicode(false)]
@@ -22,7 +22,7 @@ namespace SysSoniaInventory.Models
         [StringLength(100), Unicode(false)]
         public string NameUser { get; set; }
 
-        [StringLength(100), Unicode(false)]
+        [StringLength(1000), Unicode(false)]
         public string ComentaryUser { get; set; }
 
         [Required, Column(TypeName = "dateonly")]

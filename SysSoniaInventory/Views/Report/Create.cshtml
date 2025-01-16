@@ -17,7 +17,17 @@
     <div class="col-12 grid-margin">
         <div class="card">
             <div class="card-body">
-                <h3 class="card-title text-success font-weight-bold">Crear Nuevo Reporte</h3>
+                <h3 class="card-title text-success font-weight-bold">
+                    Crear Nuevo Reporte
+                    @if (User.HasClaim("AccessTipe", "Nivel 5") || User.HasClaim("AccessTipe", "Nivel 4"))
+                    {
+                    }
+                    else
+                    {
+                        <span class="text-muted font-weight-normal" style="font-size: 0.85em;"> (Solo se puede hacer un reporte cada 24 horas)</span>
+                    }
+
+                </h3>
                 <hr class="linea-success" />
                 <form asp-action="Create">
                     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
@@ -27,7 +37,7 @@
                             <div class="form-group row">
                                 <label class="col-sm-3 col-form-label">Tipo de Reporte:</label>
                                 <div class="col-sm-9">
-                               
+
                                     <select class="form-control text-light" asp-for="TypeReport" required>
                                         <option value="" disabled selected>Seleccione el tipo de reporte</option>
                                         <option value="Error de sistema" title="Reporta fallos técnicos como errores al cargar o problemas de funcionamiento.">
@@ -40,7 +50,7 @@
                                             3 - Reporte Ventas.
                                         </option>
                                         <option value="Reporte Financiero" title="Resúmenes de ingresos, egresos, y estado financiero.">
-                                           4 - Reporte Financiero.
+                                            4 - Reporte Financiero.
                                         </option>
                                         <option value="Reporte Usuario" title="Seguimiento de actividad, auditoría y estado de los usuarios del sistema.">
                                             5 - Reporte Usuario.
@@ -51,7 +61,7 @@
                                         <option value="Ayuda y asistencia" title="Problemas con alguna acción o dificultades para acceder al sistema.">
                                             7 - Ayuda y asistencia.
                                         </option>
-                                        <option value="Mensaje o recordatorio" title="Un reporte personal que no sera visible para nadie más.">
+                                        <option value="Mensaje o recordatorio" title="Un reporte personal que no sera visible para niveles inferiores a 4.">
                                             8 - Mensaje o recordatorio.
                                         </option>
                                         <option value="Perzonalizado" title="Describe/detalla tu caso en el cuadro de descripción.">
@@ -62,7 +72,7 @@
 
                                     <span asp-validation-for="TypeReport" class="text-danger"></span>
                                 </div>
-                           
+
                             </div>
                         </div>
 
@@ -70,9 +80,9 @@
                             <div class="form-group row">
                                 <label class="col-sm-3 col-form-label">Estatus:</label>
                                 <div class="col-sm-9">
-                                   <select class="form-control text-light" asp-for="Estatus" required>
+                                    <select class="form-control text-light" asp-for="Estatus" required>
                                         <option value="Pendiente" title="Reporte que necesita ser atendido.">
-                                           1 - Pendiente.
+                                            1 - Pendiente.
                                         </option>
                                         <option value="En Proceso" title="Reporte tomado por un usuario y al pendiente de cambios.">
                                             2 - En Proceso.
@@ -80,7 +90,7 @@
                                         <option value="Finalizado" title="Reporte que ha sido resuelto y cerrado sin requerir más acciones.">
                                             3 - Finalizado.
                                         </option>
-                                      
+
                                     </select>
 
 
@@ -88,15 +98,15 @@
                             </div>
                         </div>
 
-                    
-                    
+
+
                     </div>
                     <div class="col-md-12">
 
                         <div class="form-group row">
                             <label class="col-sm-12 col-form-label">Descripción:</label>
                             <div class="col-sm-12">
-                                <textarea class="form-control textarea-create" maxlength="250" asp-for="Description"></textarea>
+                                <textarea class="form-control textarea-create" maxlength="1000" asp-for="Description"></textarea>
                                 <span asp-validation-for="Description" class="text-danger"></span>
                             </div>
                         </div>

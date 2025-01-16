@@ -17,7 +17,10 @@
     <div class="col-12 grid-margin">
         <div class="card">
             <div class="card-body">
-                <h3 class="card-title text-warning font-weight-bold">Editar Reporte</h3>
+                <h3 class="card-title text-warning font-weight-bold">Editar Reporte
+                   
+                </h3>
+
                 <hr class="linea-warning" />
                 <form asp-action="Edit">
                     <input type="hidden" asp-for="Id" />
@@ -27,7 +30,7 @@
                             <div class="form-group row">
                                 <label class="col-sm-3 col-form-label">Tipo de Reporte:</label>
                                 <div class="col-sm-9">
-                                    <input type="text" class="form-control" asp-for="TypeReport" />
+                                    <input type="text" class="form-control readonly-input" asp-for="TypeReport" readonly />
                                     <span asp-validation-for="TypeReport" class="text-danger"></span>
                                 </div>
                             </div>
@@ -37,7 +40,18 @@
                             <div class="form-group row">
                                 <label class="col-sm-3 col-form-label">Estatus:</label>
                                 <div class="col-sm-9">
-                                    <input type="text" class="form-control" asp-for="Estatus" />
+                                    <select class="form-control text-light" asp-for="Estatus" required>
+                                        <option value="Pendiente" title="Reporte que necesita ser atendido.">
+                                            1 - Pendiente.
+                                        </option>
+                                        <option value="En Proceso" title="Reporte tomado por un usuario y al pendiente de cambios.">
+                                            2 - En Proceso.
+                                        </option>
+                                        <option value="Finalizado" title="Reporte que ha sido resuelto y cerrado sin requerir más acciones.">
+                                            3 - Finalizado.
+                                        </option>
+
+                                    </select>
                                     <span asp-validation-for="Estatus" class="text-danger"></span>
                                 </div>
                             </div>
@@ -49,29 +63,40 @@
                             <div class="row mb-3">
                                 <div class="col-md-6 d-flex flex-column flex-md-row align-items-start align-items-md-center">
                                     <label class="form-label me-md-2 mb-1 mb-md-0 w-100 w-md-55" asp-for="StarDate">Fecha de Inicio:</label>
-                                    <input type="text" class="form-control w-100 w-md-45" asp-for="StarDate" />
+                                    <input type="date" class="form-control w-100 w-md-45 readonly-input" asp-for="StarDate" readonly />
                                     <span asp-validation-for="StarDate" class="text-danger"></span>
                                 </div>
 
                                 <div class="col-md-6 d-flex flex-column flex-md-row align-items-start align-items-md-center">
                                     <label class="form-label me-md-2 mb-1 mb-md-0 w-100 w-md-55" asp-for="StarTime">Hora de Inicio:</label>
-                                    <input type="text" class="form-control w-100 w-md-45" asp-for="StarTime" />
+                                    <input type="time" class="form-control w-100 w-md-45 readonly-input" asp-for="StarTime" readonly />
                                     <span asp-validation-for="StarTime" class="text-danger"></span>
                                 </div>
                             </div>
 
                             <div class="form-group row">
-                                <label class="col-sm-3 col-form-label">Id de Relación:</label>
-                                <div class="col-sm-9">
-                                    <input type="text" class="form-control" asp-for="IdRelation" />
+                                <div class="col-sm-4 d-flex align-items-center">
+                                    @if (Model.TypeReport == "Stock Bajo")
+                                    {
+                                        <label class="col-form-label">Id del producto:</label>
+                                    }
+                                    else
+                                    {
+                                        <label class="col-form-label">Id del usuario que hizo el reporte:</label>
+                                    }
+                                </div>
+
+                                <div class="col-sm-8">
+                                    <input type="text" class="form-control readonly-input" asp-for="IdRelation" readonly />
                                     <span asp-validation-for="IdRelation" class="text-danger"></span>
                                 </div>
                             </div>
 
+
                             <div class="form-group row">
                                 <label class="col-sm-3 col-form-label">Descripción:</label>
                                 <div class="col-sm-9">
-                                    <textarea class="form-control textarea-edit"  maxlength="250" asp-for="Description"></textarea>
+                                    <textarea class="form-control textarea-edit readonly-input" maxlength="1000" asp-for="Description" readonly></textarea>
                                     <span asp-validation-for="Description" class="text-danger"></span>
                                 </div>
                             </div>
@@ -81,13 +106,13 @@
                             <div class="row mb-3">
                                 <div class="col-md-6 d-flex flex-column flex-md-row align-items-start align-items-md-center">
                                     <label class="form-label me-md-2 mb-1 mb-md-0 w-100 w-md-55" asp-for="EndDate">Fecha de Finalización:</label>
-                                    <input type="text" class="form-control w-100 w-md-45" asp-for="EndDate" />
+                                    <input class="form-control w-100 w-md-45 readonly-input" asp-for="EndDate" type="date" value="@DateTime.Now.ToString("yyyy-MM-dd")" readonly />
                                     <span asp-validation-for="EndDate" class="text-danger"></span>
                                 </div>
 
                                 <div class="col-md-6 d-flex flex-column flex-md-row align-items-start align-items-md-center">
                                     <label class="form-label me-md-2 mb-1 mb-md-0 w-100 w-md-55" asp-for="EndTime">Hora de Finalización:</label>
-                                    <input type="text" class="form-control w-100 w-md-45" asp-for="EndTime" />
+                                    <input  class="form-control w-100 w-md-45 readonly-input" asp-for="EndTime" type="time" value="@DateTime.Now.ToString("HH:mm")" readonly />
                                     <span asp-validation-for="EndTime" class="text-danger"></span>
                                 </div>
                             </div>
@@ -95,7 +120,7 @@
                             <div class="form-group row">
                                 <label class="col-sm-3 col-form-label">Usuario:</label>
                                 <div class="col-sm-9">
-                                    <input type="text" class="form-control" asp-for="NameUser" />
+                                    <input type="text" class="form-control readonly-input" asp-for="NameUser" value="@ViewBag.NameUser" readonly />
                                     <span asp-validation-for="NameUser" class="text-danger"></span>
                                 </div>
                             </div>
@@ -103,7 +128,7 @@
                             <div class="form-group row">
                                 <label class="col-sm-3 col-form-label">Comentario del Usuario:</label>
                                 <div class="col-sm-9">
-                                    <textarea class="form-control textarea-edit" maxlength="100" asp-for="ComentaryUser"></textarea>
+                                    <textarea class="form-control textarea-edit" maxlength="1000" asp-for="ComentaryUser"></textarea>
                                     <span asp-validation-for="ComentaryUser" class="text-danger"></span>
                                 </div>
                             </div>
