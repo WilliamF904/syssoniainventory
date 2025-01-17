@@ -81,14 +81,6 @@ namespace SysSoniaInventory.Controllers
 
 
 
-
-
-
-
-
-
-
-
             var facturas = _context.modelFactura
                 .Include(f => f.DetalleFactura)
                 .Where(f => f.Date.Year == currentYear && f.Date.Month == currentMonth)
@@ -202,8 +194,8 @@ namespace SysSoniaInventory.Controllers
                 ViewBag.UserName = userName;
                 ViewBag.TotalVentasUsuario = totalVentasUsuario;
                 ViewBag.ProductosVendidosUsuario = productosVendidosUsuario;
-                ViewBag.ErrorMessage = TempData["ErrorMessage"] as string;
 
+                ViewBag.ErrorMessage = TempData["ErrorMessage"] as string;
                 return View(facturas);
             }
             else
@@ -227,7 +219,7 @@ namespace SysSoniaInventory.Controllers
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
+        public IActionResult Error404()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
@@ -235,7 +227,11 @@ namespace SysSoniaInventory.Controllers
 
 
 
-
+        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+        public IActionResult Error500()
+        {
+            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        }
 
 
 

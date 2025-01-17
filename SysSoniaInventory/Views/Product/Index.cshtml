@@ -117,6 +117,10 @@
                                             <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-outline-info">Detalles</a>
                                             <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-outline-danger">Eliminar</a>
                                         }
+                                        else
+                                        {
+                                            <a asp-action="Detail" asp-route-id="@item.Id" class="btn btn-outline-info">Detalle</a>
+                                        }
                                     </td>
                                 </tr>
                             }

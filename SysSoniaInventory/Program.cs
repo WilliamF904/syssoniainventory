@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using SysSoniaInventory.DataAccess;
 using System.Text.Json;
 
@@ -52,13 +54,24 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
 
 var app = builder.Build();
 
+
 // Configure the HTTP request pipeline.
 // Manejo de excepciones en entorno de producción
 if (!app.Environment.IsDevelopment())
 {
-    app.UseExceptionHandler("/Home/Error");
+    app.UseExceptionHandler("/Home/Error500");
 }
+app.UseStatusCodePages(async context =>
+{
+    var statusCode = context.HttpContext.Response.StatusCode;
 
+    if (statusCode == 404) // Error 404
+    {
+   
+        context.HttpContext.Response.Redirect("/Home/Error404"); // Redirigir a una vista personalizada
+    }
+  
+});
 // Middleware para servir archivos estáticos (CSS, JS, imágenes)
 app.UseStaticFiles();
 

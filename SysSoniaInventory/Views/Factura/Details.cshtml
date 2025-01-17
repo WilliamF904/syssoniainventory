@@ -1,62 +1,108 @@
 ﻿@model SysSoniaInventory.Models.ModelFactura
+<h2>Detalles de la Factura</h2>
+<div class="row">
+    
 
-<div class="container mt-4">
-    <h2>Detalles de la Factura</h2>
-    <div class="row">
-        <!-- Información de la factura -->
-        <div class="col-md-4">
-            <div class="card">
+    <div class="col-lg-3 stretch-card">
+        <div class="card">
+           
                 <div class="card-header bg-primary text-white">
                     Información de la Factura
                 </div>
                 <div class="card-body">
                     <p><strong>Factura ID:</strong> @Model.Id</p>
                     <p><strong>Sucursal:</strong> @Model.NameSucursal</p>
-                    <p><strong>Usuario:</strong> @Model.NameUser</p>  
+                    <p><strong>Usuario:</strong> @Model.NameUser</p>
                     <p><strong>Cliente:</strong> @Model.NameClient</p>
                     <p><strong>Fecha:</strong> @Model.Date.ToString("yyyy-MM-dd")</p>
                     <p><strong>Hora:</strong> @Model.Time.ToString("HH:mm")</p>
                 </div>
-            </div>
+
         </div>
+    </div>
 
-        <!-- Detalle de productos -->
-        <div class="col-md-8">
-            <div class="card">
-                <div class="card-header bg-success text-white">
-                    Detalle de Productos
-                </div>
-                <div class="card-body">
-                    <table class="table table-bordered">
-                        <thead class="thead-darck">
+
+    <div class="col-lg-9 stretch-card">
+        <div class="card">
+
+            <div class="card-header bg-success text-white">
+                Detalle de Productos
+            </div>
+            <div class="card-body table-responsive">
+                <table class="table table-bordered table-striped  table-hover">
+                    <thead class="table-info">
+                        <tr>
+                            <th >Producto</th>
+
+                            <th >Cant.</th>
+                            <th >Precio Unitario</th>
+                            <th >Desc.</th>
+                            <th >Precio descuento</th>
+                            <th >Precio Total</th>
+                        </tr>
+                    </thead>
+                    <tbody class="txt-whithe">
+                        @foreach (var detalle in Model.DetalleFactura)
+                        {
                             <tr>
-                                <th class="readonly-input">Código</th>
-                                
-                                <th class="readonly-input">Cantidad</th>
-                                <th class="readonly-input">Precio Unitario</th>
-                                <th class="readonly-input">Descuento</th>
-                                <th class="readonly-input">Precio descuento</th>
-                                <th class="readonly-input">Precio Total</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var detalle in Model.DetalleFactura)
-                            {
-                                <tr>
-                                    <td class="text-light">@detalle.CodigoProducto</td>
-                                   
-                                    <td class="text-light">@detalle.CantidadProduct</td>
-                                    <td class="text-light">@detalle.SalePriceUnitario.ToString("C")</td>
-                                    <td class="text-light">@Math.Round(detalle.ValorDescuento) %</td>
+                                <td class="text-light" title="@detalle.CodigoProducto">
+                                    @(detalle.NameProducto.Length > 30 ? detalle.NameProducto.Substring(0, 30) + "..." : detalle.NameProducto)
+                                </td>
 
-                                    <td class="text-light">@detalle.SalePriceDescuento.ToString("C")</td>
-                                    <td class ="text-light"> @detalle.PriceTotal.ToString("C")</td>
-                                </tr>
-                            }
-                        </tbody>
-                    </table>
-                </div>
+
+                                <td class="text-light">@detalle.CantidadProduct</td>
+                                <td class="text-light">@detalle.SalePriceUnitario.ToString("C")</td>
+                                <td class="text-light">@Math.Round(detalle.ValorDescuento) %</td>
+
+                                <td class="text-light">@detalle.SalePriceDescuento.ToString("C")</td>
+                                <td class="text-light valor-text"> @detalle.PriceTotal.ToString("C")</td>
+                            </tr>
+                           
+                        }
+                        <tr>
+                            <td colspan="5"><strong>Total General:</strong></td>
+                            <td id="totalGeneral"></td> <!-- Aquí se mostrará el total -->
+                        </tr>
+                    </tbody>
+                </table>
+
+
+
             </div>
         </div>
     </div>
+
 </div>
+
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        let total = 0;
+
+        // Seleccionar todas las celdas con la clase "text-light"
+        const cells = document.querySelectorAll('td.valor-text');
+
+        // Iterar por cada celda y sumar sus valores
+        cells.forEach(cell => {
+            const priceText = cell.textContent.trim(); // Obtener el contenido de la celda
+            const priceValue = parseFloat(priceText.replace(/[^\d.-]/g, '')); // Eliminar caracteres no numéricos
+            if (!isNaN(priceValue)) {
+                total += priceValue; // Sumar el valor al total
+            }
+        });
+
+        // Mostrar el total general formateado como moneda
+        const totalCell = document.getElementById("totalGeneral");
+        totalCell.textContent = total.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
+       
+    });
+</script>
+
+
+
+
+
+
+
+
+

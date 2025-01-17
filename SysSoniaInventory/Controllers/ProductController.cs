@@ -109,17 +109,27 @@ namespace SysSoniaInventory.Controllers
     [HttpGet]
     public async Task<IActionResult> Details(int? id)
     {
-        // Verificar niveles de acceso
-        if (!User.HasClaim("AccessTipe", "Nivel 2") &&
-            !User.HasClaim("AccessTipe", "Nivel 3") &&
-            !User.HasClaim("AccessTipe", "Nivel 4") &&
-            !User.HasClaim("AccessTipe", "Nivel 5"))
-        {
-            TempData["Error"] = "No tienes acceso a esta sección. Requerido: Nivel 2 o superior.";
-            return RedirectToAction("Index", "Home");
-        }
+                 // Verificar niveles de acceso
+            if (User.HasClaim("AccessTipe", "Nivel 5") ||
+                User.HasClaim("AccessTipe", "Nivel 4") ||
+                User.HasClaim("AccessTipe", "Nivel 3"))
+            {
+               
+            }
+            else if (User.HasClaim("AccessTipe", "Nivel 2"))
+            {
+                // Redirigir a Detail, Product
+                return RedirectToAction("Detail", "Product", new { id = id });
+            }
+            else 
+            {
+               // Manejo por defecto si no hay nivel definido
+                TempData["Error"] = "No tienes acceso a esta sección. Requerido: Nivel 2 o superior.";
+                return RedirectToAction("Index", "Home");
+            }
 
-        if (id == null)
+
+            if (id == null)
         {
             TempData["Error"] = "Debes seleccionar un producto.";
             return RedirectToAction(nameof(Index));
@@ -172,8 +182,38 @@ namespace SysSoniaInventory.Controllers
     }
 
 
-    // GET: Product/Create
-    [HttpGet]
+
+
+        [HttpGet]
+        public async Task<IActionResult> Detail(int? id)
+        {
+            // Verificar niveles de acceso
+            if (!User.HasClaim("AccessTipe", "Nivel 2"))
+            {
+                return RedirectToAction("Details", "Product", new { id = id });
+            }
+        
+            if (id == null)
+            {
+                TempData["Error"] = "Debes seleccionar un producto.";
+                return RedirectToAction(nameof(Index));
+            }
+
+            var modelProduct = await _context.modelProduct
+                .Include(m => m.IdCategoryNavigation)
+                .Include(m => m.IdProveedorNavigation)
+                .FirstOrDefaultAsync(m => m.Id == id);
+
+            if (modelProduct == null)
+            {
+                TempData["Error"] = "Producto no encontrado.";
+                return RedirectToAction(nameof(Index));
+            }
+            return View(modelProduct);
+        }
+
+        // GET: Product/Create
+        [HttpGet]
         public IActionResult Create()
         {
             // Verificar niveles de acceso

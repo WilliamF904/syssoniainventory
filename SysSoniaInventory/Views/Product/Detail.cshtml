@@ -1,0 +1,132 @@
+﻿@model SysSoniaInventory.Models.ModelProduct
+
+@{
+    ViewData["Title"] = "Details Product";
+}
+
+
+<div class="col-12 grid-margin">
+
+    <div class="card">
+        <div class="card-body">
+
+
+            <div class="row">
+
+                <!-- Columna izquierda con los detalles del producto (campos) -->
+                <div class="col-md-6">
+                    <div class="justify-content-center">
+                        <h3 class="card-title text-info font-weight-bold">Detalles del Producto</h3>
+                    </div>
+                    <hr class="linea-info" />
+
+                    <div class="form-group row">
+                        <label class="col-sm-3 col-form-label" asp-for="IdCategory">Categoría:</label>
+                        <div class="col-sm-9">
+                            <input type="text" class="form-control readonly-input" asp-for="IdCategoryNavigation.Name" readonly />
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label class="col-sm-3 col-form-label" asp-for="Name">Nombre:</label>
+                        <div class="col-sm-9">
+                            <input type="text" class="form-control readonly-input" asp-for="Name" readonly />
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-3 col-form-label" asp-for="Codigo">Código:</label>
+                        <div class="col-sm-9">
+                            <input type="text" class="form-control readonly-input" asp-for="Codigo" readonly />
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="row mb-3">
+                                <!-- Sub-columna 1: Stock -->
+                                <div class="col-md-6 d-flex flex-column flex-md-row align-items-start align-items-md-center">
+                                    <label class="form-label me-md-2 mb-1 mb-md-0 w-100 w-md-55" asp-for="Stock">Stock:</label>
+                                    <input type="number" class="form-control w-100 w-md-45 readonly-input" asp-for="Stock" placeholder="Ingrese la cantidad de stock" readonly />
+                                    <span asp-validation-for="Stock" class="text-danger mt-1 mt-md-0 ms-md-2"></span>
+                                </div>
+                                <!-- Sub-columna 2: LowStock -->
+                                <div class="col-md-6 d-flex flex-column flex-md-row align-items-start align-items-md-center">
+                                    <label class="form-label me-md-2 mb-1 mb-md-0 w-100 w-md-55" asp-for="LowStock">Reportar Stock:</label>
+                                    <input type="number" class="form-control w-100 w-md-45 readonly-input" asp-for="LowStock" placeholder="Reportar cuando llegue a.. " readonly />
+                                    <span asp-validation-for="LowStock" class="text-danger mt-1 mt-md-0 ms-md-2"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+
+                        <label class="col-sm-3 col-form-label" asp-for="SalePrice">Precio Venta:</label>
+                        <div class="col-sm-9">
+                            <input type="number" class="form-control readonly-input text-white" asp-for="SalePrice" placeholder="Ingrese el precio de venta" readonly />
+                            <span asp-validation-for="SalePrice" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label class="col-sm-3 col-form-label" asp-for="Estatus">Estatus:</label>
+                        <div class="col-sm-9">
+                            <select class="form-control readonly-input text-white" asp-for="Estatus" disabled>
+                                <option value="1">Activo</option>
+                                <option value="0">Inactivo</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Columna derecha con los precios juntos en la misma fila y columna -->
+                <div class="col-md-6">
+                    <br /><br />
+                    <!-- Imagen del Producto -->
+                    <div class="form-group row">
+
+                        <div class="col-sm-12">
+                            <div class="form-group text-center">
+                                @if (!string.IsNullOrEmpty(Model.Url))
+                                {
+                                    <img src="@Model.Url" alt="Imagen del producto" class="img-fluid img-thumbnail" style="max-width: 250px; max-height: 250px; object-fit: cover;" />
+                                }
+                                else
+                                {
+
+                                    var fallbackImages = new string[]
+                                    {
+                                "/imgSystem/nou.png",
+                                "/imgSystem/LogoProductos1.jfif",
+                                "/imgSystem/LogoProductos2.jfif",
+                                "/imgSystem/LogoProductos3.jfif"
+                                    };
+
+                                    var randomIndex = new Random().Next(fallbackImages.Length);
+                                    var selectedImage = fallbackImages[randomIndex];
+
+
+                                    <img src="@selectedImage" alt="Imagen de remplazo" class="img-fluid custom-img mb-2" style="max-width: 250px; max-height: 250px; object-fit: cover;" />
+                                }
+                            </div>
+                        </div>
+                    </div>
+                    
+                </div>
+
+
+
+
+            </div>
+
+            <hr class="linea-info" />
+
+            <div class="d-flex justify-content-end">
+                <a asp-action="Edit" asp-route-id="@Model?.Id" class="btn btn-outline-warning font-weight-bold"><i class="mdi mdi-file-restore btn-icon-prepend"></i>Editar</a>
+                <a asp-action="Index" class="btn btn-outline-secondary font-weight-bold ml-2">Volver a la lista</a>
+            </div>
+        </div>
+
+
+    </div>
+</div>

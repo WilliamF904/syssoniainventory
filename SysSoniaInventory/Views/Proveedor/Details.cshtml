@@ -3,6 +3,14 @@
 @{
     ViewData["Title"] = "Details";
 }
+<style>
+    .textarea-create {
+        resize: none;
+        height: 150px !important;
+        overflow-y: auto;
+        word-wrap: break-word;
+    }
+</style>
 <div class="col-12 grid-margin">
     <div class="card">
         <div class="card-body">
@@ -10,7 +18,7 @@
             <hr class="linea-info" />
             <form>
                 <div class="row">
-                    <div class="col-md-6">
+                    <div class="col-md-12">
                         <div class="form-group row">
                             <label class="col-sm-3 col-form-label">Nombre:</label>
                             <div class="col-sm-9">
@@ -18,14 +26,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-6">
-                        <div class="form-group row">
-                            <label class="col-sm-3 col-form-label">Descripción:</label>
-                            <div class="col-sm-9">
-                                <input type="text" class="form-control readonly-input" asp-for="Description" readonly />
-                            </div>
-                        </div>
-                    </div>
+                   
                 </div>
 
                 <div class="row">
@@ -42,6 +43,16 @@
                             <label class="col-sm-3 col-form-label">Correo Electrónico:</label>
                             <div class="col-sm-9">
                                 <input type="email" class="form-control readonly-input" asp-for="Email" readonly />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+
+                        <div class="form-group row">
+                            <label class="col-sm-12 col-form-label">Descripción:</label>
+                            <div class="col-sm-12">
+                                <textarea class="form-control textarea-create  readonly-input" maxlength="1000" asp-for="Description" readonly></textarea>
+                                <span asp-validation-for="Description" class="text-danger"></span>
                             </div>
                         </div>
                     </div>

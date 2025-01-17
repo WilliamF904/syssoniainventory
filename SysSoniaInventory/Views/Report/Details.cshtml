@@ -55,8 +55,18 @@
                         </div>
 
                         <div class="form-group row">
-                            <label class="col-sm-3 col-form-label">Id de Relación:</label>
-                            <div class="col-sm-9">
+                            <div class="col-sm-4 d-flex align-items-center">
+                                @if (Model.TypeReport == "Stock Bajo")
+                                {
+                                    <label class="col-form-label">Id del producto:</label>
+                                }
+                                else
+                                {
+                                    <label class="col-form-label">Id del usuario que hizo el reporte:</label>
+                                }
+                            </div>
+
+                            <div class="col-sm-8">
                                 <input type="text" class="form-control readonly-input" asp-for="IdRelation" readonly />
                             </div>
                         </div>
@@ -111,14 +121,14 @@
                         </div>
 
                         <div class="form-group row">
-                            <label class="col-sm-3 col-form-label">Usuario:</label>
+                            <label class="col-sm-3 col-form-label">Atendido por:</label>
                             <div class="col-sm-9">
                                 <input type="text" class="form-control readonly-input" asp-for="NameUser" readonly />
                             </div>
                         </div>
 
                         <div class="form-group row">
-                                <label class="col-sm-3 col-form-label">Comentario del Usuario:</label>
+                                <label class="col-sm-3 col-form-label">Descripción del Usuario:</label>
                                 <div class="col-sm-9">
                                 <textarea class="form-control  readonly-input readonly-textarea" asp-for="ComentaryUser" readonly></textarea>
                                 </div>

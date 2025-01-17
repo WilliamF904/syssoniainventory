@@ -118,7 +118,7 @@
                             </div>
 
                             <div class="form-group row">
-                                <label class="col-sm-3 col-form-label">Usuario:</label>
+                                <label class="col-sm-3 col-form-label">Atendido por:</label>
                                 <div class="col-sm-9">
                                     <input type="text" class="form-control readonly-input" asp-for="NameUser" value="@ViewBag.NameUser" readonly />
                                     <span asp-validation-for="NameUser" class="text-danger"></span>
@@ -126,9 +126,9 @@
                             </div>
 
                             <div class="form-group row">
-                                <label class="col-sm-3 col-form-label">Comentario del Usuario:</label>
+                                <label class="col-sm-3 col-form-label">Descripción del Usuario:</label>
                                 <div class="col-sm-9">
-                                    <textarea class="form-control textarea-edit" maxlength="1000" asp-for="ComentaryUser"></textarea>
+                                    <textarea class="form-control textarea-edit" maxlength="1000" asp-for="ComentaryUser" placeholder="Ingrese una descripción para el reporte - Máx:1000 caracteres"></textarea>
                                     <span asp-validation-for="ComentaryUser" class="text-danger"></span>
                                 </div>
                             </div>

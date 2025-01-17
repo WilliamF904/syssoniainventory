@@ -19,6 +19,12 @@ namespace SysSoniaInventory.Task
                 // Normalizar el nombre (reemplazar caracteres no válidos y proporcionar un valor predeterminado)
                 string nombreNormalizado = !string.IsNullOrEmpty(name) ? name.Trim().Replace(" ", "_") : "sin_nombre";
 
+                // Limitar el nombre a un máximo de 75 caracteres
+                if (nombreNormalizado.Length > 75)
+                {
+                    nombreNormalizado = nombreNormalizado.Substring(0, 75);
+                }
+
                 // Crear el nombre del archivo con el formato id_nombre.png
                 string nombreArchivo = $"{id}_{nombreNormalizado}.png";
                 string rutaDirectorio = Path.Combine("wwwroot", "img");

@@ -3,7 +3,14 @@
 @{
     ViewData["Title"] = "Edit";
 }
-
+<style>
+    .textarea-create {
+        resize: none;
+        height: 150px !important;
+        overflow-y: auto;
+        word-wrap: break-word;
+    }
+</style>
 <div class="col-12 grid-margin">
     <div class="card">
         <div class="card-body">
@@ -14,7 +21,7 @@
                 <input type="hidden" asp-for="Id" />
 
                 <div class="row">
-                    <div class="col-md-6">
+                    <div class="col-md-12">
                         <div class="form-group row">
                             <label class="col-sm-3 col-form-label text-light" asp-for="Name">Nombre de la Sucursal:</label>
                             <div class="col-sm-9">
@@ -24,15 +31,7 @@
                         </div>
                     </div>
 
-                    <div class="col-md-6">
-                        <div class="form-group row">
-                            <label class="col-sm-3 col-form-label text-light" asp-for="Description">Descripción:</label>
-                            <div class="col-sm-9">
-                                <input type="text" maxlength="250" class="form-control" asp-for="Description" />
-                                <span asp-validation-for="Description" class="text-danger"></span>
-                            </div>
-                        </div>
-                    </div>
+                    
                 </div>
 
                 <div class="row">
@@ -52,6 +51,16 @@
                             <div class="col-sm-9">
                                 <input type="text" maxlength="75" class="form-control" asp-for="Email" />
                                 <span asp-validation-for="Email" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-12">
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label text-light" asp-for="Description">Descripción: </label>
+                            <div class="col-sm-9">
+                                <textarea type="text" maxlength="250" class="form-control textarea-create" asp-for="Description" placeholder="Ingrese una descripción (opcional) - Máx:250 caracteres"></textarea>
+                                <span asp-validation-for="Description" class="text-danger"></span>
                             </div>
                         </div>
                     </div>

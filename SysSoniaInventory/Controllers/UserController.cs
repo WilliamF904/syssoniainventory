@@ -245,7 +245,7 @@ namespace SysSoniaInventory.Controllers
             }
 
 
-
+            ModelState.Remove("RegistrationDate");
             if (ModelState.IsValid)
             {
                 
@@ -265,6 +265,7 @@ namespace SysSoniaInventory.Controllers
                     return View(modelUser); // Retorna la vista con el modelo
                 }
 
+                modelUser.RegistrationDate = DateOnly.FromDateTime(DateTime.Now);
 
                 // Agregar el usuario a la base de datos
                 _context.Add(modelUser);
