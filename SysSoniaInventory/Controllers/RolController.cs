@@ -67,14 +67,16 @@ namespace SysSoniaInventory.Controllers
             }
             if (id == null)
             {
-                return NotFound();
+                TempData["Error"] = "Debe seleccionar un rol.";
+                return RedirectToAction(nameof(Index));
             }
 
             var modelRol = await _context.modelRol
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (modelRol == null)
             {
-                return NotFound();
+                TempData["Error"] = "Rol no encontrado.";
+                return RedirectToAction(nameof(Index));
             }
 
             return View(modelRol);
@@ -130,7 +132,7 @@ namespace SysSoniaInventory.Controllers
                 TempData["Success"] = "Rol creado correctamente.";
                 return RedirectToAction(nameof(Index));
             }
-
+            TempData["Error"] = "Error al validar uno o más campos.";
             return View(modelRol);
         }
 
@@ -150,13 +152,15 @@ namespace SysSoniaInventory.Controllers
             }
             if (id == null)
             {
-                return NotFound();
+                TempData["Error"] = "Debe seleccionar un rol.";
+                return RedirectToAction(nameof(Index));
             }
 
             var modelRol = await _context.modelRol.FindAsync(id);
             if (modelRol == null)
             {
-                return NotFound();
+                TempData["Error"] = "Rol no encontrado.";
+                return RedirectToAction(nameof(Index));
             }
             return View(modelRol);
         }
@@ -179,7 +183,8 @@ namespace SysSoniaInventory.Controllers
             }
             if (id != modelRol.Id)
             {
-                return NotFound();
+                TempData["Error"] = "El id del rol no coincide.";
+                return RedirectToAction(nameof(Index));
             }
 
 
@@ -205,7 +210,8 @@ namespace SysSoniaInventory.Controllers
                 {
                     if (!ModelRolExists(modelRol.Id))
                     {
-                        return NotFound();
+                        TempData["Error"] = "Rol no encontrado.";
+                        return RedirectToAction(nameof(Index));
                     }
                     else
                     {
@@ -236,14 +242,16 @@ namespace SysSoniaInventory.Controllers
             }
             if (id == null)
             {
-                return NotFound();
+                TempData["Error"] = "Debe seleccionar un rol.";
+                return RedirectToAction(nameof(Index));
             }
 
             var modelRol = await _context.modelRol
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (modelRol == null)
             {
-                return NotFound();
+                TempData["Error"] = "Rol no encontrado.";
+                return RedirectToAction(nameof(Index));
             }
 
             return View(modelRol);

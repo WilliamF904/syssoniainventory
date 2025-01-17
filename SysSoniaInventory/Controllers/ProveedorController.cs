@@ -135,6 +135,7 @@ namespace SysSoniaInventory.Controllers
             {
                 _context.Add(modelProveedor);
                 await _context.SaveChangesAsync();
+                TempData["Success"] = "Proveedor creado correctamente.";
                 return RedirectToAction(nameof(Index));
             }
             return View(modelProveedor);
@@ -187,8 +188,6 @@ namespace SysSoniaInventory.Controllers
             { // Nivel 5 tiene acceso
 
             }
-
-
             else
             {
                 // Redirigir con mensaje de error si el usuario no tiene acceso
@@ -197,7 +196,8 @@ namespace SysSoniaInventory.Controllers
             }
             if (id != modelProveedor.Id)
             {
-                return NotFound();
+                TempData["Error"] = "Debe seleccionar un proveedor.";
+                return RedirectToAction(nameof(Index));
             }
 
             if (ModelState.IsValid)
@@ -206,12 +206,14 @@ namespace SysSoniaInventory.Controllers
                 {
                     _context.Update(modelProveedor);
                     await _context.SaveChangesAsync();
+                    TempData["Success"] = "Proveedor modificado correctamente.";
                 }
                 catch (DbUpdateConcurrencyException)
                 {
                     if (!ModelProveedorExists(modelProveedor.Id))
                     {
-                        return NotFound();
+                        TempData["Error"] = "Proveedor no encontrado.";
+                        return RedirectToAction(nameof(Index));
                     }
                     else
                     {
@@ -220,6 +222,7 @@ namespace SysSoniaInventory.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
+            TempData["Error"] = "Error inesperado en la validación de un campo o más.";
             return View(modelProveedor);
         }
 

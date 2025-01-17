@@ -153,6 +153,7 @@ namespace SysSoniaInventory.Controllers
             ModelState.Remove("PurchasePriceUnitario");
             if (!ModelState.IsValid)
             {
+                TempData["Error"] = "Error inesperado en la validación de un campo o más.";
                 ViewBag.Productos = _context.modelProduct.ToList();
                 return View(factura);
             }
@@ -267,7 +268,7 @@ namespace SysSoniaInventory.Controllers
                     // Guardar cambios y confirmar transacción
                     _context.SaveChanges();
                     transaction.Commit();
-
+                    TempData["Success"] = "Factura creada correctamente.";
                     return RedirectToAction("Index");
                 }
                 catch (Exception ex)

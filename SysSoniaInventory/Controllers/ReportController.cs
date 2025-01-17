@@ -182,8 +182,7 @@ namespace SysSoniaInventory.Controllers
             {
                 _context.Add(modelReport);
                 await _context.SaveChangesAsync();
-            
-
+                TempData["Success"] = "Reporte creado correctamente.";
 
 
                 // Crear la cookie con tiempo de expiración de 24 horas
@@ -195,11 +194,25 @@ namespace SysSoniaInventory.Controllers
                 };
                 Response.Cookies.Append(reportCookieName, "1", cookieOptions);
 
+
+                // Verificar niveles de acceso
+                if (User.HasClaim("AccessTipe", "Nivel 4"))
+                { // Nivel 4 tiene acceso
+
+                }
+                else if (User.HasClaim("AccessTipe", "Nivel 5"))
+                { // Nivel 5 tiene acceso
+
+                }
+                else
+                {
+                    return RedirectToAction("Index", "Home");
+                }
                 return RedirectToAction(nameof(Index));
             }
 
 
-
+            TempData["Error"] = "Error inesperado en la validación de un campo o más.";
             return View(modelReport);
         }
 
@@ -257,7 +270,8 @@ namespace SysSoniaInventory.Controllers
             }
             if (id != modelReport.Id)
             {
-                return NotFound();
+                TempData["Error"] = "Debe seleccionar un reporte.";
+                return RedirectToAction(nameof(Index));
             }
             modelReport.ComentaryUser = modelReport.ComentaryUser ?? string.Empty;
 
@@ -272,12 +286,14 @@ namespace SysSoniaInventory.Controllers
                 {
                     _context.Update(modelReport);
                     await _context.SaveChangesAsync();
+                    TempData["Success"] = "Reporte modificado correctamente.";
                 }
                 catch (DbUpdateConcurrencyException)
                 {
                     if (!ModelReportExists(modelReport.Id))
                     {
-                        return NotFound();
+                        TempData["Error"] = "Reporte no encontrado.";
+                        return RedirectToAction(nameof(Index));
                     }
                     else
                     {
@@ -286,6 +302,7 @@ namespace SysSoniaInventory.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
+            TempData["Error"] = "Error inesperado en la validación de un campo o más.";
             return View(modelReport);
         }
 

@@ -158,7 +158,8 @@ namespace SysSoniaInventory.Controllers
 
             if (id == null)
             {
-                return NotFound();
+                TempData["Error"] = "Debe seleccionar un usuario.";
+                return RedirectToAction(nameof(Index));
             }
 
             // Obtener el usuario del detalle
@@ -169,7 +170,8 @@ namespace SysSoniaInventory.Controllers
 
             if (modelUser == null)
             {
-                return NotFound();
+                TempData["Error"] = "Usuario no encontrado.";
+                return RedirectToAction(nameof(Index));
             }
 
             // Verificar si el usuario tiene acceso al detalle
@@ -311,7 +313,8 @@ namespace SysSoniaInventory.Controllers
 
             if (id == null)
             {
-                return NotFound();
+                TempData["Error"] = "Debe seleccionar un usuario.";
+                return RedirectToAction(nameof(Index));
             }
 
             var modelUser = await _context.modelUser.FindAsync(id);
@@ -397,7 +400,8 @@ namespace SysSoniaInventory.Controllers
 
             if (id != modelUser.Id)
             {
-                return NotFound();
+                TempData["Error"] = "El id del usuario no coincide.";
+                return RedirectToAction(nameof(Index));
             }
             // Verificar si el ID se puede convertir a int (si aplica)
             if (!int.TryParse(currentUserId, out int userId))
@@ -424,7 +428,8 @@ namespace SysSoniaInventory.Controllers
             var existingUser = await _context.modelUser.AsNoTracking().FirstOrDefaultAsync(u => u.Id == id);
             if (existingUser == null)
             {
-                return NotFound();
+                TempData["Error"] = "Usuario no encontrado.";
+                return RedirectToAction(nameof(Index));
             }
          
             modelUser.RegistrationDate = existingUser.RegistrationDate;
@@ -439,10 +444,11 @@ namespace SysSoniaInventory.Controllers
             {
                 try
                 {
-                  
 
-                   
-                    if (EsNivelIgualOSuperior(modelUser.IdRol, currentUserAccessTipe))
+                    if (userId == id) { 
+
+                    }
+                    else if (EsNivelIgualOSuperior(modelUser.IdRol, currentUserAccessTipe))
                     {
                         TempData["Error"] = "No puedes asignar un nivel de acceso igual o superior al tuyo.";
 
@@ -487,7 +493,8 @@ namespace SysSoniaInventory.Controllers
                 {
                     if (!ModelUserExists(modelUser.Id))
                     {
-                        return NotFound();
+                        TempData["Error"] = "Usuario no encontrado.";
+                        return RedirectToAction(nameof(Index));
                     }
                     else
                     {
@@ -619,7 +626,8 @@ namespace SysSoniaInventory.Controllers
                 {
                     if (!ModelUserExists(modelUser.Id))
                     {
-                        return NotFound();
+                        TempData["Error"] = "Usuario no encontrado.";
+                        return RedirectToAction(nameof(Index));
                     }
                     else
                     {
@@ -722,7 +730,7 @@ namespace SysSoniaInventory.Controllers
 
 
             if (id == userId) {
-                return RedirectToAction("EditInfoPerso", "User");
+               return RedirectToAction("EditInfoPerso", "User");
             }
 
 
@@ -751,7 +759,10 @@ namespace SysSoniaInventory.Controllers
 
             if (id != modelUser.Id)
             {
-                return NotFound();
+               TempData["Error"] = "El id de usuario no coincide.";
+                
+                return RedirectToAction(nameof(Index));
+
             }
        
             var existingUserIdentity = await _context.modelUser.AsNoTracking().FirstOrDefaultAsync(u => u.Id == userId);
@@ -774,7 +785,8 @@ namespace SysSoniaInventory.Controllers
 
             if (existingUser == null)
             {
-                return NotFound();
+                TempData["Error"] = "Usuario no encontrado.";
+                return RedirectToAction(nameof(Index));
             }
 
             modelUser.RegistrationDate = existingUser.RegistrationDate;
@@ -836,7 +848,8 @@ namespace SysSoniaInventory.Controllers
                 {
                     if (!ModelUserExists(modelUser.Id))
                     {
-                        return NotFound();
+                        TempData["Error"] = "Usuario no encontrado.";
+                        return RedirectToAction(nameof(Index));
                     }
                     else
                     {
@@ -894,7 +907,8 @@ namespace SysSoniaInventory.Controllers
 
             if (id == null)
             {
-                return NotFound();
+                TempData["Error"] = "Debe seleccionar un usuario.";
+                return RedirectToAction(nameof(Index));
             }
 
             var modelUser = await _context.modelUser
@@ -903,7 +917,8 @@ namespace SysSoniaInventory.Controllers
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (modelUser == null)
             {
-                return NotFound();
+                TempData["Error"] = "Usuario no encontrado.";
+                return RedirectToAction(nameof(Index));
             }
             ViewData["IdRol"] = new SelectList(_context.modelRol, "Id", "Name", modelUser.IdRol);
             ViewData["IdSucursal"] = new SelectList(_context.modelSucursal, "Id", "Name", modelUser.IdSucursal);

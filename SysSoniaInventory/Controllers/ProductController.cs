@@ -347,7 +347,7 @@ namespace SysSoniaInventory.Controllers
             }
             if (id == null)
             {
-                TempData["Error"] = "Debese seleccionar un producto.";
+                TempData["Error"] = "Debe seleccionar un producto.";
                 return RedirectToAction(nameof(Index));
             }
 
@@ -413,7 +413,8 @@ namespace SysSoniaInventory.Controllers
                     modelProduct.Stock = originalProduct.Stock;
                     if (originalProduct == null)
                     {
-                        return NotFound();
+                        TempData["Error"] = "Producto no encontrado.";
+                        return RedirectToAction(nameof(Index));
                     }
 
                     // Si se proporciona una nueva imagen, procesarla
@@ -504,6 +505,8 @@ namespace SysSoniaInventory.Controllers
 
             ViewData["IdCategory"] = new SelectList(_context.modelCategory, "Id", "Name", modelProduct.IdCategory);
             ViewData["IdProveedor"] = new SelectList(_context.modelProveedor, "Id", "Name", modelProduct.IdProveedor);
+            TempData["Error"] = "Error inesperado en la validación de un campo o más.";
+
             return View(modelProduct);
         }
 

@@ -3,7 +3,24 @@
 @{
     ViewData["Title"] = "Edit";
 }
+<link href="~/lib/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+<link rel="stylesheet" href="~/assets/vendors/mdi/css/materialdesignicons.min.css">
+<link rel="stylesheet" href="~/assets/vendors/css/vendor.bundle.base.css">
+<!-- endinject -->
+<!-- Plugin css for this page -->
+<link rel="stylesheet" href="~/assets/vendors/jvectormap/jquery-jvectormap.css">
+<link rel="stylesheet" href="~/assets/vendors/flag-icon-css/css/flag-icon.min.css">
+<link rel="stylesheet" href="~/assets/vendors/owl-carousel-2/owl.carousel.min.css">
+<link rel="stylesheet" href="~/assets/vendors/owl-carousel-2/owl.theme.default.min.css">
 
+<link rel="stylesheet" href="~/vendor/fontawesome-free/css/all.min.css">
+<link rel="stylesheet" href="~/css/site.css">
+<!-- End plugin css for this page -->
+<!-- inject:css -->
+<!-- endinject -->
+<!-- Layout styles -->
+<link rel="stylesheet" href="~/assets/css/style.css">
 <div class="col-12 grid-margin">
     <div class="card">
         <div class="card-body">
@@ -86,36 +103,102 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-6">
-                        <div class="form-group row">
-                            <label class="col-sm-3 col-form-label" for="currentPasswordIdentity">Contraseña de validación:</label>
-
-                            <div class="col-sm-9">
-                                <input type="password" maxlength="20" minlength="8" class="form-control" id="currentPasswordIdentity" name="currentPasswordIdentity" placeholder="Contraseña para validar identidad" required />
-
-                            </div>
-                        </div>
-                    </div>  
-                </div>
-                 @if (User.HasClaim("AccessTipe", "Nivel 4"))
-                {
-                    <div class="row">
+                    @if (User.HasClaim("AccessTipe", "Nivel 4"))
+                    {
                         <div class="col-md-6">
-                        <div class="form-group row">
-                            <label class="col-sm-3 col-form-label" asp-for="Password">Contraseña: </label>
-                            <div class="col-sm-9">
+                            <div class="form-group row">
+                                <label class="col-sm-3 col-form-label" asp-for="Password">Contraseña: </label>
+                                <div class="col-sm-9">
                                     <input type="password" maxlength="20" minlength="8" class="form-control" asp-for="Password" placeholder="Modificar contraseña" required />
-                             
+
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </div>}
+                    }
+                </div>
+               
+
                 <hr class="linea-warning" />
                 <div class="d-flex justify-content-end">
-                    <button type="submit" class="btn btn-outline-warning font-weight-bold"><i class="mdi mdi-file-check btn-icon-prepend"></i>Guardar</button>
+                    <button type="button" class="btn btn-outline-warning font-weight-bold" data-bs-toggle="modal" data-bs-target="#identityModal"><i class="mdi mdi-file-check btn-icon-prepend"></i>Guardar</button>
                     <a asp-action="Index" class="btn btn-outline-secondary font-weight-bold ml-2">Volver a la lista</a>
                 </div>
             </form>
+
+
+
+
+            <!-- Modal de Confirmación de Identidad -->
+            <div class="modal fade" id="identityModal" tabindex="-1" aria-labelledby="identityModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content rounded-4 shadow-lg">
+                        <div class="modal-header bg-warning text-white rounded-top-4">
+                            <h5 class="modal-title fw-bold" id="identityModalLabel">Confirmar Identidad</h5>
+                            <button type="button" class="btn-close text-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="text-center mb-4">
+                                @if (User.Identity.IsAuthenticated)
+                                {
+                                    var userName = User.FindFirst(System.Security.Claims.ClaimTypes.Name)?.Value;
+                                    <h4 class="fw-semibold text-uppercase">@userName</h4>
+                                }
+                            </div>
+
+                            <div class="form-group mb-3">
+                                <label for="currentPasswordIdentity" class="fw-semibold text-center d-block">Contraseña de validación:</label>
+                                <input type="password" maxlength="20" minlength="8" class="form-control rounded-pill shadow-sm"
+                                       id="currentPasswordIdentity" name="currentPasswordIdentity"
+                                       placeholder="Introduce tu contraseña" required />
+                            </div>
+                            <p class="text-center text-muted mt-3" style="font-size: 0.9rem;">
+                                Para guardar cambios, debes confirmar tu identidad introduciendo tu contraseña.
+                            </p>
+                        </div>
+                        <div class="modal-footer d-flex justify-content-center">
+                            <button type="button" class="btn btn-outline-warning rounded-pill px-4" onclick="submitEditUserForm()">
+                                <i class="mdi mdi-file-check btn-icon-prepend"></i> Confirmar
+                            </button>
+                            <button type="button" class="btn btn-outline-secondary rounded-pill px-4" data-bs-dismiss="modal">Cancelar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
         </div>
     </div>
 </div>
+
+
+<script>
+    function submitEditUserForm() {
+        const passwordField = document.getElementById('currentPasswordIdentity');
+        const passwordValue = passwordField.value.trim();
+        // Validar longitud mínima
+        if (passwordValue.length < 8) {
+            alert("La contraseña debe tener al menos 8 caracteres.");
+            passwordField.focus();
+            return;
+        }
+        if (passwordValue.length > 20) {
+            alert("La contraseña debe tener no más de 20 caracteres.");
+            passwordField.focus();
+            return;
+        }
+        if (!passwordValue) {
+            alert("Por favor, introduce tu contraseña para continuar.");
+            return;
+        }
+
+        // Crear campo oculto para enviar la contraseña
+        const form = document.getElementById('editUserForm');
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = 'currentPasswordIdentity';
+        input.value = passwordValue;
+
+        form.appendChild(input);
+        form.submit();
+    }
+</script>

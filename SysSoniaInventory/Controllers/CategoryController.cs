@@ -136,8 +136,10 @@ namespace SysSoniaInventory.Controllers
             {
                 _context.Add(modelCategory);
                 await _context.SaveChangesAsync();
+                TempData["Success"] = "Categoria creada correctamente.";
                 return RedirectToAction(nameof(Index));
             }
+            TempData["Error"] = "Error inesperado en la validación de un campo o más.";
             return View(modelCategory);
         }
 
@@ -196,7 +198,8 @@ namespace SysSoniaInventory.Controllers
             }
             if (id != modelCategory.Id)
             {
-                return NotFound();
+                TempData["Error"] = "Debese seleccionar una categoria.";
+                return RedirectToAction(nameof(Index));
             }
 
             if (ModelState.IsValid)
@@ -205,12 +208,14 @@ namespace SysSoniaInventory.Controllers
                 {
                     _context.Update(modelCategory);
                     await _context.SaveChangesAsync();
+                    TempData["Success"] = "Categoria modificada correctamente.";
                 }
                 catch (DbUpdateConcurrencyException)
                 {
                     if (!ModelCategoryExists(modelCategory.Id))
                     {
-                        return NotFound();
+                        TempData["Error"] = "Categoria no encontrada.";
+                        return RedirectToAction(nameof(Index));
                     }
                     else
                     {
@@ -219,6 +224,7 @@ namespace SysSoniaInventory.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
+            TempData["Error"] = "Error inesperado en la validación de un campo o más.";
             return View(modelCategory);
         }
 
@@ -285,6 +291,7 @@ namespace SysSoniaInventory.Controllers
             }
 
             await _context.SaveChangesAsync();
+            TempData["Success"] = "Categoria eliminada correctamente.";
             return RedirectToAction(nameof(Index));
         }
 
