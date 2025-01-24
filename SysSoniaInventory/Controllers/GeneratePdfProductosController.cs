@@ -1,11 +1,15 @@
 ﻿using System.IO;
+using System.Linq;
+using System.Collections.Generic;
 using iText.Kernel.Pdf;
 using iText.Layout;
 using iText.Layout.Element;
 using iText.Layout.Properties;
+using iText.Layout.Borders;
+using iText.Kernel.Colors;
+using iText.IO.Image;
 using Microsoft.AspNetCore.Mvc;
 using SysSoniaInventory.DataAccess;
-using System.Linq;
 using SysSoniaInventory.Models;
 
 namespace SysSoniaInventory.Controllers
@@ -49,37 +53,71 @@ namespace SysSoniaInventory.Controllers
                 var pdf = new PdfDocument(writer);
                 var document = new Document(pdf);
 
-                // Título
+                // Agregar logo
+                string imagePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images", "logo.png");
+                if (System.IO.File.Exists(imagePath))
+                {
+                    var logo = new Image(ImageDataFactory.Create(imagePath)).ScaleAbsolute(100, 100);
+                    document.Add(logo);
+                }
+
+                // Título estilizado
                 document.Add(new Paragraph(titulo)
+                    .SetFontSize(24)
+                    .SetFontColor(ColorConstants.DARK_GRAY)
                     .SetTextAlignment(TextAlignment.CENTER)
-                    .SetFontSize(20));
+                    .SetBold()
+                    .SetMarginBottom(20));
 
                 // Crear tabla
-                var table = new Table(new float[] { 1, 3, 2, 2, 2, 1 });
-                table.SetWidth(UnitValue.CreatePercentValue(100));
+                var table = new Table(new float[] { 1, 3, 2, 2, 2, 1 }).SetWidth(UnitValue.CreatePercentValue(100));
+                table.SetMarginTop(10);
 
-                // Encabezados
-                table.AddHeaderCell("ID");
-                table.AddHeaderCell("Nombre");
-                table.AddHeaderCell("Precio Compra");
-                table.AddHeaderCell("Precio Venta");
-                table.AddHeaderCell("Stock");
-                table.AddHeaderCell("Estatus");
+                // Encabezados estilizados
+                var headerColor = new DeviceRgb(41, 128, 185); // Azul oscuro
+                foreach (var header in new[] { "ID", "Nombre", "Precio Compra", "Precio Venta", "Stock", "Estatus" })
+                {
+                    table.AddHeaderCell(new Cell().Add(new Paragraph(header)
+                            .SetFontColor(ColorConstants.WHITE)
+                            .SetBold())
+                        .SetBackgroundColor(headerColor)
+                        .SetTextAlignment(TextAlignment.CENTER)
+                        .SetPadding(8));
+                }
 
-                // Agregar datos
+                // Filas alternadas
+                var alternateRowColor = new DeviceRgb(230, 240, 255); // Azul claro
+                bool isAlternate = false;
                 foreach (var producto in productos)
                 {
-                    table.AddCell(producto.Id.ToString());
-                    table.AddCell(producto.Name);
-                    table.AddCell(producto.PurchasePrice.ToString("F2"));
-                    table.AddCell(producto.SalePrice.ToString("F2"));
-                    table.AddCell(producto.Stock.ToString());
-                    table.AddCell(producto.Estatus == 1 ? "Activo" : "Inactivo");
+                    var rowColor = isAlternate ? alternateRowColor : ColorConstants.WHITE;
+                    table.AddCell(new Cell().Add(new Paragraph(producto.Id.ToString()))
+                        .SetBackgroundColor(rowColor).SetTextAlignment(TextAlignment.CENTER));
+                    table.AddCell(new Cell().Add(new Paragraph(producto.Name))
+                        .SetBackgroundColor(rowColor));
+                    table.AddCell(new Cell().Add(new Paragraph(producto.PurchasePrice.ToString("F2")))
+                        .SetBackgroundColor(rowColor));
+                    table.AddCell(new Cell().Add(new Paragraph(producto.SalePrice.ToString("F2")))
+                        .SetBackgroundColor(rowColor));
+                    table.AddCell(new Cell().Add(new Paragraph(producto.Stock.ToString()))
+                        .SetBackgroundColor(rowColor));
+                    table.AddCell(new Cell().Add(new Paragraph(producto.Estatus == 1 ? "Activo" : "Inactivo"))
+                        .SetBackgroundColor(rowColor));
+                    isAlternate = !isAlternate;
                 }
 
                 document.Add(table);
+
+                // Pie de página
+                document.Add(new Paragraph("Muebles y Electrodomesticos Sonia")
+                    .SetFontSize(10)
+                    .SetFontColor(ColorConstants.GRAY)
+                    .SetTextAlignment(TextAlignment.CENTER)
+                    .SetMarginTop(20));
+
                 document.Close();
 
+                // Retornar archivo PDF
                 return File(stream.ToArray(), "application/pdf", $"{titulo.Replace(" ", "_")}.pdf");
             }
         }

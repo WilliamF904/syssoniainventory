@@ -9,6 +9,11 @@ using iText.Kernel.Pdf;
 using iText.Layout;
 using iText.Layout.Element;
 using iText.Layout.Properties;
+using iText.Layout.Borders;
+using iText.Kernel.Colors;
+using iText.IO.Image;
+using iText.IO.Font;
+using iText.Kernel.Font;
 
 [Authorize]
 public class FacturaController : Controller
@@ -20,27 +25,21 @@ public class FacturaController : Controller
         _context = context;
     }
 
-    // Método para generar PDF de facturas según fecha o todas
     public IActionResult GeneratePdf(DateOnly? startDate, DateOnly? endDate)
     {
-        // Verificar acceso del usuario
         if (!User.HasClaim("AccessTipe", "Nivel 4") && !User.HasClaim("AccessTipe", "Nivel 5"))
         {
             TempData["Error"] = "No tienes acceso a esta sección. Requerido: Nivel 4 o 5.";
             return RedirectToAction("Index", "Home");
         }
 
-        // Filtrar facturas por rango de fecha o incluir todas
         var facturas = _context.Set<ModelFactura>().AsQueryable();
-
         if (startDate.HasValue && endDate.HasValue)
         {
             facturas = facturas.Where(f => f.Date >= startDate && f.Date <= endDate);
         }
 
         var facturasList = facturas.ToList();
-
-        // Manejar error si no se encuentran facturas
         if (!facturasList.Any())
         {
             TempData["Error"] = "No se encontraron facturas en el rango de fechas especificado.";
@@ -53,39 +52,77 @@ public class FacturaController : Controller
             var pdf = new PdfDocument(writer);
             var document = new Document(pdf);
 
-            // Título del documento
+            
+
+            // Agregar logo
+            string imagePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images", "logo.png");
+            if (System.IO.File.Exists(imagePath))
+            {
+                var logo = new Image(ImageDataFactory.Create(imagePath)).ScaleAbsolute(100, 100);
+                document.Add(logo);
+            }
+
+            // Título estilizado
             string title = startDate.HasValue && endDate.HasValue
                 ? $"Facturas del {startDate} al {endDate}"
                 : "Todas las Facturas";
 
             document.Add(new Paragraph(title)
+              
+                .SetFontSize(24)
+                .SetFontColor(ColorConstants.DARK_GRAY)
                 .SetTextAlignment(TextAlignment.CENTER)
-                .SetFontSize(20));
+                .SetBold()
+                .SetMarginBottom(20));
 
-            // Crear tabla para las facturas
+            // Crear tabla
             var table = new Table(new float[] { 1, 2, 2, 2, 2 }).SetWidth(UnitValue.CreatePercentValue(100));
-            table.AddHeaderCell("ID");
-            table.AddHeaderCell("Sucursal");
-            table.AddHeaderCell("Usuario");
-            table.AddHeaderCell("Cliente");
-            table.AddHeaderCell("Fecha");
+            table.SetMarginTop(10);
 
-            // Agregar datos
+            // Encabezados
+            var headerColor = new DeviceRgb(41, 128, 185); // Azul oscuro
+            foreach (var header in new[] { "ID", "Sucursal", "Usuario", "Cliente", "Fecha" })
+            {
+                table.AddHeaderCell(new Cell().Add(new Paragraph(header)
+                       
+                        .SetFontColor(ColorConstants.WHITE)
+                        .SetBold())
+                    .SetBackgroundColor(headerColor)
+                    .SetTextAlignment(TextAlignment.CENTER)
+                    .SetPadding(8));
+            }
+
+            // Filas alternadas
+            var alternateRowColor = new DeviceRgb(230, 240, 255); // Azul claro
+            bool isAlternate = false;
             foreach (var factura in facturasList)
             {
-                table.AddCell(factura.Id.ToString());
-                table.AddCell(factura.NameSucursal);
-                table.AddCell(factura.NameUser);
-                table.AddCell(factura.NameClient ?? "N/A");
-                table.AddCell(factura.Date.ToShortDateString());
+                var rowColor = isAlternate ? alternateRowColor : ColorConstants.WHITE;
+                table.AddCell(new Cell().Add(new Paragraph(factura.Id.ToString()))
+                    .SetBackgroundColor(rowColor).SetTextAlignment(TextAlignment.CENTER));
+                table.AddCell(new Cell().Add(new Paragraph(factura.NameSucursal))
+                    .SetBackgroundColor(rowColor));
+                table.AddCell(new Cell().Add(new Paragraph(factura.NameUser))
+                    .SetBackgroundColor(rowColor));
+                table.AddCell(new Cell().Add(new Paragraph(factura.NameClient ?? "N/A"))
+                    .SetBackgroundColor(rowColor));
+                table.AddCell(new Cell().Add(new Paragraph(factura.Date.ToShortDateString()))
+                    .SetBackgroundColor(rowColor));
+                isAlternate = !isAlternate;
             }
 
             document.Add(table);
-            document.Close();
 
-            // Descargar archivo
+            // Pie de página
+            document.Add(new Paragraph("Muebles y Electrodomesticos Sonia")
+                
+                .SetFontSize(10)
+                .SetFontColor(ColorConstants.GRAY)
+                .SetTextAlignment(TextAlignment.CENTER)
+                .SetMarginTop(20));
+
+            document.Close();
             return File(stream.ToArray(), "application/pdf", $"{title.Replace(" ", "_")}.pdf");
         }
     }
 }
-        

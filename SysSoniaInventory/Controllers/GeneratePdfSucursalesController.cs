@@ -1,13 +1,15 @@
 ﻿using System.IO;
+using System.Linq;
 using iText.Kernel.Pdf;
 using iText.Layout;
 using iText.Layout.Element;
 using iText.Layout.Properties;
+using iText.Layout.Borders;
+using iText.Kernel.Colors;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SysSoniaInventory.DataAccess;
 using SysSoniaInventory.Models;
-using System.Linq;
-using Microsoft.AspNetCore.Authorization;
 
 [Authorize]
 public class SucursalController : Controller
@@ -22,21 +24,10 @@ public class SucursalController : Controller
     // Método para generar PDF de todas las sucursales
     public IActionResult GeneratePdf()
     {
-
         // Verificar niveles de acceso
-        if (User.HasClaim("AccessTipe", "Nivel 4"))
-        { // Nivel 4 tiene acceso
-
-        }
-        else if (User.HasClaim("AccessTipe", "Nivel 5"))
+        if (!User.HasClaim("AccessTipe", "Nivel 4") && !User.HasClaim("AccessTipe", "Nivel 5"))
         {
-            // Nivel 5 tiene acceso
-
-        }
-        else
-        {
-            // Redirigir con mensaje de error si el usuario no tiene acceso
-            TempData["Error"] = "No tienes acceso a esta sección. Requerido: Nivel 4.";
+            TempData["Error"] = "No tienes acceso a esta sección. Requerido: Nivel 4 o 5.";
             return RedirectToAction("Index", "Home");
         }
 
@@ -49,35 +40,58 @@ public class SucursalController : Controller
             var pdf = new PdfDocument(writer);
             var document = new Document(pdf);
 
-            // Título
+            // Título estilizado
             document.Add(new Paragraph("Lista de Sucursales")
                 .SetTextAlignment(TextAlignment.CENTER)
-                .SetFontSize(20));
+                .SetFontSize(24)
+                .SetFontColor(ColorConstants.DARK_GRAY)
+                .SetBold()
+                .SetMarginBottom(20));
 
             // Crear tabla
-            var table = new Table(new float[] { 1, 2, 3 }); // Ajustar las columnas según los datos
-            table.SetWidth(UnitValue.CreatePercentValue(100));
+            var table = new Table(new float[] { 1, 2, 3 }).SetWidth(UnitValue.CreatePercentValue(100));
+            table.SetMarginTop(10);
 
-            // Encabezados
-            table.AddHeaderCell("ID");
-            table.AddHeaderCell("Nombre");
-            table.AddHeaderCell("Dirección");
+            // Encabezados estilizados
+            var headerColor = new DeviceRgb(52, 152, 219); // Azul intenso
+            foreach (var header in new[] { "ID", "Nombre", "Dirección" })
+            {
+                table.AddHeaderCell(new Cell().Add(new Paragraph(header)
+                        .SetFontColor(ColorConstants.WHITE)
+                        .SetBold())
+                    .SetBackgroundColor(headerColor)
+                    .SetTextAlignment(TextAlignment.CENTER)
+                    .SetPadding(8));
+            }
 
-            // Agregar datos de las sucursales
+            // Filas alternadas
+            var alternateRowColor = new DeviceRgb(235, 245, 255); // Azul claro
+            bool isAlternate = false;
             foreach (var sucursal in sucursales)
             {
-                table.AddCell(sucursal.Id.ToString());
-                table.AddCell(sucursal.Name);
-                table.AddCell(sucursal.Address ?? "N/A");
+                var rowColor = isAlternate ? alternateRowColor : ColorConstants.WHITE;
+                table.AddCell(new Cell().Add(new Paragraph(sucursal.Id.ToString()))
+                    .SetBackgroundColor(rowColor).SetTextAlignment(TextAlignment.CENTER));
+                table.AddCell(new Cell().Add(new Paragraph(sucursal.Name))
+                    .SetBackgroundColor(rowColor));
+                table.AddCell(new Cell().Add(new Paragraph(sucursal.Address ?? "N/A"))
+                    .SetBackgroundColor(rowColor));
+                isAlternate = !isAlternate;
             }
 
             document.Add(table);
+
+            // Pie de página
+            document.Add(new Paragraph("Muebles y Electrodomésticos Sonia")
+                .SetFontSize(10)
+                .SetFontColor(ColorConstants.GRAY)
+                .SetTextAlignment(TextAlignment.CENTER)
+                .SetMarginTop(20));
+
             document.Close();
 
             // Retornar archivo PDF
             return File(stream.ToArray(), "application/pdf", "Sucursales.pdf");
         }
     }
-
-
 }

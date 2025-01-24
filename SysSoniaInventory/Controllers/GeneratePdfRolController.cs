@@ -1,8 +1,11 @@
 ﻿using System.IO;
+using System.Linq;
 using iText.Kernel.Pdf;
 using iText.Layout;
 using iText.Layout.Element;
 using iText.Layout.Properties;
+using iText.Layout.Borders;
+using iText.Kernel.Colors;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SysSoniaInventory.DataAccess;
@@ -20,21 +23,10 @@ public class RolController : Controller
     // Método para generar PDF
     public IActionResult GeneratePdf(bool? active = null)
     {
-
         // Verificar niveles de acceso
-        if (User.HasClaim("AccessTipe", "Nivel 4"))
-        { // Nivel 4 tiene acceso
-
-        }
-        else if (User.HasClaim("AccessTipe", "Nivel 5"))
+        if (!User.HasClaim("AccessTipe", "Nivel 4") && !User.HasClaim("AccessTipe", "Nivel 5"))
         {
-            // Nivel 5 tiene acceso
-
-        }
-        else
-        {
-            // Redirigir con mensaje de error si el usuario no tiene acceso
-            TempData["Error"] = "No tienes acceso a esta sección. Requerido: Nivel 4.";
+            TempData["Error"] = "No tienes acceso a esta sección. Requerido: Nivel 4 o 5.";
             return RedirectToAction("Index", "Home");
         }
 
@@ -43,7 +35,6 @@ public class RolController : Controller
 
         if (active.HasValue)
         {
-            // Suponiendo que "active" indica una propiedad booleana en el modelo
             roles = roles.Where(r => r.User.Any(u => u.Estatus == (active.Value ? 1 : 0)));
         }
 
@@ -56,35 +47,58 @@ public class RolController : Controller
             var pdf = new PdfDocument(writer);
             var document = new Document(pdf);
 
-            // Título
+            // Título estilizado
             document.Add(new Paragraph("Lista de Roles")
                 .SetTextAlignment(TextAlignment.CENTER)
-                .SetFontSize(20));
+                .SetFontSize(24)
+                .SetFontColor(ColorConstants.DARK_GRAY)
+                .SetBold()
+                .SetMarginBottom(20));
 
             // Crear tabla
-            var table = new Table(new float[] { 1, 2, 2 });
-            table.SetWidth(UnitValue.CreatePercentValue(100));
+            var table = new Table(new float[] { 1, 2, 2 }).SetWidth(UnitValue.CreatePercentValue(100));
+            table.SetMarginTop(10);
 
-            // Encabezados
-            table.AddHeaderCell("ID");
-            table.AddHeaderCell("Nombre");
-            table.AddHeaderCell("Tipo de Acceso");
+            // Encabezados estilizados
+            var headerColor = new DeviceRgb(52, 152, 219); // Azul intenso
+            foreach (var header in new[] { "ID", "Nombre", "Tipo de Acceso" })
+            {
+                table.AddHeaderCell(new Cell().Add(new Paragraph(header)
+                        .SetFontColor(ColorConstants.WHITE)
+                        .SetBold())
+                    .SetBackgroundColor(headerColor)
+                    .SetTextAlignment(TextAlignment.CENTER)
+                    .SetPadding(8));
+            }
 
-            // Agregar datos
+            // Filas alternadas
+            var alternateRowColor = new DeviceRgb(235, 245, 255); // Azul claro
+            bool isAlternate = false;
             foreach (var role in roleList)
             {
-                table.AddCell(role.Id.ToString());
-                table.AddCell(role.Name);
-                table.AddCell(role.AccessTipe);
+                var rowColor = isAlternate ? alternateRowColor : ColorConstants.WHITE;
+                table.AddCell(new Cell().Add(new Paragraph(role.Id.ToString()))
+                    .SetBackgroundColor(rowColor).SetTextAlignment(TextAlignment.CENTER));
+                table.AddCell(new Cell().Add(new Paragraph(role.Name))
+                    .SetBackgroundColor(rowColor));
+                table.AddCell(new Cell().Add(new Paragraph(role.AccessTipe))
+                    .SetBackgroundColor(rowColor));
+                isAlternate = !isAlternate;
             }
 
             document.Add(table);
+
+            // Pie de página
+            document.Add(new Paragraph("Muebles y Electrodomésticos Sonia")
+                .SetFontSize(10)
+                .SetFontColor(ColorConstants.GRAY)
+                .SetTextAlignment(TextAlignment.CENTER)
+                .SetMarginTop(20));
+
             document.Close();
 
             // Retornar archivo PDF
             return File(stream.ToArray(), "application/pdf", "Roles.pdf");
         }
     }
-
-
 }

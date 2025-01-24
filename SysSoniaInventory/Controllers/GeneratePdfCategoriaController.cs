@@ -3,6 +3,9 @@ using iText.Kernel.Pdf;
 using iText.Layout;
 using iText.Layout.Element;
 using iText.Layout.Properties;
+using iText.Layout.Borders;
+using iText.Kernel.Colors;
+using iText.IO.Image;
 using Microsoft.AspNetCore.Mvc;
 using SysSoniaInventory.DataAccess;
 using SysSoniaInventory.Models;
@@ -21,24 +24,21 @@ public class CategoryController : Controller
 
     // Método para generar PDF de todas las categorías
     public IActionResult GeneratePdfCategoria()
-    {     // Verificar niveles de acceso
-        if (User.HasClaim("AccessTipe", "Nivel 4"))
-        { // Nivel 4 tiene acceso
-
-        }
-        else if (User.HasClaim("AccessTipe", "Nivel 5"))
+    {
+        // Verificar niveles de acceso
+        if (!User.HasClaim("AccessTipe", "Nivel 4") && !User.HasClaim("AccessTipe", "Nivel 5"))
         {
-            // Nivel 5 tiene acceso
-
-        }
-        else
-        {
-            // Redirigir con mensaje de error si el usuario no tiene acceso
-            TempData["Error"] = "No tienes acceso a esta sección. Requerido: Nivel 4.";
+            TempData["Error"] = "No tienes acceso a esta sección. Requerido: Nivel 4 o 5.";
             return RedirectToAction("Index", "Home");
         }
+
         // Obtener la lista de categorías
         var categories = _context.Set<ModelCategory>().ToList();
+        if (!categories.Any())
+        {
+            TempData["Error"] = "No hay categorías disponibles para generar el PDF.";
+            return RedirectToAction("Index");
+        }
 
         using (var stream = new MemoryStream())
         {
@@ -46,33 +46,64 @@ public class CategoryController : Controller
             var pdf = new PdfDocument(writer);
             var document = new Document(pdf);
 
-            // Título
+            // Agregar logo
+            string imagePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images", "logo.png");
+            if (System.IO.File.Exists(imagePath))
+            {
+                var logo = new Image(ImageDataFactory.Create(imagePath)).ScaleAbsolute(100, 100);
+                document.Add(logo);
+            }
+
+            // Título estilizado
             document.Add(new Paragraph("Lista de Categorías")
+                .SetFontSize(24)
+                .SetFontColor(ColorConstants.DARK_GRAY)
                 .SetTextAlignment(TextAlignment.CENTER)
-                .SetFontSize(20));
+                .SetBold()
+                .SetMarginBottom(20));
 
             // Crear tabla
-            var table = new Table(new float[] { 1, 2 }); // Ajustar columnas según los datos
-            table.SetWidth(UnitValue.CreatePercentValue(100));
+            var table = new Table(new float[] { 1, 3 }).SetWidth(UnitValue.CreatePercentValue(100));
+            table.SetMarginTop(10);
 
             // Encabezados
-            table.AddHeaderCell("ID");
-            table.AddHeaderCell("Nombre");
+            var headerColor = new DeviceRgb(41, 128, 185); // Azul oscuro
+            foreach (var header in new[] { "ID", "Nombre" })
+            {
+                table.AddHeaderCell(new Cell().Add(new Paragraph(header)
+                        .SetFontColor(ColorConstants.WHITE)
+                        .SetBold())
+                    .SetBackgroundColor(headerColor)
+                    .SetTextAlignment(TextAlignment.CENTER)
+                    .SetPadding(8));
+            }
 
-            // Agregar datos de las categorías
+            // Filas alternadas
+            var alternateRowColor = new DeviceRgb(230, 240, 255); // Azul claro
+            bool isAlternate = false;
             foreach (var category in categories)
             {
-                table.AddCell(category.Id.ToString());
-                table.AddCell(category.Name);
+                var rowColor = isAlternate ? alternateRowColor : ColorConstants.WHITE;
+                table.AddCell(new Cell().Add(new Paragraph(category.Id.ToString()))
+                    .SetBackgroundColor(rowColor).SetTextAlignment(TextAlignment.CENTER));
+                table.AddCell(new Cell().Add(new Paragraph(category.Name))
+                    .SetBackgroundColor(rowColor));
+                isAlternate = !isAlternate;
             }
 
             document.Add(table);
+
+            // Pie de página
+            document.Add(new Paragraph("Muebles y Electrodomesticos Sonia")
+                .SetFontSize(10)
+                .SetFontColor(ColorConstants.GRAY)
+                .SetTextAlignment(TextAlignment.CENTER)
+                .SetMarginTop(20));
+
             document.Close();
 
             // Retornar archivo PDF
-            return File(stream.ToArray(), "application/pdf", "Categorias.pdf");
+            return File(stream.ToArray(), "application/pdf", "Lista_Categorias.pdf");
         }
     }
-
-
 }
