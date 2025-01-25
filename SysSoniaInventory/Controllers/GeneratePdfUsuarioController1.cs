@@ -9,6 +9,7 @@ using iText.Kernel.Colors;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SysSoniaInventory.DataAccess;
+using iText.IO.Image;
 
 [Authorize]
 public class UserController : Controller
@@ -46,6 +47,25 @@ public class UserController : Controller
             var pdf = new PdfDocument(writer);
             var document = new Document(pdf);
 
+            // Ruta del logo  
+            string imagePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "img", "2_ventilador.png");
+
+            // Verificar si el archivo del logo existe  
+            if (System.IO.File.Exists(imagePath))
+            {
+                var logo = new Image(ImageDataFactory.Create(imagePath))
+                    .ScaleAbsolute(100, 100); // Tamaño del logo  
+
+
+                document.Add(logo);
+            }
+            else
+            {
+                TempData["Error"] = "No se pudo encontrar el logo.";
+            }
+
+
+
             // Título estilizado
             document.Add(new Paragraph("Lista de Usuarios")
                 .SetTextAlignment(TextAlignment.CENTER)
@@ -57,6 +77,8 @@ public class UserController : Controller
             // Crear tabla
             var table = new Table(new float[] { 1, 2, 2, 3, 1 }).SetWidth(UnitValue.CreatePercentValue(100));
             table.SetMarginTop(10);
+
+
 
             // Encabezados estilizados
             var headerColor = new DeviceRgb(52, 152, 219); // Azul intenso

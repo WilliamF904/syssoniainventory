@@ -27,5 +27,7 @@ namespace SysSoniaInventory.Models
 
 
         public virtual ICollection<ModelDetalleFactura> DetalleFactura { get; set; } = new List<ModelDetalleFactura>();
+        [NotMapped]
+        public object TotalVenta { get; internal set; }
     }
 }

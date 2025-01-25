@@ -12,8 +12,6 @@ using iText.Layout.Properties;
 using iText.Layout.Borders;
 using iText.Kernel.Colors;
 using iText.IO.Image;
-using iText.IO.Font;
-using iText.Kernel.Font;
 
 [Authorize]
 public class FacturaController : Controller
@@ -52,39 +50,33 @@ public class FacturaController : Controller
             var pdf = new PdfDocument(writer);
             var document = new Document(pdf);
 
-            
+            // Agregar logo una sola vez  
+            string imagePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "img", "2_ventilador.png");
+            var logo = new Image(ImageDataFactory.Create(imagePath)).ScaleAbsolute(100, 100);
 
-            // Agregar logo
-            string imagePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images", "logo.png");
-            if (System.IO.File.Exists(imagePath))
-            {
-                var logo = new Image(ImageDataFactory.Create(imagePath)).ScaleAbsolute(100, 100);
-                document.Add(logo);
-            }
+            document.Add(logo); // Agregar el logo aquí  
 
-            // Título estilizado
+            // Título estilizado  
             string title = startDate.HasValue && endDate.HasValue
                 ? $"Facturas del {startDate} al {endDate}"
                 : "Todas las Facturas";
 
             document.Add(new Paragraph(title)
-              
                 .SetFontSize(24)
                 .SetFontColor(ColorConstants.DARK_GRAY)
                 .SetTextAlignment(TextAlignment.CENTER)
                 .SetBold()
                 .SetMarginBottom(20));
 
-            // Crear tabla
+            // Crear tabla  
             var table = new Table(new float[] { 1, 2, 2, 2, 2 }).SetWidth(UnitValue.CreatePercentValue(100));
             table.SetMarginTop(10);
 
-            // Encabezados
-            var headerColor = new DeviceRgb(41, 128, 185); // Azul oscuro
+            // Encabezados  
+            var headerColor = new DeviceRgb(41, 128, 185); // Azul oscuro  
             foreach (var header in new[] { "ID", "Sucursal", "Usuario", "Cliente", "Fecha" })
             {
                 table.AddHeaderCell(new Cell().Add(new Paragraph(header)
-                       
                         .SetFontColor(ColorConstants.WHITE)
                         .SetBold())
                     .SetBackgroundColor(headerColor)
@@ -92,8 +84,8 @@ public class FacturaController : Controller
                     .SetPadding(8));
             }
 
-            // Filas alternadas
-            var alternateRowColor = new DeviceRgb(230, 240, 255); // Azul claro
+            // Filas alternadas  
+            var alternateRowColor = new DeviceRgb(230, 240, 255); // Azul claro  
             bool isAlternate = false;
             foreach (var factura in facturasList)
             {
@@ -113,9 +105,8 @@ public class FacturaController : Controller
 
             document.Add(table);
 
-            // Pie de página
+            // Pie de página  
             document.Add(new Paragraph("Muebles y Electrodomesticos Sonia")
-                
                 .SetFontSize(10)
                 .SetFontColor(ColorConstants.GRAY)
                 .SetTextAlignment(TextAlignment.CENTER)

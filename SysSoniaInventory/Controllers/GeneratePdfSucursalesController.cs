@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SysSoniaInventory.DataAccess;
 using SysSoniaInventory.Models;
+using iText.IO.Image;
 
 [Authorize]
 public class SucursalController : Controller
@@ -39,6 +40,25 @@ public class SucursalController : Controller
             var writer = new PdfWriter(stream);
             var pdf = new PdfDocument(writer);
             var document = new Document(pdf);
+
+
+            // Ruta del logo  
+            string imagePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "img", "2_ventilador.png");
+
+            // Verificar si el archivo del logo existe  
+            if (System.IO.File.Exists(imagePath))
+            {
+                var logo = new Image(ImageDataFactory.Create(imagePath))
+                    .ScaleAbsolute(100, 100); // Tamaño del logo  
+
+
+                document.Add(logo);
+            }
+            else
+            {
+                TempData["Error"] = "No se pudo encontrar el logo.";
+            }
+
 
             // Título estilizado
             document.Add(new Paragraph("Lista de Sucursales")

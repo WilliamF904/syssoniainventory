@@ -47,7 +47,7 @@ public class CategoryController : Controller
             var document = new Document(pdf);
 
             // Agregar logo
-            string imagePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images", "logo.png");
+            string imagePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "img", "2_ventilador.png");
             if (System.IO.File.Exists(imagePath))
             {
                 var logo = new Image(ImageDataFactory.Create(imagePath)).ScaleAbsolute(100, 100);
