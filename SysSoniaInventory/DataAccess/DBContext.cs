@@ -24,6 +24,7 @@ namespace SysSoniaInventory.DataAccess
 
 
         public virtual DbSet<ModelFactura> modelFactura { get; set; }
+        public virtual DbSet<ModelMarca> modelMarca { get; set; }
         public virtual DbSet<ModelDetalleFactura> modelDetalleFactura { get; set; }
 
         public virtual DbSet<ModelDevolucion> modelDevolucion { get; set; }
@@ -78,6 +79,12 @@ namespace SysSoniaInventory.DataAccess
                 entity.Property(e => e.Tel);
                 entity.Property(e => e.Email).HasMaxLength(75).IsUnicode(false);
             });
+            modelBuilder.Entity<ModelMarca>(entity =>
+            {
+                entity.HasKey(e => e.Id).HasName("PK__ModelMarca__3214EC0773A63FE3");
+                entity.Property(e => e.Name).IsRequired().HasMaxLength(75).IsUnicode(false);
+                entity.Property(e => e.Description).HasMaxLength(250).IsUnicode(false);
+            });
 
             modelBuilder.Entity<ModelProduct>(entity =>
             {
@@ -98,6 +105,11 @@ namespace SysSoniaInventory.DataAccess
                 entity.HasOne(d => d.IdProveedorNavigation).WithMany(p => p.Product)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Product_Proveedor");
+
+
+                entity.HasOne(d => d.IdMarcanavigation).WithMany(p => p.Product)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Product_Marca");
             });
 
             modelBuilder.Entity<ModelHistorialProduct>(entity =>

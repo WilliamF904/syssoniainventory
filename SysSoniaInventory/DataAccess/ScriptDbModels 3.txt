@@ -51,11 +51,19 @@ CREATE TABLE ModelProveedor (
     Email VARCHAR(75)
 );
 
+CREATE TABLE ModelMarca(
+    Id INT PRIMARY KEY IDENTITY(1,1),
+    Name VARCHAR(75) NOT NULL,
+    Description VARCHAR(250)
+    
+);
+
 -- Tabla ModelProduct
 CREATE TABLE ModelProduct (
     Id INT PRIMARY KEY IDENTITY(1,1),
     IdCategory INT NOT NULL,
     IdProveedor INT NOT NULL,
+    IdMarca INT NOT NULL,
     Name VARCHAR(100) NOT NULL,
     PurchasePrice DECIMAL(18,2) NOT NULL,
     SalePrice DECIMAL(18,2) NOT NULL,
@@ -65,6 +73,7 @@ CREATE TABLE ModelProduct (
     Url VARCHAR(100),
     Estatus TINYINT NOT NULL,
     CONSTRAINT FK_Product_Category FOREIGN KEY (IdCategory) REFERENCES ModelCategory(Id),
+   CONSTRAINT FK_Product_Marca FOREIGN KEY (IdMarca REFERENCES ModelMarcaId),
     CONSTRAINT FK_Product_Proveedor FOREIGN KEY (IdProveedor) REFERENCES ModelProveedor(Id)
 );
 
@@ -125,8 +134,7 @@ CREATE TABLE ModelDevolucion (
     NameClient VARCHAR(75),
     Date DATE NOT NULL,
     Time TIME NOT NULL,
-    CONSTRAINT FK_Devolucion_Factura FOREIGN KEY (IdFactura) REFERENCES ModelFactura(Id)
-);
+ );
 
 -- Tabla ModelDetalleDevolucion
 CREATE TABLE ModelDetalleDevolucion (
@@ -135,8 +143,6 @@ CREATE TABLE ModelDetalleDevolucion (
     IdProduct INT NOT NULL,
     NameProduct VARCHAR(100) NOT NULL,
     CodigoProducto VARCHAR(25),
-    PurchasePrice DECIMAL(18,2) NOT NULL,
-    SalePriceUnitario DECIMAL(18,2) NOT NULL,
     CantidadProduct INT NOT NULL,
     PriceReembolso DECIMAL(18,2) NOT NULL,
     PriceTotalReembolso DECIMAL(18,2) NOT NULL,
@@ -161,11 +167,34 @@ CREATE TABLE ModelReport (
     IdRelation INT
 );
 
-ALTER TABLE ModelReport
-    ALTER COLUMN Description VARCHAR(1000) NOT NULL;
 
-ALTER TABLE ModelReport
-    ALTER COLUMN ComentaryUser VARCHAR(1000);
+
+
+-- Tabla ModelCompra
+CREATE TABLE ModelCompra (
+    Id INT PRIMARY KEY IDENTITY(1,1),
+    NameSucursal VARCHAR(75) NOT NULL,
+    NameUser VARCHAR(100) NOT NULL,
+    Description VARCHAR(250) NOT NULL,
+    NameProveedor VARCHAR(75),
+    CodigoFactura VARCHAR(75),
+    Date DATE NOT NULL,
+    Time TIME NOT NULL
+);
+
+-- Tabla ModelDetalleCompra
+CREATE TABLE ModelDetalleCompra (
+    Id INT PRIMARY KEY IDENTITY(1,1),
+    IdCompra INT NOT NULL,
+    IdProduct INT NOT NULL,
+    MarcaProducto VARCHAR(75),
+    NameProducto VARCHAR(100) NOT NULL,
+    CodigoProducto VARCHAR(25),
+    CantidadProduct INT NOT NULL,
+    PriceCompraUnitario DECIMAL(18,2) NOT NULL,
+    PriceTotal DECIMAL(18,2) NOT NULL,
+    CONSTRAINT FK_DetalleCompra_Compra FOREIGN KEY (IdCompra) REFERENCES ModelCompra(Id)
+);
 
 
 

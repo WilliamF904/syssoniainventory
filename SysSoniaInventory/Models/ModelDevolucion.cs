@@ -28,8 +28,5 @@ namespace SysSoniaInventory.Models
 
 
         public virtual ICollection<ModelDetalleDevolucion> DetalleDevolucion { get; set; } = new List<ModelDetalleDevolucion>();
-
-        [ForeignKey("IdFactura")]
-        public virtual ModelFactura? IdFacturaNavigation { get; set; }
     }
 }

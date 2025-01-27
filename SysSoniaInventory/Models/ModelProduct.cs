@@ -13,6 +13,8 @@ namespace SysSoniaInventory.Models
 
         public int IdProveedor { get; set; }
 
+        public int IdMarca{ get; set; }
+
         [Required, MaxLength(100), Unicode(false)]
         public string Name { get; set; }
 
@@ -42,5 +44,7 @@ namespace SysSoniaInventory.Models
         [ForeignKey("IdProveedor")]
         public virtual ModelProveedor? IdProveedorNavigation { get; set; }
 
+        [ForeignKey("IdMarca")]
+        public virtual ModelMarca? IdMarcanavigation { get; set; }
     }
 }
