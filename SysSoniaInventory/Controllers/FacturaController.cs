@@ -123,7 +123,9 @@ namespace SysSoniaInventory.Controllers
             ViewBag.NameSucursal = User.FindFirst("Sucursal")?.Value;
             ViewBag.NameUser = User.Identity?.Name;
 
-            ViewBag.Productos = _context.modelProduct.ToList();
+            // Filtrar solo productos activos
+            ViewBag.Productos = _context.modelProduct.Where(p => p.Estatus == 1).ToList();
+
             return View();
         }
 
@@ -144,6 +146,7 @@ namespace SysSoniaInventory.Controllers
             }
 
             // Sobrescribir valores de seguridad
+            ModelState.Remove("TotalVenta");
             factura.NameUser = User.Identity?.Name;
             factura.NameSucursal = User.FindFirst("Sucursal")?.Value;
             factura.Date = DateOnly.FromDateTime(DateTime.Now);
@@ -259,6 +262,7 @@ namespace SysSoniaInventory.Controllers
                                     Estatus = "Pendiente",
                                     StarDate = DateOnly.FromDateTime(DateTime.Now),
                                     StarTime = TimeOnly.FromDateTime(DateTime.Now),
+
                                     IdRelation = producto.Id
                                 };
 
@@ -272,8 +276,9 @@ namespace SysSoniaInventory.Controllers
 
                     // Guardar cambios y confirmar transacción
                     _context.SaveChanges();
-                    transaction.Commit();
+                    transaction.Commit();   
                     TempData["Success"] = "Factura creada correctamente.";
+                  
                     return RedirectToAction("Index");
                 }
                 catch (Exception ex)
