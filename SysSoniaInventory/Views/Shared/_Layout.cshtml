@@ -108,6 +108,8 @@ else
                     </a>
                 </li>
 
+                  @if (!User.HasClaim("AccessTipe", "Nivel 2") && !User.HasClaim("AccessTipe", "Nivel 1"))
+                            {
                 <li class="nav-item menu-items">
                     <a class="nav-link" data-toggle="collapse" href="#admin-options" aria-expanded="false" aria-controls="admin-options">
                         <span class="menu-icon">
@@ -148,8 +150,9 @@ else
                         </ul>
                     </div>
                 </li>
-
-
+                            }
+                @if (!User.HasClaim("AccessTipe", "Nivel 2") && !User.HasClaim("AccessTipe", "Nivel 1"))
+                            {
                 <li class="nav-item menu-items">
                     <a class="nav-link" data-toggle="collapse" href="#management-options" aria-expanded="false" aria-controls="management-options">
                         <span class="menu-icon">
@@ -190,6 +193,7 @@ else
                         </ul>
                     </div>
                 </li>
+                            }
                 <!-- Menú para Producto y Registros -->
                 <li class="nav-item menu-items">
                     <a class="nav-link" data-toggle="collapse" href="#inventory-options" aria-expanded="false" aria-controls="inventory-options">
