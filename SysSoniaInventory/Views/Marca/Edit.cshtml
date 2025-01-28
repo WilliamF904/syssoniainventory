@@ -4,33 +4,36 @@
     ViewData["Title"] = "Edit";
 }
 
-<h1>Edit</h1>
-
-<h4>ModelMarca</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Edit">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="Id" />
-            <div class="form-group">
-                <label asp-for="Name" class="control-label"></label>
-                <input asp-for="Name" class="form-control" />
-                <span asp-validation-for="Name" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Description" class="control-label"></label>
-                <input asp-for="Description" class="form-control" />
-                <span asp-validation-for="Description" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
-            </div>
-        </form>
+<div class="col-12 grid-margin">
+    <div class="card">
+        <div class="card-body">
+            <h3 class="card-title text-warning font-weight-bold">Editar Marca</h3>
+            <hr class="linea-warning" />
+            <form asp-action="Edit">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <input type="hidden" asp-for="Id" />
+                <div class="form-group row">
+                    <label class="col-sm-3 col-form-label">Nombre de la Marca:</label>
+                    <div class="col-sm-9">
+                        <input type="text" maxlength="60" class="form-control" asp-for="Name" />
+                        <span asp-validation-for="Name" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="col-sm-3 col-form-label">Descripción de la Marca:</label>
+                    <div class="col-sm-9">
+                        <input type="text" maxlength="255" class="form-control" asp-for="Description" />
+                        <span asp-validation-for="Description" class="text-danger"></span>
+                    </div>
+                </div>
+                <hr class="linea-warning" />
+                <div class="d-flex justify-content-end">
+                    <button type="submit" class="btn btn-outline-warning font-weight-bold">
+                        <i class="mdi mdi-file-check btn-icon-prepend"></i>Guardar
+                    </button>
+                    <a asp-action="Index" class="btn btn-outline-secondary font-weight-bold ml-2">Volver a la lista</a>
+                </div>
+            </form>
+        </div>
     </div>
 </div>
-
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
-
