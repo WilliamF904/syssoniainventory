@@ -9,10 +9,13 @@ namespace SysSoniaInventory.Models
         [Key]
         public int Id { get; set; }
 
+        [Required(ErrorMessage = "Debe seleccionar una Categoria.")]
         public int IdCategory { get; set; }
 
+        [Required(ErrorMessage = "Debe seleccionar un Proveedor.")]
         public int IdProveedor { get; set; }
 
+        [Required(ErrorMessage = "Debe seleccionar una marca.")]
         public int IdMarca{ get; set; }
 
         [Required, MaxLength(100), Unicode(false)]

@@ -138,6 +138,7 @@ namespace SysSoniaInventory.Controllers
         var modelProduct = await _context.modelProduct
             .Include(m => m.IdCategoryNavigation)
             .Include(m => m.IdProveedorNavigation)
+            .Include(m => m.IdMarcanavigation)
             .FirstOrDefaultAsync(m => m.Id == id);
 
         if (modelProduct == null)
@@ -202,6 +203,7 @@ namespace SysSoniaInventory.Controllers
             var modelProduct = await _context.modelProduct
                 .Include(m => m.IdCategoryNavigation)
                 .Include(m => m.IdProveedorNavigation)
+                .Include(m => m.IdMarcanavigation)
                 .FirstOrDefaultAsync(m => m.Id == id);
 
             if (modelProduct == null)
@@ -233,8 +235,16 @@ namespace SysSoniaInventory.Controllers
                 TempData["Error"] = "No tienes acceso a esta sección. Requerido: Nivel 4.";
                 return RedirectToAction("Index", "Home");
             }
+
+            if (!_context.modelMarca.Any())
+            {
+                TempData["Error"] = "No hay marcas disponibles. Por favor, agregue marcas primero.";
+                return RedirectToAction("Index", "Marca");
+            }
+
             ViewData["IdCategory"] = new SelectList(_context.modelCategory, "Id", "Name");
             ViewData["IdProveedor"] = new SelectList(_context.modelProveedor, "Id", "Name");
+            ViewData["IdMarca"] = new SelectList(_context.modelMarca, "Id", "Name"); // Asegúrate de que `modelMarca` sea el nombre correcto de tu DbSet para las marcas.
             return View();
         }
 
@@ -242,7 +252,7 @@ namespace SysSoniaInventory.Controllers
         // POST: Product/Create 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,IdCategory,IdProveedor,Name,PurchasePrice,SalePrice,Stock,LowStock,Codigo,Url,Estatus")] ModelProduct modelProduct, string DescriptionCambio, IFormFile imagen)
+        public async Task<IActionResult> Create([Bind("Id,IdCategory,IdProveedor,IdMarca,Name,PurchasePrice,SalePrice,Stock,LowStock,Codigo,Url,Estatus")] ModelProduct modelProduct, string DescriptionCambio, IFormFile imagen)
         {
             // Verificar niveles de acceso
             if (User.HasClaim("AccessTipe", "Nivel 4"))
@@ -260,6 +270,13 @@ namespace SysSoniaInventory.Controllers
                 TempData["Error"] = "No tienes acceso a esta sección. Requerido: Nivel 4.";
                 return RedirectToAction("Index", "Home");
             }
+
+            if (!_context.modelMarca.Any())
+            {
+                TempData["Error"] = "No hay marcas disponibles. Por favor, agregue marcas primero.";
+                return RedirectToAction("Index", "Marca");
+            }
+
 
             if (modelProduct.LowStock == null || modelProduct.LowStock == 0)
             {
@@ -369,13 +386,14 @@ namespace SysSoniaInventory.Controllers
             }
             ViewData["IdCategory"] = new SelectList(_context.modelCategory, "Id", "Name", modelProduct.IdCategory);
             ViewData["IdProveedor"] = new SelectList(_context.modelProveedor, "Id", "Name", modelProduct.IdProveedor);
+            ViewData["IdMarca"] = new SelectList(_context.modelMarca, "Id", "Name", modelProduct.IdMarca);
             return View(modelProduct);
         }
 
         // POST: Product/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,IdCategory,IdProveedor,Name,PurchasePrice,SalePrice,Stock,LowStock,Codigo,Url,Estatus")] ModelProduct modelProduct, string DescriptionCambio, IFormFile imagen)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,IdCategory,IdProveedor,IdMarca,Name,PurchasePrice,SalePrice,Stock,LowStock,Codigo,Url,Estatus")] ModelProduct modelProduct, string DescriptionCambio, IFormFile imagen)
         {
             // Verificar niveles de acceso
             if (User.HasClaim("AccessTipe", "Nivel 4"))

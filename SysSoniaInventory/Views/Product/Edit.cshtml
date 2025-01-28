@@ -32,6 +32,15 @@
                         </div>
 
                         <div class="form-group row">
+                            <label class="col-sm-3 col-form-label" asp-for="IdMarca">Marca: </label>
+                            <div class="col-sm-9">
+                                <select class="form-control text-light" asp-for="IdMarca" asp-items="ViewBag.IdMarca"></select>
+                                <span asp-validation-for="IdMarca" class="text-danger"></span>
+                            </div>
+                        </div>
+
+
+                        <div class="form-group row">
                             <label class="col-sm-3 col-form-label" asp-for="IdProveedor">Proveedor: </label>
                             <div class="col-sm-9">
                                 <select class="form-control text-light" asp-for="IdProveedor" asp-items="ViewBag.IdProveedor"></select>
