@@ -145,6 +145,19 @@ else
                         </a>
                     </li>
                 }
+
+                 @if (User.HasClaim("AccessTipe", "Nivel 4") || User.HasClaim("AccessTipe", "Nivel 3") || User.HasClaim("AccessTipe", "Nivel 5"))
+                {
+                    <li class="nav-item menu-items">
+                        <a class="nav-link" asp-controller="Marca" asp-action="Index">
+                            <span class="menu-icon">
+                                <i class="mdi mdi-tag-multiple"></i>
+                            </span>
+                            <span class="menu-title">Marca</span>
+                        </a>
+                    </li>
+                }
+
                 @if (User.HasClaim("AccessTipe", "Nivel 4") || User.HasClaim("AccessTipe", "Nivel 3") || User.HasClaim("AccessTipe", "Nivel 5"))
                 {
                     <li class="nav-item menu-items">
