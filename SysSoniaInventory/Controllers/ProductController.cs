@@ -660,12 +660,38 @@ namespace SysSoniaInventory.Controllers
                     {
                         reporte.Estatus = "Finalizado";
                         reporte.NameUser = User.Identity?.Name;
-                        reporte.ComentaryUser = $"Descripción automática: Se agregó {modificarStock} al stock del producto.";
+                        reporte.ComentaryUser = $"Descripción automática: Se agregó {modificarStock} al stock del producto de foma manual desde la sección 'Stock'.";
                         reporte.EndDate = DateOnly.FromDateTime(DateTime.Now);
                         reporte.EndTime = TimeOnly.FromDateTime(DateTime.Now);
 
                         _context.Update(reporte);
                         TempData["reporte"] = "Reporte: Stock bajo; Estado: Finalizado.";
+                    }
+                }
+                // Crear un reporte si no hay reportes pendientes y el stock es menor a LowStock
+                if (!accionStock && originalProduct.Stock <= originalProduct.LowStock)
+                {
+                    var reportesExistentes = await _context.modelReport
+                        .Where(r => r.IdRelation == originalProduct.Id)
+                        .ToListAsync();
+
+                    bool crearReporte = !reportesExistentes.Any(r => r.Estatus != "Finalizado");
+
+                    if (crearReporte)
+                    {
+                        var nuevoReporte = new ModelReport
+                        {
+                            NameUser = "",
+                            ComentaryUser = "",
+                            TypeReport = "Stock Bajo",
+                            Description = $"Descripción automática: El usuario {User.Identity?.Name} le restó manualmente {modificarStock} al stock del producto '{originalProduct.Name}' con el código '{originalProduct.Codigo}' e ID '{originalProduct.Id}' y ahora tiene el stock bajo con {originalProduct.Stock} cantidad tras el ajuste manual.",
+                            Estatus = "Pendiente",
+                            StarDate = DateOnly.FromDateTime(DateTime.Now),
+                            StarTime = TimeOnly.FromDateTime(DateTime.Now),
+                            IdRelation = originalProduct.Id
+                        };
+
+                        _context.modelReport.Add(nuevoReporte);
                     }
                 }
 

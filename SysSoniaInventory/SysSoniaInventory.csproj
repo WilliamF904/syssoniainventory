@@ -9,15 +9,19 @@
   <ItemGroup>
     <Compile Remove="wwwroot\assets\css\maps\**" />
     <Compile Remove="wwwroot\assets\vendors\js\**" />
+    <Compile Remove="wwwroot\imgSistem\**" />
     <Compile Remove="wwwroot\vendor\**" />
     <Content Remove="wwwroot\assets\css\maps\**" />
     <Content Remove="wwwroot\assets\vendors\js\**" />
+    <Content Remove="wwwroot\imgSistem\**" />
     <Content Remove="wwwroot\vendor\**" />
     <EmbeddedResource Remove="wwwroot\assets\css\maps\**" />
     <EmbeddedResource Remove="wwwroot\assets\vendors\js\**" />
+    <EmbeddedResource Remove="wwwroot\imgSistem\**" />
     <EmbeddedResource Remove="wwwroot\vendor\**" />
     <None Remove="wwwroot\assets\css\maps\**" />
     <None Remove="wwwroot\assets\vendors\js\**" />
+    <None Remove="wwwroot\imgSistem\**" />
     <None Remove="wwwroot\vendor\**" />
   </ItemGroup>
 
@@ -40,7 +44,6 @@
 
   <ItemGroup>
     <Folder Include="wwwroot\img\" />
-    <Folder Include="wwwroot\imgSistem\" />
   </ItemGroup>
 
 </Project>

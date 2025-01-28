@@ -73,7 +73,7 @@ CREATE TABLE ModelProduct (
     Url VARCHAR(100),
     Estatus TINYINT NOT NULL,
     CONSTRAINT FK_Product_Category FOREIGN KEY (IdCategory) REFERENCES ModelCategory(Id),
-   CONSTRAINT FK_Product_Marca FOREIGN KEY (IdMarca REFERENCES ModelMarcaId),
+   CONSTRAINT FK_Product_Marca FOREIGN KEY (IdMarca) REFERENCES ModelMarca(Id),
     CONSTRAINT FK_Product_Proveedor FOREIGN KEY (IdProveedor) REFERENCES ModelProveedor(Id)
 );
 

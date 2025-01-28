@@ -154,22 +154,27 @@ namespace SysSoniaInventory.Controllers
             if (!ModelState.IsValid)
             {
                 TempData["Error"] = "Error inesperado en la validación de un campo o más.";
+                ViewBag.NameSucursal = User.FindFirst("Sucursal")?.Value;
+                ViewBag.NameUser = User.Identity?.Name;
+
                 ViewBag.Productos = _context.modelProduct.ToList();
                 return View(factura);
             }
 
             if (detalles == null || !detalles.Any())
             {
-                ModelState.AddModelError("", "Debe agregar al menos un detalle a la factura.");
-                ViewBag.Productos = _context.modelProduct.ToList();
-                return View(factura);
+                TempData["Error"]= ("Debe agregar al menos un detalle(producto) a la factura.");
+                return RedirectToAction("Create", "Factura");
             }
 
             foreach (var detalle in detalles)
             {
                 if (detalle.CantidadProduct <= 0)
                 {
-                    ModelState.AddModelError("", "La cantidad de un producto debe ser mayor a cero.");
+                    TempData["Error"] = ("La cantidad de un producto debe ser mayor a cero.");
+                    ViewBag.NameSucursal = User.FindFirst("Sucursal")?.Value;
+                    ViewBag.NameUser = User.Identity?.Name;
+
                     ViewBag.Productos = _context.modelProduct.ToList();
                     return View(factura);
                 }
@@ -250,7 +255,7 @@ namespace SysSoniaInventory.Controllers
                                     NameUser = "",
                                     ComentaryUser = "",
                                     TypeReport = "Stock Bajo",
-                                    Description = $"El producto '{producto.Name}' con el código '{producto.Codigo}' e id '{producto.Id}' tiene el stock bajo con {producto.Stock} cantidad a la hora y fecha de creación del reporte.",
+                                    Description = $"Descripción automática: El producto '{producto.Name}' con el código '{producto.Codigo}' e id '{producto.Id}' tiene el stock bajo con {producto.Stock} cantidad a la hora y fecha de creación del reporte, por medio de la sección 'Pago'.",
                                     Estatus = "Pendiente",
                                     StarDate = DateOnly.FromDateTime(DateTime.Now),
                                     StarTime = TimeOnly.FromDateTime(DateTime.Now),
