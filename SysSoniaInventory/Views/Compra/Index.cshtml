@@ -1,71 +1,311 @@
 ﻿@model IEnumerable<SysSoniaInventory.Models.ModelCompra>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Lista de Compras";
 }
 
-<h1>Index</h1>
+<div class="row">
+    <div class="col-lg-6 grid-margin stretch-card">
+        <div class="card">
+            <div class="card-body">
+                <h1 class="card-title">Lista de Compras</h1>
+                <div class="d-flex align-items-center justify-content-start">
+                    <a asp-action="Create" class="btn btn-outline-primary font-weight-bold ml-2">
+                        <i class="fas fa-plus"></i> Nueva Compra
+                    </a>
+                    <div class="separator mx-3"></div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.NameSucursal)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.NameUser)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Description)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.NameProveedor)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.CodigoFactura)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Date)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Time)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.NameSucursal)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.NameUser)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Description)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.NameProveedor)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.CodigoFactura)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Date)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Time)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+    <div class="col-lg-6 grid-margin stretch-card">
+        <div class="card">
+            <div class="card-body">
+                <h1 class="card-title">Filtrar Compras</h1>
+                <form method="get" asp-action="Index" class="mb-3">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <input type="text" name="searchUser" class="form-control" placeholder="Buscar por usuario"
+                                   value="@ViewBag.SearchUser" />
+                        </div>
+                        <div class="col-md-3">
+                            <input type="date" name="startDate" class="form-control"
+                                   value="@ViewBag.StartDate" />
+                        </div>
+                        <div class="col-md-3">
+                            <input type="date" name="endDate" class="form-control"
+                                   value="@ViewBag.EndDate" />
+                        </div>
+                        <div class="col-md-2">
+                            <button type="submit" class="btn btn-primary">Filtrar</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-12 mt-4">
+        <div class="card">
+            <div class="card-body">
+                <h4 class="card-title">Tabla de Compras</h4>
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover table-striped" id="purchaseTable">
+                        <thead>
+                            <tr>
+                                <th>Sucursal</th>
+                                <th>Usuario</th>
+                                <th>Descripción</th>
+                                <th>Proveedor</th>
+                                <th>Código Factura</th>
+                                <th>Fecha</th>
+                                <th>Hora</th>
+                                <th>Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var compra in Model)
+                            {
+                                <tr>
+                                    <td>@compra.NameSucursal</td>
+                                    <td>@compra.NameUser</td>
+                                    <td>@compra.Description</td>
+                                    <td>@compra.NameProveedor</td>
+                                    <td>@compra.CodigoFactura</td>
+                                    <td>@compra.Date.ToShortDateString()</td>
+                                    <td>@compra.Time.ToString("hh\\:mm")</td>
+                                    <td>
+                                        <a asp-action="Edit" asp-route-id="@compra.Id" class="btn btn-outline-warning">Editar</a> |
+                                        <a asp-action="Details" asp-route-id="@compra.Id" class="btn btn-outline-info">Detalles</a> |
+                                        <a asp-action="Delete" asp-route-id="@compra.Id" class="btn btn-outline-danger">Eliminar</a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+                <nav aria-label="Page navigation">
+                    <ul class="pagination justify-content-center">
+                        @for (var i = 1; i <= ViewBag.TotalPages; i++)
+                        {
+                            <li class="page-item @(i == ViewBag.CurrentPage ? "active" : "")">
+                                <a class="page-link" href="?page=@i&searchUser=@ViewBag.SearchUser&startDate=@ViewBag.StartDate&endDate=@ViewBag.EndDate">@i</a>
+                            </li>
+                        }
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </div>
+</div>
+<style>
+    /* General button styling para estilos de descarga por fecha */
+    /* Estilo para el formulario de descarga por fecha */
+    .download-form {
+        border: 2px solid #007bff;
+        border-radius: 10px;
+        padding: 15px;
+        margin-top: 15px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+        .download-form label {
+            font-weight: bold;
+        }
+
+        .download-form .range-field {
+            margin-bottom: 10px;
+        }
+
+        .download-form .range-input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ced4da;
+            border-radius: 5px;
+        }
+
+            .download-form .range-input:focus {
+                border-color: #80bdff;
+                outline: none;
+            }
+
+        .download-form .btn {
+            font-weight: bold;
+        }
+
+        .download-form .download-date-btn {
+            background-color: #28a745;
+            color: #fff;
+            border: none;
+        }
+
+            .download-form .download-date-btn:hover {
+                background-color: #218838;
+                color: #f8f9fa;
+            }
+
+
+
+
+
+
+
+    .styled-btn {
+        font-size: 1.2rem;
+        border-radius: 8px;
+    }
+
+    /* Button for all invoices */
+    .download-all-btn {
+        background-color: #343a40;
+        color: #fff;
+        border: none;
+        font-weight: bold;
+    }
+
+        .download-all-btn:hover {
+            background-color: #495057;
+            color: #e9ecef;
+        }
+
+    /* Button for date range */
+    .download-date-btn {
+        background-color: #28a745;
+        color: #fff;
+        font-weight: bold;
+        border: none;
+    }
+
+        .download-date-btn:hover {
+            background-color: #218838;
+            color: #f8f9fa;
+        }
+
+    /* Date range field styling */
+    .range-field {
+        display: flex;
+        align-items: center;
+        margin-bottom: 10px;
+    }
+
+        .range-field label {
+            width: 120px;
+            margin-right: 10px;
+            font-weight: bold;
+        }
+
+    .range-input {
+        flex-grow: 1;
+        border: 2px solid #dee2e6;
+        border-radius: 5px;
+    }
+
+        .range-input:focus {
+            border-color: #80bdff;
+            outline: none;
+        }
+
+    /* Dropdown menu styles */
+    .dropdown-container .dropdown-menu {
+        padding: 15px;
+        background-color: #ffffff;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+        .dropdown-container .dropdown-menu.show {
+            display: block;
+        }
+</style>
+
+
+
+
+
+
+<style>
+    .form-group label {
+        width: 150px;
+        text-align: right;
+    }
+
+    .form-group input,
+    .form-group select {
+        flex-grow: 1;
+    }
+
+    .d-flex {
+        display: flex;
+    }
+
+    .separator {
+        width: 2px;
+        height: 30px;
+        background-color: #ddd;
+    }
+
+    .dropdown-container {
+        position: relative;
+    }
+
+        .dropdown-container .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            display: none;
+            list-style: none;
+            padding: 10px;
+            margin: 0;
+            background-color: #f8f9fa;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            width: 250px;
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            z-index: 1000;
+        }
+
+            .dropdown-container .dropdown-menu.show {
+                display: block;
+                opacity: 1;
+                transform: translateY(0);
+            }
+</style>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const dropdownButton = document.getElementById("dropdownButton");
+        const dropdownMenu = document.getElementById("dropdownMenu");
+
+        dropdownButton.addEventListener("click", function (event) {
+            event.stopPropagation();
+            dropdownMenu.classList.toggle("show");
+        });
+
+        document.addEventListener("click", function (event) {
+            if (!dropdownMenu.contains(event.target)) {
+                dropdownMenu.classList.remove("show");
+            }
+        });
+
+        const filterText = document.getElementById("filterText");
+        const rows = Array.from(document.querySelectorAll("#invoiceTable tbody tr"));
+
+        filterText.addEventListener("input", function () {
+            const filterValue = filterText.value.toLowerCase();
+
+            const filteredRows = rows.filter(row => {
+                return Array.from(row.getElementsByTagName('td')).some(cell =>
+                    cell.textContent.toLowerCase().includes(filterValue)
+                );
+            });
+
+            const tbody = document.querySelector("#invoiceTable tbody");
+            tbody.innerHTML = "";
+            filteredRows.forEach(row => tbody.appendChild(row));
+        });
+    });
+</script>

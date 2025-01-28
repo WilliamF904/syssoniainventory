@@ -286,7 +286,7 @@ namespace SysSoniaInventory.Controllers
                             foreach (var reporte in reportesPendientes)
                             {
                                 reporte.Estatus = "Finalizado";
-                                reporte.NameUser = User.Identity?.Name;
+                                reporte.NameUser = User.Identity?.Name;      
                                 reporte.ComentaryUser = $"Descripción automática: Se agregó {detalle.CantidadProduct} al stock del producto por medio de la sección 'Compra' con el id {detalle.IdCompra}.";
                                 reporte.EndDate = DateOnly.FromDateTime(DateTime.Now);
                                 reporte.EndTime = TimeOnly.FromDateTime(DateTime.Now);

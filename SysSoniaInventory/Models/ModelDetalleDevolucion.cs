@@ -34,6 +34,8 @@ namespace SysSoniaInventory.Models
         [Required, Column(TypeName = "decimal(18, 2)")]
         public decimal PriceTotalReembolso { get; set; }
 
+        [NotMapped] // Esto indica que no será parte de la base de datos.
+        public string StockD { get; set; }
 
         [ForeignKey("IdDevolucion")]
         public virtual ModelDevolucion? IdDevolucionNavigation { get; set; }

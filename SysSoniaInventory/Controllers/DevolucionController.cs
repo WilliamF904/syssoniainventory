@@ -132,26 +132,186 @@ namespace SysSoniaInventory.Controllers
 
 
         // GET: Devolucion/Create
+        [HttpGet]
         public IActionResult Create()
         {
+            // Verificar niveles de acceso
+            if (User.HasClaim("AccessTipe", "Nivel 5") || User.HasClaim("AccessTipe", "Nivel 4") || User.HasClaim("AccessTipe", "Nivel 3") || User.HasClaim("AccessTipe", "Nivel 2"))
+            { // Nivel 4 tiene acceso
+
+            }
+            else
+            {
+                // Redirigir con mensaje de error si el usuario no tiene acceso
+                TempData["Error"] = "No tienes acceso a esta sección. Requerido: Nivel 2 o superior.";
+                return RedirectToAction("Index", "Home");
+            }
+
+
+            ViewBag.NameSucursal = User.FindFirst("Sucursal")?.Value;
+            ViewBag.NameUser = User.Identity?.Name;
+
+            ViewBag.Productos = _context.modelProduct.ToList();
             return View();
         }
-
-        // POST: Devolucion/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,IdFactura,NameSucursal,NameUser,NameClient,Date,Time")] ModelDevolucion modelDevolucion)
+        public IActionResult Create(ModelDevolucion devolucion, List<ModelDetalleDevolucion> detalles)
         {
-            if (ModelState.IsValid)
+            // Verificar niveles de acceso
+            if (User.HasClaim("AccessTipe", "Nivel 5") || User.HasClaim("AccessTipe", "Nivel 4") || User.HasClaim("AccessTipe", "Nivel 3") || User.HasClaim("AccessTipe", "Nivel 2"))
             {
-                _context.Add(modelDevolucion);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                // Nivel 4 tiene acceso
             }
-            return View(modelDevolucion);
+            else
+            {
+                // Redirigir con mensaje de error si el usuario no tiene acceso
+                TempData["Error"] = "No tienes acceso a esta sección. Requerido: Nivel 2 o superior.";
+                return RedirectToAction("Index", "Home");
+            }
+
+            // Sobrescribir valores de seguridad
+            devolucion.NameUser = User.Identity?.Name;
+            devolucion.NameSucursal = User.FindFirst("Sucursal")?.Value;
+            devolucion.Date = DateOnly.FromDateTime(DateTime.Now);
+            devolucion.Time = TimeOnly.FromDateTime(DateTime.Now);
+
+            // Validar que los datos son correctos
+            ModelState.Remove("PurchasePriceUnitario");
+            if (!ModelState.IsValid)
+            {
+                TempData["Error"] = "Error inesperado en la validación de un campo o más.";
+                ViewBag.NameSucursal = User.FindFirst("Sucursal")?.Value;
+                ViewBag.NameUser = User.Identity?.Name;
+
+                ViewBag.Productos = _context.modelProduct.ToList();
+                return View(devolucion);
+            }
+
+            if (detalles == null || !detalles.Any())
+            {
+                ModelState.AddModelError("", "Debe agregar al menos un detalle a la devolucion.");
+                ViewBag.NameSucursal = User.FindFirst("Sucursal")?.Value;
+                ViewBag.NameUser = User.Identity?.Name;
+
+                ViewBag.Productos = _context.modelProduct.ToList();
+                return View(devolucion);
+            }
+
+            foreach (var detalle in detalles)
+            {
+                if (detalle.CantidadProduct <= 0)
+                {
+                    ModelState.AddModelError("", "La cantidad de un producto debe ser mayor a cero.");
+                    ViewBag.NameSucursal = User.FindFirst("Sucursal")?.Value;
+                    ViewBag.NameUser = User.Identity?.Name;
+
+                    ViewBag.Productos = _context.modelProduct.ToList();
+                    return View(devolucion);
+                }
+            }
+
+            using (var transaction = _context.Database.BeginTransaction())
+            {
+                try
+                {
+                    // Guardar la devolucion
+                    _context.modelDevolucion.Add(devolucion);
+                    _context.SaveChanges(); // Aquí se genera el Id de la devolucion
+
+                    foreach (var detalle in detalles)
+                    {
+                        // Obtener los datos actuales del producto seleccionado
+                        var producto = _context.modelProduct.FirstOrDefault(p => p.Id == detalle.IdProduct);
+                        if (producto == null)
+                        {
+                            ModelState.AddModelError("", $"El producto con ID {detalle.IdProduct} no existe.");
+                            ViewBag.Productos = _context.modelProduct.ToList();
+                            transaction.Rollback();
+                            return View(devolucion);
+                        }
+
+                        //--------------------------------------------------------------------------------------
+                        if (detalle.StockD == "1")
+                        {
+                            // Almacenar valores originales para el historial
+                            var stockAnterior = producto.Stock;
+
+                            // Actualizar stock sumando la cantidad de productos devueltos
+                            producto.Stock += detalle.CantidadProduct;
+
+                            // Guardar el historial del cambio de stock
+                            var historial = new ModelHistorialProduct
+                            {
+                                NameUser = User.Identity?.Name,
+                                IdProduct = producto.Id,
+                                Date = DateOnly.FromDateTime(DateTime.Now),
+                                Time = TimeOnly.FromDateTime(DateTime.Now),
+                                BeforeStock = stockAnterior,
+                                AfterStock = producto.Stock,
+                                RazonCambioAuto = "Devolución de productos (Devolucion)",
+                                DescriptionCambio = "Devolución registrado y stock actualizado"
+                            };
+
+                            _context.Add(historial);
+
+                            // Validar si el stock supera LowStock y hay reportes pendientes
+                            if (producto.Stock > producto.LowStock)
+                            {
+                                var reportesPendientes = _context.modelReport
+                                    .Where(r => r.IdRelation == producto.Id && r.TypeReport == "Stock Bajo" && r.Estatus != "Finalizado")
+                                    .ToList();
+
+                                foreach (var reporte in reportesPendientes)
+                                {
+                                    reporte.Estatus = "Finalizado";
+                                    reporte.NameUser = User.Identity?.Name;
+                                    reporte.ComentaryUser = $"Descripción automática: Se agregó {detalle.CantidadProduct} al stock del producto por medio de la sección 'Devolucion' con el id {detalle.IdDevolucion}.";
+                                    reporte.EndDate = DateOnly.FromDateTime(DateTime.Now);
+                                    reporte.EndTime = TimeOnly.FromDateTime(DateTime.Now);
+                                 
+                                    _context.Update(reporte);
+                                }
+                            }
+                        }
+
+                        //--------------------------------------------------------------------------------------
+
+
+                        // Asignar valores al detalle de compra
+                        detalle.IdDevolucion = devolucion.Id;
+                        detalle.CodigoProducto = producto.Codigo;
+                        detalle.NameProduct = producto.Name;
+                        detalle.PurchasePrice = producto.PurchasePrice; // Verificar primero el precio manual
+                        detalle.PriceTotalReembolso = detalle.PurchasePrice * detalle.CantidadProduct;
+
+                        // Guardar el detalle
+                        _context.modelDetalleDevolucion.Add(detalle);
+                    }
+
+                    // Guardar cambios y confirmar transacción
+                    _context.SaveChanges();
+                    transaction.Commit();
+                    TempData["Success"] = "Devolución registrada correctamente.";
+                    return RedirectToAction("Index");
+                }
+                catch (Exception ex)
+                {
+                    if (ex.InnerException != null)
+                    {
+                        Console.WriteLine($"Inner Exception: {ex.InnerException.Message}");
+                    }
+                    Console.WriteLine($"Stack Trace: {ex.StackTrace}");
+                    ModelState.AddModelError("", "Ocurrió un error al guardar los cambios en la base de datos.");
+                    ViewBag.Productos = _context.modelProduct.ToList();
+                    return View(devolucion);
+                }
+            }
         }
+
+
+
+
+
 
 
 

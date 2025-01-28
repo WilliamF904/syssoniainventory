@@ -108,114 +108,168 @@ else
                     </a>
                 </li>
 
-                <!---->
-                @if (User.HasClaim("AccessTipe", "Nivel 4") || User.HasClaim("AccessTipe", "Nivel 5"))
+                <li class="nav-item menu-items">
+                    <a class="nav-link" data-toggle="collapse" href="#admin-options" aria-expanded="false" aria-controls="admin-options">
+                        <span class="menu-icon">
+                            <i class="mdi mdi-account-card-details text-primary"></i>
+                        </span>
+                        <span class="menu-title">Administración</span>
+                        <i class="menu-arrow"></i>
+                    </a>
+                    <div class="collapse" id="admin-options">
+                        <ul class="nav flex-column sub-menu list-unstyled">
+                            @if (User.HasClaim("AccessTipe", "Nivel 4") || User.HasClaim("AccessTipe", "Nivel 5"))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link d-flex align-items-center" asp-controller="Rol" asp-action="Index">
+                                        <i class="mdi mdi-account-key text-primary mr-2"></i>
+                                        <span> Rol</span>
+                                    </a>
+                                </li>
+                            }
+                            @if (User.HasClaim("AccessTipe", "Nivel 4") || User.HasClaim("AccessTipe", "Nivel 5"))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link d-flex align-items-center" asp-controller="Sucursal" asp-action="Index">
+                                        <i class="mdi mdi-home-map-marker text-success mr-2"></i>
+                                        <span> Sucursal</span>
+                                    </a>
+                                </li>
+                            }
+                            @if (User.HasClaim("AccessTipe", "Nivel 4") || User.HasClaim("AccessTipe", "Nivel 3") || User.HasClaim("AccessTipe", "Nivel 5"))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link d-flex align-items-center" asp-controller="User" asp-action="Index">
+                                        <i class="mdi mdi-account-multiple text-danger mr-2"></i>
+                                        <span> Usuario</span>
+                                    </a>
+                                </li>
+                            }
+                        </ul>
+                    </div>
+                </li>
 
-                {
 
-                    <li class="nav-item menu-items">
-                        <a class="nav-link" asp-controller="Rol" asp-action="Index">
-                            <span class="menu-icon">
-                                <i class="mdi mdi-account-key"></i>
-                            </span>
-                            <span class="menu-title">Rol</span>
-                        </a>
-                    </li>
-                }
-                @if (User.HasClaim("AccessTipe", "Nivel 4") || User.HasClaim("AccessTipe", "Nivel 5"))
-                {
-                    <li class="nav-item menu-items">
-                        <a class="nav-link" asp-controller="Sucursal" asp-action="Index">
-                            <span class="menu-icon">
-                                <i class="mdi mdi-home-map-marker"></i>
-                            </span>
-                            <span class="menu-title">Sucursal</span>
-                        </a>
-                    </li>
-                }
-                @if (User.HasClaim("AccessTipe", "Nivel 4") || User.HasClaim("AccessTipe", "Nivel 3") || User.HasClaim("AccessTipe", "Nivel 5"))
+                <li class="nav-item menu-items">
+                    <a class="nav-link" data-toggle="collapse" href="#management-options" aria-expanded="false" aria-controls="management-options">
+                        <span class="menu-icon">
+                            <i class="mdi mdi-collage text-warning"></i>
+                        </span>
+                        <span class="menu-title">Gestión</span>
+                        <i class="menu-arrow"></i>
+                    </a>
+                    <div class="collapse" id="management-options">
+                        <ul class="nav flex-column sub-menu list-unstyled">
+                            @if (User.HasClaim("AccessTipe", "Nivel 4") || User.HasClaim("AccessTipe", "Nivel 3") || User.HasClaim("AccessTipe", "Nivel 5"))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link d-flex align-items-center" asp-controller="Marca" asp-action="Index">
+                                        <i class="mdi mdi-tag-multiple text-primary mr-2"></i>
+                                        <span> Marca</span>
+                                    </a>
+                                </li>
+                            }
+                            @if (User.HasClaim("AccessTipe", "Nivel 4") || User.HasClaim("AccessTipe", "Nivel 3") || User.HasClaim("AccessTipe", "Nivel 5"))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link d-flex align-items-center" asp-controller="Category" asp-action="Index">
+                                        <i class="mdi mdi-tag-multiple text-success mr-2"></i>
+                                        <span> Categoría</span>
+                                    </a>
+                                </li>
+                            }
+                            @if (User.HasClaim("AccessTipe", "Nivel 4") || User.HasClaim("AccessTipe", "Nivel 3") || User.HasClaim("AccessTipe", "Nivel 5"))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link d-flex align-items-center" asp-controller="Proveedor" asp-action="Index">
+                                        <i class="mdi mdi-truck text-danger mr-2"></i>
+                                        <span> Proveedor</span>
+                                    </a>
+                                </li>
+                            }
+                        </ul>
+                    </div>
+                </li>
+                <!-- Menú para Producto y Registros -->
+                <li class="nav-item menu-items">
+                    <a class="nav-link" data-toggle="collapse" href="#inventory-options" aria-expanded="false" aria-controls="inventory-options">
+                        <span class="menu-icon">
+                            <i class="mdi mdi-cube text-light"></i>
+                        </span>
+                        <span class="menu-title">Inventario</span>
+                        <i class="menu-arrow"></i>
+                    </a>
+                    <div class="collapse" id="inventory-options">
+                        <ul class="nav flex-column sub-menu list-unstyled">
+                            @if (User.HasClaim("AccessTipe", "Nivel 2") || User.HasClaim("AccessTipe", "Nivel 4") || User.HasClaim("AccessTipe", "Nivel 3") || User.HasClaim("AccessTipe", "Nivel 5"))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link d-flex align-items-center" asp-controller="Product" asp-action="Index">
+                                        <i class="mdi mdi-cart text-info mr-2"></i>
+                                        <span> Producto</span>
+                                    </a>
+                                </li>
+                            }
+                            @if (User.HasClaim("AccessTipe", "Nivel 4") || User.HasClaim("AccessTipe", "Nivel 5"))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link d-flex align-items-center" asp-controller="HistorialProduct" asp-action="Index">
+                                        <i class="mdi mdi-history text-danger mr-2"></i>
+                                        <span> Registros</span>
+                                    </a>
+                                </li>
+                            }
+                        </ul>
+                    </div>
+                </li>
 
-                {
-                    <li class="nav-item menu-items">
-                        <a class="nav-link" asp-controller="User" asp-action="Index">
-                            <span class="menu-icon">
-                                <i class="mdi mdi-account-multiple"></i>
-                            </span>
-                            <span class="menu-title">Usuario</span>
-                        </a>
-                    </li>
-                }
+                <!-- Menú para Devolución y Compra -->
+                <li class="nav-item menu-items">
+                    <a class="nav-link" data-toggle="collapse" href="#transactions-options" aria-expanded="false" aria-controls="transactions-options">
+                        <span class="menu-icon">
+                            <i class="mdi mdi-television-guide text-info"></i>
+                        </span>
+                        <span class="menu-title">Transacciones</span>
+                        <i class="menu-arrow"></i>
+                    </a>
+                    <div class="collapse" id="transactions-options">
+                        <ul class="nav flex-column sub-menu list-unstyled">
+                            @if (User.HasClaim("AccessTipe", "Nivel 4") || User.HasClaim("AccessTipe", "Nivel 3") || User.HasClaim("AccessTipe", "Nivel 2") || User.HasClaim("AccessTipe", "Nivel 5"))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link d-flex align-items-center" asp-controller="Devolucion" asp-action="Index">
+                                        <i class="mdi mdi-backspace text-warning mr-2"></i>
+                                        <span> Devolución</span>
+                                    </a>
+                                </li>
+                            }
+                            @if (User.HasClaim("AccessTipe", "Nivel 4") || User.HasClaim("AccessTipe", "Nivel 3") || User.HasClaim("AccessTipe", "Nivel 2") || User.HasClaim("AccessTipe", "Nivel 5"))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link d-flex align-items-center" asp-controller="Compra" asp-action="Index">
+                                        <i class="mdi mdi-cart-plus text-success mr-2"></i>
+                                        <span> Compra</span>
+                                    </a>
+                                </li>
+                            }
+                        </ul>
+                    </div>
+                </li>
 
-                 @if (User.HasClaim("AccessTipe", "Nivel 4") || User.HasClaim("AccessTipe", "Nivel 3") || User.HasClaim("AccessTipe", "Nivel 5"))
-                {
-                    <li class="nav-item menu-items">
-                        <a class="nav-link" asp-controller="Marca" asp-action="Index">
-                            <span class="menu-icon">
-                                <i class="mdi mdi-tag-multiple"></i>
-                            </span>
-                            <span class="menu-title">Marca</span>
-                        </a>
-                    </li>
-                }
 
-                @if (User.HasClaim("AccessTipe", "Nivel 4") || User.HasClaim("AccessTipe", "Nivel 3") || User.HasClaim("AccessTipe", "Nivel 5"))
-                {
-                    <li class="nav-item menu-items">
-                        <a class="nav-link" asp-controller="Category" asp-action="Index">
-                            <span class="menu-icon">
-                                <i class="mdi mdi-tag-multiple"></i>
-                            </span>
-                            <span class="menu-title">Categoría</span>
-                        </a>
-                    </li>
-                }
-                @if (User.HasClaim("AccessTipe", "Nivel 4") || User.HasClaim("AccessTipe", "Nivel 3") || User.HasClaim("AccessTipe", "Nivel 5"))
-                {
-                    <li class="nav-item menu-items">
-                        <a class="nav-link" asp-controller="Proveedor" asp-action="Index">
-                            <span class="menu-icon">
-                                <i class="mdi mdi-truck"></i>
-                            </span>
-                            <span class="menu-title">Proveedor</span>
-                        </a>
-                    </li>
-                }
-                @if (User.HasClaim("AccessTipe", "Nivel 2") || User.HasClaim("AccessTipe", "Nivel 4") || User.HasClaim("AccessTipe", "Nivel 3") || User.HasClaim("AccessTipe", "Nivel 5"))
-                {
-                    <li class="nav-item menu-items">
-                        <a class="nav-link" asp-controller="Product" asp-action="Index">
-                            <span class="menu-icon">
-                                <i class="mdi mdi-cart"></i>
-                            </span>
-                            <span class="menu-title">Producto</span>
-                        </a>
-                    </li>
-                }
-                @if (User.HasClaim("AccessTipe", "Nivel 4") || User.HasClaim("AccessTipe", "Nivel 5"))
-
-                {
-                    <li class="nav-item menu-items">
-                        <a class="nav-link" asp-controller="HistorialProduct" asp-action="Index">
-                            <span class="menu-icon">
-                                <i class="mdi mdi-history"></i>
-                            </span>
-                            <span class="menu-title">Registros</span>
-                        </a>
-                    </li>
-                }
                 @if (User.HasClaim("AccessTipe", "Nivel 4") || User.HasClaim("AccessTipe", "Nivel 3") || User.HasClaim("AccessTipe", "Nivel 2") || User.HasClaim("AccessTipe", "Nivel 5"))
 
                 {
                     <li class="nav-item menu-items">
                         <a class="nav-link" asp-controller="Factura" asp-action="Index">
                             <span class="menu-icon">
-                                <i class="mdi mdi-cart"></i>
+                                <i class="mdi mdi-cart text-success"></i>
                             </span>
-                            <span class="menu-title">Pago</span>
+                            <span class="menu-title">Venta</span>
                         </a>
                     </li>
                 }
-
+           
 
                 <!---->
 
