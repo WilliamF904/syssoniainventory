@@ -51,7 +51,7 @@ public class FacturaController : Controller
             var document = new Document(pdf);
 
             // Agregar logo una sola vez  
-            string imagePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "img", "2_ventilador.png");
+            string imagePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "imgSystem", "LOGO.jpeg");
             var logo = new Image(ImageDataFactory.Create(imagePath)).ScaleAbsolute(100, 100);
 
             document.Add(logo); // Agregar el logo aquí  

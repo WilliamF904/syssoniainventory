@@ -43,7 +43,7 @@ public class SucursalController : Controller
 
 
             // Ruta del logo  
-            string imagePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "img", "2_ventilador.png");
+            string imagePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "imgSystem", "LOGO.jpeg");
 
             // Verificar si el archivo del logo existe  
             if (System.IO.File.Exists(imagePath))
