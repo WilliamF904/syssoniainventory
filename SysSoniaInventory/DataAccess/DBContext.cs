@@ -168,9 +168,6 @@ namespace SysSoniaInventory.DataAccess
                 entity.HasKey(e => e.Id).HasName("PK__ModelDetalleDevolucion__3214EC0773A64348");
                 entity.Property(e => e.NameProduct).IsRequired().HasMaxLength(100).IsUnicode(false);
                 entity.Property(e => e.CodigoProducto).HasMaxLength(25).IsUnicode(false);
-                entity.Property(e => e.PurchasePrice).HasColumnType("decimal(18, 2)").IsRequired();
-                entity.Property(e => e.SalePriceUnitario).HasColumnType("decimal(18, 2)").IsRequired();
-                entity.Property(e => e.CantidadProduct).IsRequired();
                 entity.Property(e => e.PriceReembolso).HasColumnType("decimal(18, 2)").IsRequired();
                 entity.Property(e => e.PriceTotalReembolso).HasColumnType("decimal(18, 2)").IsRequired();
                 entity.HasOne(d => d.IdDevolucionNavigation)

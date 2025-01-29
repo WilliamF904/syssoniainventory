@@ -281,8 +281,8 @@ namespace SysSoniaInventory.Controllers
                         detalle.IdDevolucion = devolucion.Id;
                         detalle.CodigoProducto = producto.Codigo;
                         detalle.NameProduct = producto.Name;
-                        detalle.PurchasePrice = producto.PurchasePrice; // Verificar primero el precio manual
-                        detalle.PriceTotalReembolso = detalle.PurchasePrice * detalle.CantidadProduct;
+                        detalle.PriceReembolso = producto.PurchasePrice; // Verificar primero el precio manual
+                        detalle.PriceTotalReembolso = detalle.PriceReembolso * detalle.CantidadProduct;
 
                         // Guardar el detalle
                         _context.modelDetalleDevolucion.Add(detalle);

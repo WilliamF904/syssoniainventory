@@ -19,12 +19,6 @@ namespace SysSoniaInventory.Models
         [MaxLength(25), Unicode(false)]
         public string? CodigoProducto { get; set; }
 
-        [Required, Column(TypeName = "decimal(18, 2)")]
-        public decimal PurchasePrice { get; set; }
-
-        [Required, Column(TypeName = "decimal(18, 2)")]
-        public decimal SalePriceUnitario { get; set; }
-
         [Required]
         public int CantidadProduct { get; set; }
 
