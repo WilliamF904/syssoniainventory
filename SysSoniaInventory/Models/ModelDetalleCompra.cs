@@ -33,5 +33,8 @@ namespace SysSoniaInventory.Models
 
         [ForeignKey("IdCompra")]
         public virtual ModelCompra? IdCompraNavigation { get; set; }
+
+     
+        public bool UpdatePrice { get; set; }
     }
 }

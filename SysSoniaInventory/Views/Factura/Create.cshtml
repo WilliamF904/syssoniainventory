@@ -5,22 +5,14 @@
 }
 <link href="~/lib/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
 <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-<link rel="stylesheet" href="~/assets/vendors/mdi/css/materialdesignicons.min.css">
-<link rel="stylesheet" href="~/assets/vendors/css/vendor.bundle.base.css">
-<!-- endinject -->
-<!-- Plugin css for this page -->
-<link rel="stylesheet" href="~/assets/vendors/jvectormap/jquery-jvectormap.css">
-<link rel="stylesheet" href="~/assets/vendors/flag-icon-css/css/flag-icon.min.css">
-<link rel="stylesheet" href="~/assets/vendors/owl-carousel-2/owl.carousel.min.css">
-<link rel="stylesheet" href="~/assets/vendors/owl-carousel-2/owl.theme.default.min.css">
 
-<link rel="stylesheet" href="~/vendor/fontawesome-free/css/all.min.css">
-<link rel="stylesheet" href="~/css/site.css">
+
 <!-- End plugin css for this page -->
 <!-- inject:css -->
 <!-- endinject -->
 <!-- Layout styles -->
 <link rel="stylesheet" href="~/assets/css/style.css">
+<link rel="stylesheet" href="~/css/site.css">
 
 <div class="container-fluid">
     <form asp-action="Create" method="post">
@@ -30,7 +22,7 @@
             <div class="col-md-4 stretch-card">
                 <div class="card dropdown-container">
                     <div class="card-body">
-                        <h1 class="display-5 font-weight-bold">Nueva Factura</h1>
+                        <h1 class="display-5 font-weight-bold">Nueva Venta</h1>
                         <hr class="linea-blanca" />
                         <div class="row">
                             <div class="col-md-6">
@@ -127,33 +119,36 @@
 
 
 <div class="modal fade" id="productModal" tabindex="-1" aria-labelledby="productModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="productModalLabel">Añadir Producto</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content rounded-4 shadow-lg">
+            <div class="modal-header bg-primary text-white rounded-top-4">
+                <h5 class="modal-title fw-bold" id="productModalLabel">Añadir Producto</h5>
+                <button type="button" class="btn-close text-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <form id="productForm">
                     <div class="mb-3">
-                        <label class="form-label" id="productDetails"></label>
-
+                        <label class="form-label fw-semibold" id="productDetails"></label>
                     </div>
                     <div class="mb-3">
-                        <label for="quantityInput" class="form-label">Cantidad</label>
-                        <input type="number" class="form-control" id="quantityInput" placeholder="Ingrese cantidad" required>
+                        <label for="quantityInput" class="form-label fw-semibold">Cantidad</label>
+                        <input type="number" class="form-control rounded-pill shadow-sm" id="quantityInput" placeholder="Ingrese cantidad" required>
                         <div class="form-text">Máximo disponible: <span id="maxStock"></span></div>
                     </div>
                     <div class="mb-3">
-                        <label for="discountInput" class="form-label">Descuento (%)</label>
-                        <input type="number" class="form-control" id="discountInput" placeholder="Ingrese descuento" required>
+                        <label for="discountInput" class="form-label fw-semibold">Descuento (%)</label>
+                        <input type="number" class="form-control rounded-pill shadow-sm" id="discountInput" placeholder="Ingrese descuento" required>
                         <div class="form-text">Entre 0% y 100%.</div>
                     </div>
                 </form>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn btn-primary" id="saveProductBtn">Guardar</button>
+            <div class="modal-footer d-flex justify-content-center">
+                <button type="button" class="btn btn-outline-secondary rounded-pill px-4" id="cancelProductBtn">
+                    <i class="mdi mdi-close"></i> Cancelar
+                </button>
+                <button type="button" class="btn btn-outline-primary rounded-pill px-4" id="saveProductBtn">
+                    <i class="mdi mdi-content-save"></i> Guardar
+                </button>
             </div>
         </div>
     </div>
@@ -163,10 +158,11 @@
 
 
 
+
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         // Asumiendo que el modal tiene el ID 'myModal'
-        const modal = document.getElementById('myModal');
+        const modal = document.getElementById('productModal');
 
         if (modal) {
             // Detectar el cierre del modal por cualquier método
@@ -251,6 +247,13 @@
             productModal.show();
         });
 
+         // Acción del botón "Cancelar"
+    cancelProductBtn.addEventListener('click', function () {
+            resetSelect();
+        productsSelect.selectedIndex = 0; // Restablecer selección
+        productModal.hide();
+    });
+
         // Guardar producto al confirmar
         saveProductBtn.addEventListener('click', function () {
             const quantity = parseInt(quantityInput.value, 10);
@@ -282,12 +285,12 @@
 
             const row = document.createElement('tr');
             row.innerHTML = `
-                          <td style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 150px;" title="${product.name}">${product.name}</td>
+                          <td class="txt-whithe" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 150px;" title="${product.name}">${product.name}</td>
 
-                        <td>${quantity}</td>
-                        <td>$${product.price.toFixed(2)}</td>
-                        <td>${discount}%</td>
-                        <td>$${subtotal.toFixed(2)}</td>
+                            <td class="txt-whithe">${quantity}</td>
+                            <td class="txt-whithe">$${product.price.toFixed(2)}</td>
+                            <td class="txt-whithe">${discount}%</td>
+                            <td class="txt-whithe">$${subtotal.toFixed(2)}</td>
                         <td>
                             <button class="btn btn-danger btn-sm" onclick="removeProduct('${product.id}', this)"> X </button>
                         </td>
@@ -298,6 +301,7 @@
             updateTotal();
             resetSelect();
             productModal.hide();
+
         });
 
         // Eliminar un producto de la tabla

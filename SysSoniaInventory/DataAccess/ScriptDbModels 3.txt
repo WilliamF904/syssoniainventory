@@ -193,6 +193,7 @@ CREATE TABLE ModelDetalleCompra (
     CantidadProduct INT NOT NULL,
     PriceCompraUnitario DECIMAL(18,2) NOT NULL,
     PriceTotal DECIMAL(18,2) NOT NULL,
+    UpdatePrice BIT NOT NULL DEFAULT 0,
     CONSTRAINT FK_DetalleCompra_Compra FOREIGN KEY (IdCompra) REFERENCES ModelCompra(Id)
 );
 

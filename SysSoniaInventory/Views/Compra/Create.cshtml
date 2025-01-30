@@ -36,7 +36,7 @@
             <div class="col-md-4 stretch-card">
                 <div class="card dropdown-container">
                     <div class="card-body">
-                        <h1 class="display-5 font-weight-bold">Nueva Factura</h1>
+                        <h1 class="display-5 font-weight-bold">Registrar Compra</h1>
                         <hr class="linea-blanca" />
                         <div class="row">
                             <div class="col-md-6">
@@ -58,18 +58,30 @@
                             <input asp-for="NameUser" class="form-control font-weight-bold form-control-lg readonly-input" id="NameUser" value="@ViewBag.NameUser" readonly />
                         </div>
 
-                      
-                        <div class="form-group">
-                            <label asp-for="Description" class="control-label"></label>
-                            <input asp-for="Description" class="form-control" />
-                            <span asp-validation-for="Description" class="text-danger"></span>
+
+                        <div class="mb-3">
+                            <label for="NameProveedor" class="form-label">Proveedor:</label>
+                            <select id="NameProveedor" name="NameProveedor" class="form-control">
+                                <option value="" disabled selected>Seleccione un proveedor</option>
+                                @foreach (var proveedor in ViewBag.IdProveedor)
+                                {
+                                    <option value="@proveedor.Value">@proveedor.Text</option>
+                                }
+                            </select>
                         </div>
+
+                       
                         <div class="form-group">
-                            <label asp-for="CodigoFactura" class="control-label"></label>
+                            <label for="CodigoFactura" class="h5 font-weight-bold">Codigo de factura de compra:</label>
                             <input asp-for="CodigoFactura" class="form-control" />
                             <span asp-validation-for="CodigoFactura" class="text-danger"></span>
                         </div>
-                 
+                      
+                        <div class="form-group">
+                            <label for="Description" class="h5 font-weight-bold">Descripción (Opcional):</label>
+                            <input asp-for="Description" class="form-control" />
+                            <span asp-validation-for="Description" class="text-danger"></span>
+                        </div>
 
                         <!-- Contenedor oculto para los inputs dinámicos -->
                         <div id="HiddenInputsContainer"></div>
@@ -92,8 +104,8 @@
                                 @foreach (var product in ViewBag.Productos)
 
                                 {
-                                    <option value="@product.Id" data-name="@product.Name" data-price="@product.SalePrice" data-stock="@product.Stock" data-codigo="@product.Codigo">
-                                        @product.Name - Precio: $@product.SalePrice - @product.Codigo
+                                    <option value="@product.Id" data-name="@product.Name" data-price="@product.PurchasePrice" data-stock="@product.Stock" data-codigo="@product.Codigo" data-marca="@product.IdMarcanavigation?.Name">
+                                        @product.Name - Precio: $@product.PurchasePrice - @product.Codigo
                                     </option>
                                 }
                             </select>
@@ -106,13 +118,13 @@
                                         <th>Producto</th>
                                         <th>Unid.</th>
                                         <th>Precio Unid.</th>
-                                        <th>Descuento(%)</th>
                                         <th>Subtotal</th>
+                                        <th>Actu.</th>
                                         <th>Accion</th>
                                     </tr>
                                 </thead>
 
-                                <tbody id="ProductTableBody" class="txt-whithe">
+                                <tbody id="ProductTableBody"  class="txt-whithe">
                                     <!-- Filas dinámicas -->
                                 </tbody>
                                 <tfoot>
@@ -133,6 +145,7 @@
             </div>
 
         </div>
+    
 
     </form>
 </div>
@@ -140,32 +153,42 @@
 
 <div class="modal fade" id="productModal" tabindex="-1" aria-labelledby="productModalLabel" aria-hidden="true">
     <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
+        <div class="modal-content border-0 shadow-lg">
+            <div class="modal-header bg-primary text-white rounded-top">
                 <h5 class="modal-title" id="productModalLabel">Añadir Producto</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <form id="productForm">
                     <div class="mb-3">
-                        <label class="form-label" id="productDetails"></label>
-
+                        <label class="form-label" id="productDetails" style="font-weight: bold;"></label>
                     </div>
                     <div class="mb-3">
-                        <label for="quantityInput" class="form-label">Cantidad</label>
+                        <label for="quantityInput" class="form-label">Cantidad:</label>
                         <input type="number" class="form-control" id="quantityInput" placeholder="Ingrese cantidad" required>
-                        <div class="form-text">Máximo disponible: <span id="maxStock"></span></div>
+                        <div class="form-text">Stock actual: <span id="maxStock" class="text-muted"></span></div>
                     </div>
                     <div class="mb-3">
-                        <label for="discountInput" class="form-label">Descuento (%)</label>
-                        <input type="number" class="form-control" id="discountInput" placeholder="Ingrese descuento" required>
-                        <div class="form-text">Entre 0% y 100%.</div>
+                        <label for="purchasePriceInput" class="form-label">Precio de Compra:</label>
+                        <input type="number" class="form-control" id="purchasePriceInput" placeholder="Ingrese precio de compra" required>
+                    </div>
+                    <!-- Opción de actualizar precio -->
+                    <div class="mb-3">
+                        <label for="updatePriceSelect" class="form-label">Actualizar precio:</label>
+                        <select class="form-select" id="updatePriceSelect" required>
+                            <option value="false" class="text-danger">No actualizar precio</option>
+                            <option value="true" class="text-success">Actualizar precio</option>
+                        </select>
                     </div>
                 </form>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn btn-primary" id="saveProductBtn">Guardar</button>
+            <div class="modal-footer justify-content-center">
+                <button type="button" class="btn btn-outline-secondary rounded-pill px-4" id="cancelProductBtn">
+                    <i class="mdi mdi-close"></i> Cancelar
+                </button>
+                <button type="button" class="btn btn-outline-primary rounded-pill px-4" id="saveProductBtn">
+                    <i class="mdi mdi-content-save"></i> Guardar
+                </button>
             </div>
         </div>
     </div>
@@ -174,20 +197,7 @@
 
 
 
-
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        // Asumiendo que el modal tiene el ID 'myModal'
-        const modal = document.getElementById('myModal');
-
-        if (modal) {
-            // Detectar el cierre del modal por cualquier método
-            modal.addEventListener('hidden.bs.modal', function () {
-                resetSelect();
-            });
-        }
-    });
-
     document.addEventListener('DOMContentLoaded', function () {
         const productsSelect = document.getElementById('ProductSelect');
         const productTableBody = document.getElementById('ProductTableBody');
@@ -195,44 +205,40 @@
         const hiddenInputsContainer = document.getElementById('HiddenInputsContainer');
         let products = [];
 
-        // Modal y campos del formulario
         const productModal = new bootstrap.Modal(document.getElementById('productModal'));
         const quantityInput = document.getElementById('quantityInput');
-        const discountInput = document.getElementById('discountInput');
+        const purchasePriceInput = document.getElementById('purchasePriceInput');
         const maxStockSpan = document.getElementById('maxStock');
         const saveProductBtn = document.getElementById('saveProductBtn');
         let currentProduct = null;
 
-        // Función para restablecer la selección del campo select
         function resetSelect() {
             productsSelect.selectedIndex = 0;
         }
 
-        // Función para actualizar los campos ocultos
         function updateHiddenInputs() {
             hiddenInputsContainer.innerHTML = '';
             products.forEach((product, index) => {
                 const baseName = `detalles[${index}]`;
                 hiddenInputsContainer.innerHTML += `
-                            <input type="hidden" name="${baseName}.IdProduct" value="${product.id}" />
-                            <input type="hidden" name="${baseName}.CodigoProducto" value="${product.codigo}" />
-                            <input type="hidden" name="${baseName}.CantidadProduct" value="${product.quantity}" />
-                            <input type="hidden" name="${baseName}.ValorDescuento" value="${product.discount}" />
-                            <input type="hidden" name="${baseName}.SalePriceUnitario" value="${product.price}" />
-                            <input type="hidden" name="${baseName}.PriceTotal" value="${product.subtotal}" />
-                            <input type="hidden" name="${baseName}.NameProducto" value="${product.name}" />
-                        `;
+                        <input type="hidden" name="${baseName}.IdProduct" value="${product.id}" />
+                        <input type="hidden" name="${baseName}.CodigoProducto" value="${product.codigo}" />
+                        <input type="hidden" name="${baseName}.CantidadProduct" value="${product.quantity}" />
+                        <input type="hidden" name="${baseName}.PriceCompraUnitario" value="${product.price}" />
+                        <input type="hidden" name="${baseName}.PriceTotal" value="${product.subtotal}" />
+                        <input type="hidden" name="${baseName}.NameProducto" value="${product.name}" />
+                        <input type="hidden" name="${baseName}.UpdatePrice" value="${product.updatePrice}" />
+                    `;
             });
         }
 
-        // Función para calcular el total general
         function updateTotal() {
             const total = products.reduce((sum, product) => sum + product.subtotal, 0);
             totalGeneral.textContent = `$${total.toFixed(2)}`;
         }
-        // Obtener referencia al elemento donde se mostrarán los detalles del producto
+
         const productDetails = document.getElementById('productDetails');
-        // Mostrar modal para ingresar datos
+
         productsSelect.addEventListener('change', function () {
             const selectedOption = productsSelect.options[productsSelect.selectedIndex];
             const productId = selectedOption.value;
@@ -240,6 +246,7 @@
             const productPrice = parseFloat(selectedOption.getAttribute('data-price'));
             const productStock = parseInt(selectedOption.getAttribute('data-stock'));
             const productCodigo = selectedOption.getAttribute('data-codigo');
+            const productMarca = selectedOption.getAttribute('data-marca');
 
             if (products.some(p => p.id === productId)) {
                 alert("Este producto ya está agregado.");
@@ -247,72 +254,78 @@
                 return;
             }
 
-            // Configurar datos del modal
             currentProduct = {
                 id: productId,
                 name: productName,
                 price: productPrice,
                 stock: productStock,
-                codigo: productCodigo
+                codigo: productCodigo,
+                marca: productMarca
             };
-            // Mostrar el nombre y el código en el modal
-            productDetails.textContent = `${currentProduct.name} (Código: ${currentProduct.codigo})`;
+
+            productDetails.textContent = `${currentProduct.name} (Código: ${currentProduct.codigo}) - Marca: ${currentProduct.marca}`;
             maxStockSpan.textContent = productStock;
             quantityInput.value = 1;
-            discountInput.value = 0;
+            purchasePriceInput.value = productPrice;
             productModal.show();
         });
 
-        // Guardar producto al confirmar
+               // Acción del botón "Cancelar"
+    cancelProductBtn.addEventListener('click', function () {
+            resetSelect();
+        productsSelect.selectedIndex = 0; // Restablecer selección
+        productModal.hide();
+    });
+
         saveProductBtn.addEventListener('click', function () {
             const quantity = parseInt(quantityInput.value, 10);
-            const discount = parseFloat(discountInput.value);
+            const purchasePrice = parseFloat(purchasePriceInput.value);
+             const updatePrice = document.getElementById('updatePriceSelect').value === 'true';
 
             if (isNaN(quantity) || quantity <= 0 || quantity > currentProduct.stock) {
                 alert("Cantidad inválida. Verifique los límites.");
                 return;
             }
 
-            if (isNaN(discount) || discount < 0 || discount > 100) {
-                alert("Descuento inválido. Debe estar entre 0% y 100%.");
+            if (isNaN(purchasePrice) || purchasePrice <= 0) {
+                alert("Precio de compra inválido.");
                 return;
             }
 
-            const discountedPrice = currentProduct.price - (currentProduct.price * discount / 100);
-            const subtotal = discountedPrice * quantity;
+            const subtotal = purchasePrice * quantity;
 
             const product = {
                 id: currentProduct.id,
                 codigo: currentProduct.codigo,
                 name: currentProduct.name,
                 quantity,
-                price: currentProduct.price,
-                discount,
-                subtotal
+                price: purchasePrice,
+                subtotal,
+                updatePrice
             };
             products.push(product);
 
             const row = document.createElement('tr');
             row.innerHTML = `
-                          <td style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 150px;" title="${product.name}">${product.name}</td>
-
-                        <td>${quantity}</td>
-                        <td>$${product.price.toFixed(2)}</td>
-                        <td>${discount}%</td>
-                        <td>$${subtotal.toFixed(2)}</td>
-                        <td>
-                            <button class="btn btn-danger btn-sm" onclick="removeProduct('${product.id}', this)"> X </button>
-                        </td>
-                    `;
+                    <td class="txt-whithe" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 150px;" title="${product.name}">${product.name}</td>
+                        <td class="txt-whithe">${quantity}</td>
+                        <td class="txt-whithe">$${purchasePrice.toFixed(2)}</td>
+                        <td class="txt-whithe">$${subtotal.toFixed(2)}</td>
+                             <td>
+            ${updatePrice ? '<span class="text-success">Sí</span>' : '<span class="text-danger">No</span>'}
+        </td>
+                    <td>
+                        <button class="btn btn-danger btn-sm" onclick="removeProduct('${product.id}', this)"> X </button>
+                    </td>
+                `;
             productTableBody.appendChild(row);
 
-            updateHiddenInputs();
-            updateTotal();
+            updateHiddenInputs(); // Actualizar los campos ocultos
+            updateTotal(); // Actualizar total
             resetSelect();
             productModal.hide();
         });
 
-        // Eliminar un producto de la tabla
         window.removeProduct = function (productId, button) {
             products = products.filter(p => p.id !== productId);
             button.parentElement.parentElement.remove();
@@ -320,5 +333,4 @@
             updateTotal();
         };
     });
-
 </script>

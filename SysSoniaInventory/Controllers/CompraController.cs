@@ -155,8 +155,12 @@ namespace SysSoniaInventory.Controllers
 
             ViewBag.NameSucursal = User.FindFirst("Sucursal")?.Value;
             ViewBag.NameUser = User.Identity?.Name;
+            ViewData["IdProveedor"] = new SelectList(_context.modelProveedor, "Name", "Name");
 
-            ViewBag.Productos = _context.modelProduct.ToList();
+            ViewBag.Productos = _context.modelProduct
+           .Include(p => p.IdMarcanavigation)  // Aquí debe coincidir con la propiedad de navegación
+           .ToList();
+
             return View();
         }
 
@@ -183,7 +187,12 @@ namespace SysSoniaInventory.Controllers
             compra.Time = TimeOnly.FromDateTime(DateTime.Now);
 
             // Validar que los datos son correctos
-            ModelState.Remove("PurchasePriceUnitario");
+            ModelState.Remove("Description");
+            if (compra.Description == null)
+            {
+                compra.Description = "";
+            }
+
             if (!ModelState.IsValid)
             {
                 TempData["Error"] = "Error inesperado en la validación de un campo o más.";
@@ -196,7 +205,7 @@ namespace SysSoniaInventory.Controllers
 
             if (detalles == null || !detalles.Any())
             {
-                ModelState.AddModelError("", "Debe agregar al menos un detalle a la compra.");
+                TempData["Error"] = "Debe agregar al menos un detalle a la compra.";
                 ViewBag.NameSucursal = User.FindFirst("Sucursal")?.Value;
                 ViewBag.NameUser = User.Identity?.Name;
 
@@ -208,7 +217,7 @@ namespace SysSoniaInventory.Controllers
             {
                 if (detalle.CantidadProduct <= 0)
                 {
-                    ModelState.AddModelError("", "La cantidad de un producto debe ser mayor a cero.");
+                    TempData["Error"] = "La cantidad de un producto debe ser mayor a cero.";
                     ViewBag.NameSucursal = User.FindFirst("Sucursal")?.Value;
                     ViewBag.NameUser = User.Identity?.Name;
 
@@ -231,10 +240,20 @@ namespace SysSoniaInventory.Controllers
                         var producto = _context.modelProduct.FirstOrDefault(p => p.Id == detalle.IdProduct);
                         if (producto == null)
                         {
-                            ModelState.AddModelError("", $"El producto con ID {detalle.IdProduct} no existe.");
+                            TempData["Error"] = $"El producto con ID {detalle.IdProduct} no existe.";
                             ViewBag.Productos = _context.modelProduct.ToList();
                             transaction.Rollback();
                             return View(compra);
+                        }
+                        // Verifica si se debe actualizar el precio
+                        var beforePurchasePrice = producto.PurchasePrice;
+                        if (detalle.UpdatePrice)
+                        {
+                            // Guardar el precio anterior (BeforePurchasePrice)
+                          
+                            producto.PurchasePrice = detalle.PriceCompraUnitario;  // Actualizas el precio
+                                    _context.Update(producto);
+
                         }
 
                         // Almacenar valores originales para el historial
@@ -255,9 +274,9 @@ namespace SysSoniaInventory.Controllers
                         detalle.IdCompra = compra.Id;
                         detalle.CodigoProducto = producto.Codigo;
                         detalle.NameProducto = producto.Name;
-                        detalle.PriceCompraUnitario = producto.PurchasePrice;                                    //Verificar primero el precio manual
+                        detalle.PriceCompraUnitario = detalle.PriceCompraUnitario; // Usar el precio ingresado por el usuario                                                                
                         detalle.PriceTotal = detalle.PriceCompraUnitario * detalle.CantidadProduct;
-
+                        detalle.UpdatePrice = detalle.UpdatePrice;
                         // Guardar el detalle
                         _context.modelDetalleCompra.Add(detalle);
 
@@ -270,6 +289,8 @@ namespace SysSoniaInventory.Controllers
                             Time = TimeOnly.FromDateTime(DateTime.Now),
                             BeforeStock = stockAnterior,
                             AfterStock = producto.Stock,
+                            BeforePurchasePrice = detalle.UpdatePrice ? beforePurchasePrice : (decimal?)null,  // Solo llenamos si se actualiza el precio
+                            AfterPurchasePrice = detalle.UpdatePrice ? producto.PurchasePrice : (decimal?)null, // Solo llenamos si se actualiza el precio
                             RazonCambioAuto = "Entrada de productos (Compra)",
                             DescriptionCambio = "Compra registrada y stock actualizado"
                         };
@@ -309,7 +330,7 @@ namespace SysSoniaInventory.Controllers
                         Console.WriteLine($"Inner Exception: {ex.InnerException.Message}");
                     }
                     Console.WriteLine($"Stack Trace: {ex.StackTrace}");
-                    ModelState.AddModelError("", "Ocurrió un error al guardar los cambios en la base de datos.");
+                    TempData["Error"] = "Ocurrió un error al guardar los cambios en la base de datos.";
                     ViewBag.Productos = _context.modelProduct.ToList();
                     return View(compra);
                 }
