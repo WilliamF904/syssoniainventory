@@ -16,12 +16,12 @@
                     <div class="separator mx-3"></div>
 
                     <div class="dropdown-container">
-                        <button id="dropdownButton" class="dropdown-button btn btn-outline-secondary styled-btn">
+                        <button id="dropdownButton" class="dropdown-button btn btn-outline-danger styled-btn">
                             <i class="mdi mdi-download"></i> Descargar PDF
                         </button>
-                        <ul id="dropdownMenu" class="dropdown-menu">
+                        <ul id="dropdownMenu" class="dropdown-menu dark-theme">
                             <li>
-                                <a asp-action="GeneratePdf" class="btn btn-outline-dark btn-block mt-2 download-all-btn">
+                                <a asp-action="GeneratePdf" class="btn btn-outline-danger btn-block mt-2 download-all-btn">
                                     <i class="mdi mdi-download"></i> Descargar Todas las ventas
                                 </a>
                             </li>
@@ -35,9 +35,10 @@
                                         <label for="endDate">Fecha Fin</label>
                                         <input type="date" name="endDate" class="form-control range-input">
                                     </div>
-                                    <button type="submit" class="btn btn-success btn-block mt-2 download-date-btn">Descargar ventas por Fecha</button>
+                                    <button type="submit" class="btn btn-success btn-block mt-2 download-date-btn">
+                                        Descargar ventas por Fecha
+                                    </button>
                                 </form>
-
                             </li>
                         </ul>
                     </div>
@@ -130,18 +131,19 @@
 </div>
 
 <style>
-    /* General button styling para estilos de descarga por fecha */
     /* Estilo para el formulario de descarga por fecha */
     .download-form {
         border: 2px solid #007bff;
         border-radius: 10px;
         padding: 15px;
         margin-top: 15px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        background-color: #212529; /* Fondo oscuro */
+        box-shadow: 0 4px 8px rgba(255, 255, 255, 0.1); /* Sombra más clara */
     }
 
         .download-form label {
             font-weight: bold;
+            color: #ffffff; /* Texto blanco */
         }
 
         .download-form .range-field {
@@ -151,8 +153,10 @@
         .download-form .range-input {
             width: 100%;
             padding: 8px;
-            border: 1px solid #ced4da;
+            border: 1px solid #495057;
             border-radius: 5px;
+            background-color: #343a40; /* Fondo oscuro */
+            color: #ffffff; /* Texto blanco */
         }
 
             .download-form .range-input:focus {
@@ -175,20 +179,15 @@
                 color: #f8f9fa;
             }
 
-    
-    
-    
-    
-    
-    
+    /* Botón de descarga general */
     .styled-btn {
-        font-size: 1.2rem;
+        font-size: 1rem;
         border-radius: 8px;
     }
 
-    /* Button for all invoices */
+    /* Botón de descarga de todas las ventas */
     .download-all-btn {
-        background-color: #343a40;
+        background-color: #343a40; /* Gris oscuro */
         color: #fff;
         border: none;
         font-weight: bold;
@@ -199,7 +198,7 @@
             color: #e9ecef;
         }
 
-    /* Button for date range */
+    /* Botón de descarga por fecha */
     .download-date-btn {
         background-color: #28a745;
         color: #fff;
@@ -212,7 +211,7 @@
             color: #f8f9fa;
         }
 
-    /* Date range field styling */
+    /* Estilo de los campos de fecha */
     .range-field {
         display: flex;
         align-items: center;
@@ -223,12 +222,15 @@
             width: 120px;
             margin-right: 10px;
             font-weight: bold;
+            color: #ffffff; /* Texto blanco */
         }
 
     .range-input {
         flex-grow: 1;
-        border: 2px solid #dee2e6;
+        border: 2px solid #495057;
         border-radius: 5px;
+        background-color: #343a40; /* Fondo oscuro */
+        color: #ffffff; /* Texto blanco */
     }
 
         .range-input:focus {
@@ -236,74 +238,102 @@
             outline: none;
         }
 
-    /* Dropdown menu styles */
+    /* Estilo del menú desplegable */
     .dropdown-container .dropdown-menu {
         padding: 15px;
-        background-color: #ffffff;
+        background-color: #343a40; /* Fondo oscuro */
         border-radius: 10px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 4px 8px rgba(255, 255, 255, 0.1); /* Sombra más clara */
+        border: 1px solid #495057;
     }
 
         .dropdown-container .dropdown-menu.show {
             display: block;
         }
+
+        /* Color del texto dentro del dropdown */
+        .dropdown-container .dropdown-menu a,
+        .dropdown-container .dropdown-menu label {
+            color: #ffffff; /* Texto blanco */
+        }
+
 </style>
-
-
-
-
-
-
 <style>
+    /* Ajuste de etiquetas de formularios */
     .form-group label {
         width: 150px;
         text-align: right;
+        color: #ffffff; /* Texto blanco */
     }
 
+    /* Ajuste de inputs */
     .form-group input,
     .form-group select {
         flex-grow: 1;
+        background-color: #343a40; /* Gris oscuro */
+        color: #ffffff; /* Texto blanco */
+        border: 1px solid #495057; /* Borde más oscuro */
     }
 
-    .d-flex {
-        display: flex;
-    }
-
-    .separator {
-        width: 2px;
-        height: 30px;
-        background-color: #ddd;
-    }
-
+    /* Contenedor del dropdown */
     .dropdown-container {
         position: relative;
     }
 
-        .dropdown-container .dropdown-menu {
-            position: absolute;
-            top: 100%;
-            left: 0;
-            display: none;
-            list-style: none;
-            padding: 10px;
-            margin: 0;
-            background-color: #f8f9fa;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-            width: 250px;
-            opacity: 0;
-            transform: translateY(-10px);
-            transition: opacity 0.3s ease, transform 0.3s ease;
-            z-index: 1000;
+    /* Menú desplegable con fondo oscuro */
+    .dropdown-menu.dark-theme {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        display: none;
+        list-style: none;
+        padding: 10px;
+        margin: 0;
+        background-color: #212529; /* Fondo oscuro */
+        border: 1px solid #343a40; /* Borde oscuro */
+        border-radius: 5px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5); /* Sombra más oscura */
+        width: 250px;
+        opacity: 0;
+        transform: translateY(-10px);
+        transition: opacity 0.3s ease, transform 0.3s ease;
+        z-index: 1000;
+    }
+
+        /* Mostrar menú desplegable */
+        .dropdown-menu.dark-theme.show {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
         }
 
-            .dropdown-container .dropdown-menu.show {
-                display: block;
-                opacity: 1;
-                transform: translateY(0);
-            }
+    /* Estilos del botón para que combine con el tema oscuro */
+    .dropdown-button {
+        background-color: #343a40; /* Gris oscuro */
+        color: #ffffff; /* Texto blanco */
+        border: 1px solid #495057; /* Borde sutil */
+    }
+
+        /* Botón en hover */
+        .dropdown-button:hover {
+            background-color: #495057; /* Un poco más claro */
+        }
+
+    /* Ajuste de botones */
+    .btn-outline-light {
+        border-color: #ffffff;
+        color: #ffffff;
+    }
+
+        .btn-outline-light:hover {
+            background-color: #ffffff;
+            color: #212529;
+        }
 </style>
+
+
+
+
 
 <script>
     document.addEventListener("DOMContentLoaded", function () {

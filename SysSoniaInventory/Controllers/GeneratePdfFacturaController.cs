@@ -12,6 +12,7 @@ using iText.Layout.Properties;
 using iText.Layout.Borders;
 using iText.Kernel.Colors;
 using iText.IO.Image;
+using Microsoft.EntityFrameworkCore;
 
 [Authorize]
 public class FacturaController : Controller
@@ -31,7 +32,11 @@ public class FacturaController : Controller
             return RedirectToAction("Index", "Home");
         }
 
-        var facturas = _context.Set<ModelFactura>().AsQueryable();
+     
+        var facturas = _context.modelFactura
+                .Include(f => f.DetalleFactura)
+                .AsQueryable();
+
         if (startDate.HasValue && endDate.HasValue)
         {
             facturas = facturas.Where(f => f.Date >= startDate && f.Date <= endDate);
@@ -44,37 +49,68 @@ public class FacturaController : Controller
             return RedirectToAction("Index");
         }
 
+        // Calcular el total por factura y la suma total de todas las facturas
+        foreach (var factura in facturasList)
+        {
+            factura.TotalVenta = factura.DetalleFactura.Sum(d => d.PriceTotal);
+        }
+
+        decimal totalGeneral = facturasList.Sum(f => (decimal)f.TotalVenta);
+        decimal totalVentaBruta = facturasList.Sum(f => f.DetalleFactura.Sum(d => d.PurchasePriceUnitario * d.CantidadProduct));
+        decimal gananciaTotal =  totalGeneral  - totalVentaBruta;
+
         using (var stream = new MemoryStream())
         {
             var writer = new PdfWriter(stream);
             var pdf = new PdfDocument(writer);
             var document = new Document(pdf);
+            // Crear una tabla invisible (sin bordes) con dos columnas: Logo y Título
+            var headerTable = new Table(new float[] { 1, 4 }).SetWidth(UnitValue.CreatePercentValue(100));
+            headerTable.SetBorder(Border.NO_BORDER); // Quitar bordes de la tabla
 
-            // Agregar logo una sola vez  
+            // Celda del logo
+            var logoCell = new Cell().SetBorder(Border.NO_BORDER).SetVerticalAlignment(VerticalAlignment.MIDDLE);
             string imagePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "imgSystem", "LOGO.jpeg");
-            var logo = new Image(ImageDataFactory.Create(imagePath)).ScaleAbsolute(100, 100);
+            var logo = new Image(ImageDataFactory.Create(imagePath)).ScaleAbsolute(100, 100).SetMarginTop(-50); // Mover 50% más arriba
+            logoCell.Add(logo);
 
-            document.Add(logo); // Agregar el logo aquí  
-
-            // Título estilizado  
+            // Celda del título
+            var titleCell = new Cell().SetBorder(Border.NO_BORDER).SetTextAlignment(TextAlignment.CENTER);
             string title = startDate.HasValue && endDate.HasValue
                 ? $"Facturas del {startDate} al {endDate}"
                 : "Todas las Facturas";
-
-            document.Add(new Paragraph(title)
+            titleCell.Add(new Paragraph(title)
                 .SetFontSize(24)
                 .SetFontColor(ColorConstants.DARK_GRAY)
-                .SetTextAlignment(TextAlignment.CENTER)
                 .SetBold()
+                .SetMarginBottom(10));
+
+            // Agregar las celdas a la tabla
+            headerTable.AddCell(logoCell);
+            headerTable.AddCell(titleCell);
+
+            // Agregar la tabla con logo y título al documento
+            document.Add(headerTable);
+
+
+
+            // Agregar textos con los totales
+            document.Add(new Paragraph($"Total General de Ventas: {totalGeneral:C}")
+                .SetFontSize(12)
+                .SetTextAlignment(TextAlignment.LEFT)
+                .SetMarginBottom(5));
+
+            document.Add(new Paragraph($"Ganancia Total: {gananciaTotal:C}")
+                .SetFontSize(12)          
+                .SetTextAlignment(TextAlignment.LEFT)
                 .SetMarginBottom(20));
 
-            // Crear tabla  
-            var table = new Table(new float[] { 1, 2, 2, 2, 2 }).SetWidth(UnitValue.CreatePercentValue(100));
-            table.SetMarginTop(10);
+            // Crear tabla con la columna extra para el total de cada factura
+            var table = new Table(new float[] { 1, 2, 2, 2, 2, 2 }).SetWidth(UnitValue.CreatePercentValue(100));
 
-            // Encabezados  
-            var headerColor = new DeviceRgb(41, 128, 185); // Azul oscuro  
-            foreach (var header in new[] { "ID", "Sucursal", "Usuario", "Cliente", "Fecha" })
+            // Encabezados de la tabla
+            var headerColor = new DeviceRgb(41, 128, 185);
+            foreach (var header in new[] { "ID", "Sucursal", "Usuario", "Cliente", "Fecha", "Total Factura" })
             {
                 table.AddHeaderCell(new Cell().Add(new Paragraph(header)
                         .SetFontColor(ColorConstants.WHITE)
@@ -84,8 +120,8 @@ public class FacturaController : Controller
                     .SetPadding(8));
             }
 
-            // Filas alternadas  
-            var alternateRowColor = new DeviceRgb(230, 240, 255); // Azul claro  
+            // Filas alternadas
+            var alternateRowColor = new DeviceRgb(230, 240, 255);
             bool isAlternate = false;
             foreach (var factura in facturasList)
             {
@@ -100,12 +136,15 @@ public class FacturaController : Controller
                     .SetBackgroundColor(rowColor));
                 table.AddCell(new Cell().Add(new Paragraph(factura.Date.ToShortDateString()))
                     .SetBackgroundColor(rowColor));
+                table.AddCell(new Cell().Add(new Paragraph($"{factura.TotalVenta:C}")) // Mostrar el total de la factura
+                    .SetBackgroundColor(rowColor).SetTextAlignment(TextAlignment.RIGHT));
+
                 isAlternate = !isAlternate;
             }
 
             document.Add(table);
 
-            // Pie de página  
+            // Pie de página
             document.Add(new Paragraph("Muebles y Electrodomesticos Sonia")
                 .SetFontSize(10)
                 .SetFontColor(ColorConstants.GRAY)
@@ -113,7 +152,10 @@ public class FacturaController : Controller
                 .SetMarginTop(20));
 
             document.Close();
-            return File(stream.ToArray(), "application/pdf", $"{title.Replace(" ", "_")}.pdf");
+            string fechaDescarga = DateTime.Now.ToString("yyyy-MM-dd");
+            return File(stream.ToArray(), "application/pdf", $"{title.Replace(" ", "_")}_{fechaDescarga}.pdf");
+
         }
     }
+
 }
