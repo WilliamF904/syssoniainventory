@@ -29,7 +29,7 @@ namespace SysSoniaInventory.Models
         public decimal PriceTotalReembolso { get; set; }
 
         [NotMapped] // Esto indica que no será parte de la base de datos.
-        public string StockD { get; set; }
+        public bool StockD { get; set; }
 
         [ForeignKey("IdDevolucion")]
         public virtual ModelDevolucion? IdDevolucionNavigation { get; set; }

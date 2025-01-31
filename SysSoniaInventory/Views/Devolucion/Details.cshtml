@@ -1,54 +1,93 @@
 ﻿@model SysSoniaInventory.Models.ModelDevolucion
 
-@{
-    ViewData["Title"] = "Details";
-}
+<h2>Detalles de la Devolución</h2>
+<div class="row">
 
-<h1>Details</h1>
+    <!-- Información de la Devolución -->
+    <div class="col-lg-3 stretch-card">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                Información de la Devolución
+            </div>
+            <div class="card-body">
+                <p><strong>Devolución ID:</strong> @Model.Id</p>
+                <p><strong>Factura ID:</strong> @Model.IdFactura</p>
+                <p><strong>Sucursal:</strong> @Model.NameSucursal</p>
+                <p><strong>Usuario:</strong> @Model.NameUser</p>
+                <p><strong>Cliente:</strong> @Model.NameClient</p>
+                <p><strong>Fecha:</strong> @Model.Date.ToString("yyyy-MM-dd")</p>
+                <p><strong>Hora:</strong> @Model.Time.ToString("HH:mm")</p>
+            </div>
+        </div>
+    </div>
 
-<div>
-    <h4>ModelDevolucion</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.IdFactura)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.IdFactura)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.NameSucursal)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.NameSucursal)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.NameUser)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.NameUser)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.NameClient)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.NameClient)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Date)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Date)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Time)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Time)
-        </dd>
-    </dl>
+    <!-- Detalles de los Productos Devueltos -->
+    <div class="col-lg-9 stretch-card">
+        <div class="card">
+            <div class="card-header bg-danger text-white">
+                Detalle de Productos Devueltos
+            </div>
+            <div class="card-body table-responsive">
+                <table class="table table-bordered table-striped table-hover">
+                    <thead class="table-warning">
+                        <tr>
+                            <th>Producto</th>
+                            <th>Código</th>
+                            <th>Cantidad</th>
+                            <th>Precio Reembolso</th>
+                            <th>Total Reembolso</th>
+                            <th>Stock Devuelto</th>
+                        </tr>
+                    </thead>
+                    <tbody class="txt-white">
+                        @foreach (var detalle in Model.DetalleDevolucion)
+                        {
+                            <tr>
+                                <td class="text-light" title="@detalle.CodigoProducto">
+                                    @(detalle.NameProduct.Length > 30 ? detalle.NameProduct.Substring(0, 30) + "..." : detalle.NameProduct)
+                                </td>
+                                <td class="text-light">@detalle.CodigoProducto</td>
+                                <td class="text-light">@detalle.CantidadProduct</td>
+                                <td class="text-light">@detalle.PriceReembolso.ToString("C")</td>
+                                <td class="text-light valor-text">@detalle.PriceTotalReembolso.ToString("C")</td>
+                                <td>
+                                    @if (detalle.StockD)
+                                    {
+                                        <span class="text-success">Sí</span> <!-- Verde para "Sí" -->
+                                    }
+                                    else
+                                    {
+                                        <span class="text-danger">No</span> <!-- Rojo para "No" -->
+                                    }
+                                </td>
+                            </tr>
+                        }
+                        <tr>
+                            <td colspan="4"><strong>Total General:</strong></td>
+                            <td colspan="2" id="totalGeneral"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
 </div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
-</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        let total = 0;
+
+        const cells = document.querySelectorAll('td.valor-text');
+
+        cells.forEach(cell => {
+            const priceText = cell.textContent.trim();
+            const priceValue = parseFloat(priceText.replace(/[^\d.-]/g, ''));
+            if (!isNaN(priceValue)) {
+                total += priceValue;
+            }
+        });
+
+        document.getElementById("totalGeneral").textContent = total.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
+    });
+</script>

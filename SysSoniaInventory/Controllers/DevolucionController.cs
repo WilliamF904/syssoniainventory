@@ -157,17 +157,18 @@ namespace SysSoniaInventory.Controllers
         [HttpPost]
         public IActionResult Create(ModelDevolucion devolucion, List<ModelDetalleDevolucion> detalles)
         {
-            // Verificar niveles de acceso
-            if (User.HasClaim("AccessTipe", "Nivel 5") || User.HasClaim("AccessTipe", "Nivel 4") || User.HasClaim("AccessTipe", "Nivel 3") || User.HasClaim("AccessTipe", "Nivel 2"))
-            {
-                // Nivel 4 tiene acceso
-            }
-            else
-            {
-                // Redirigir con mensaje de error si el usuario no tiene acceso
-                TempData["Error"] = "No tienes acceso a esta sección. Requerido: Nivel 2 o superior.";
-                return RedirectToAction("Index", "Home");
-            }
+       
+                // Verificar niveles de acceso
+                if (User.HasClaim("AccessTipe", "Nivel 5") || User.HasClaim("AccessTipe", "Nivel 4") || User.HasClaim("AccessTipe", "Nivel 3") || User.HasClaim("AccessTipe", "Nivel 2"))
+                { // Nivel 4 tiene acceso
+
+                }
+                else
+                {
+                    // Redirigir con mensaje de error si el usuario no tiene acceso
+                    TempData["Error"] = "No tienes acceso a esta sección. Requerido: Nivel 2 o superior.";
+                    return RedirectToAction("Index", "Home");
+                }
 
             // Sobrescribir valores de seguridad
             devolucion.NameUser = User.Identity?.Name;
@@ -175,71 +176,81 @@ namespace SysSoniaInventory.Controllers
             devolucion.Date = DateOnly.FromDateTime(DateTime.Now);
             devolucion.Time = TimeOnly.FromDateTime(DateTime.Now);
 
-            // Validar que los datos son correctos
-            ModelState.Remove("PurchasePriceUnitario");
-            if (!ModelState.IsValid)
-            {
-                TempData["Error"] = "Error inesperado en la validación de un campo o más.";
-                ViewBag.NameSucursal = User.FindFirst("Sucursal")?.Value;
-                ViewBag.NameUser = User.Identity?.Name;
-
-                ViewBag.Productos = _context.modelProduct.ToList();
-                return View(devolucion);
-            }
-
-            if (detalles == null || !detalles.Any())
-            {
-                ModelState.AddModelError("", "Debe agregar al menos un detalle a la devolucion.");
-                ViewBag.NameSucursal = User.FindFirst("Sucursal")?.Value;
-                ViewBag.NameUser = User.Identity?.Name;
-
-                ViewBag.Productos = _context.modelProduct.ToList();
-                return View(devolucion);
-            }
-
-            foreach (var detalle in detalles)
-            {
-                if (detalle.CantidadProduct <= 0)
+                // Validar que los datos son correctos
+                ModelState.Remove("NameClient");
+            ModelState.Remove("IdFactura"); 
+                  ModelState.Remove("NameProduct");
+            if (devolucion.NameClient == null)
                 {
-                    ModelState.AddModelError("", "La cantidad de un producto debe ser mayor a cero.");
-                    ViewBag.NameSucursal = User.FindFirst("Sucursal")?.Value;
-                    ViewBag.NameUser = User.Identity?.Name;
-
-                    ViewBag.Productos = _context.modelProduct.ToList();
-                    return View(devolucion);
+                devolucion.NameClient = "";
                 }
+
+                if (!ModelState.IsValid)
+                {
+                    TempData["Error"] = "Error inesperado en la validación de un campo o más.";
+                return RedirectToAction("Create", "Devolucion");
             }
 
-            using (var transaction = _context.Database.BeginTransaction())
-            {
-                try
+                if (detalles == null || !detalles.Any())
                 {
+                    TempData["Error"] = "Debe agregar al menos un detalle a la devolucion.";
+                return RedirectToAction("Create", "Devolucion");
+            }
+
+                foreach (var detalle in detalles)
+                {
+                    if (detalle.CantidadProduct <= 0)
+                    {
+                        TempData["Error"] = "La cantidad de un producto debe ser mayor a cero.";
+                    return RedirectToAction("Create", "Devolucion");
+                }
+                }
+
+                using (var transaction = _context.Database.BeginTransaction())
+                {
+                    try
+                    {
                     // Guardar la devolucion
                     _context.modelDevolucion.Add(devolucion);
-                    _context.SaveChanges(); // Aquí se genera el Id de la devolucion
+                        _context.SaveChanges(); // Aquí se genera el Id de la devolucion
 
                     foreach (var detalle in detalles)
-                    {
-                        // Obtener los datos actuales del producto seleccionado
-                        var producto = _context.modelProduct.FirstOrDefault(p => p.Id == detalle.IdProduct);
-                        if (producto == null)
                         {
-                            ModelState.AddModelError("", $"El producto con ID {detalle.IdProduct} no existe.");
-                            ViewBag.Productos = _context.modelProduct.ToList();
-                            transaction.Rollback();
-                            return View(devolucion);
+                            // Obtener los datos actuales del producto seleccionado
+                            var producto = _context.modelProduct.FirstOrDefault(p => p.Id == detalle.IdProduct);
+                            if (producto == null)
+                            {
+                                TempData["Error"] = $"El producto con ID {detalle.IdProduct} no existe.";
+                            
+                                transaction.Rollback();
+                            return RedirectToAction("Create", "Devolucion");
                         }
+                            // Verifica si se debe actualizar el precio
+                            var beforePurchasePrice = producto.PurchasePrice;
+                          
 
-                        //--------------------------------------------------------------------------------------
-                        if (detalle.StockD == "1")
-                        {
                             // Almacenar valores originales para el historial
                             var stockAnterior = producto.Stock;
-
+                        if (detalle.StockD)
+                        {
                             // Actualizar stock sumando la cantidad de productos devueltos
                             producto.Stock += detalle.CantidadProduct;
+                        }
 
-                            // Guardar el historial del cambio de stock
+
+                        // Asignar valores al detalle de devolucion
+                        detalle.IdDevolucion = devolucion.Id;
+                            detalle.CodigoProducto = producto.Codigo;
+                            detalle.NameProduct = producto.Name;
+                            detalle.PriceReembolso = detalle.PriceReembolso; // Usar el precio ingresado por el usuario                                                                
+                            detalle.PriceTotalReembolso = detalle.PriceReembolso * detalle.CantidadProduct;
+                      
+                            // Guardar el detalle
+                            _context.modelDetalleDevolucion.Add(detalle);
+
+                        // Guardar el historial del cambio de stock
+                        if (detalle.StockD)
+                        {
                             var historial = new ModelHistorialProduct
                             {
                                 NameUser = User.Identity?.Name,
@@ -248,14 +259,17 @@ namespace SysSoniaInventory.Controllers
                                 Time = TimeOnly.FromDateTime(DateTime.Now),
                                 BeforeStock = stockAnterior,
                                 AfterStock = producto.Stock,
-                                RazonCambioAuto = "Devolución de productos (Devolucion)",
-                                DescriptionCambio = "Devolución registrado y stock actualizado"
-                            };
+                                RazonCambioAuto = "Devolución de productos (Devolución)",
 
+                                DescriptionCambio = "Devolución procesado y stock actualizado"
+                            };
                             _context.Add(historial);
 
-                            // Validar si el stock supera LowStock y hay reportes pendientes
-                            if (producto.Stock > producto.LowStock)
+                        }
+
+
+                        // Validar si el stock supera LowStock y hay reportes pendientes
+                        if (producto.Stock > producto.LowStock)
                             {
                                 var reportesPendientes = _context.modelReport
                                     .Where(r => r.IdRelation == producto.Id && r.TypeReport == "Stock Bajo" && r.Estatus != "Finalizado")
@@ -265,48 +279,34 @@ namespace SysSoniaInventory.Controllers
                                 {
                                     reporte.Estatus = "Finalizado";
                                     reporte.NameUser = User.Identity?.Name;
-                                    reporte.ComentaryUser = $"Descripción automática: Se agregó {detalle.CantidadProduct} al stock del producto por medio de la sección 'Devolucion' con el id {detalle.IdDevolucion}.";
+                                    reporte.ComentaryUser = $"Descripción automática: Se agregó {detalle.CantidadProduct} al stock del producto por medio de la sección 'Devolución' con el id {detalle.IdDevolucion}.";
                                     reporte.EndDate = DateOnly.FromDateTime(DateTime.Now);
                                     reporte.EndTime = TimeOnly.FromDateTime(DateTime.Now);
-                                 
+
                                     _context.Update(reporte);
                                 }
                             }
                         }
 
-                        //--------------------------------------------------------------------------------------
-
-
-                        // Asignar valores al detalle de compra
-                        detalle.IdDevolucion = devolucion.Id;
-                        detalle.CodigoProducto = producto.Codigo;
-                        detalle.NameProduct = producto.Name;
-                        detalle.PriceReembolso = producto.PurchasePrice; // Verificar primero el precio manual
-                        detalle.PriceTotalReembolso = detalle.PriceReembolso * detalle.CantidadProduct;
-
-                        // Guardar el detalle
-                        _context.modelDetalleDevolucion.Add(detalle);
+                        // Guardar cambios y confirmar transacción
+                        _context.SaveChanges();
+                        transaction.Commit();
+                        TempData["Success"] = "Compra registrada correctamente.";
+                        return RedirectToAction("Index");
                     }
-
-                    // Guardar cambios y confirmar transacción
-                    _context.SaveChanges();
-                    transaction.Commit();
-                    TempData["Success"] = "Devolución registrada correctamente.";
-                    return RedirectToAction("Index");
-                }
-                catch (Exception ex)
-                {
-                    if (ex.InnerException != null)
+                    catch (Exception ex)
                     {
-                        Console.WriteLine($"Inner Exception: {ex.InnerException.Message}");
-                    }
-                    Console.WriteLine($"Stack Trace: {ex.StackTrace}");
-                    ModelState.AddModelError("", "Ocurrió un error al guardar los cambios en la base de datos.");
-                    ViewBag.Productos = _context.modelProduct.ToList();
-                    return View(devolucion);
+                        if (ex.InnerException != null)
+                        {
+                            Console.WriteLine($"Inner Exception: {ex.InnerException.Message}");
+                        }
+                        Console.WriteLine($"Stack Trace: {ex.StackTrace}");
+                        TempData["Error"] = "Ocurrió un error al guardar los cambios en la base de datos.";
+                        ViewBag.Productos = _context.modelProduct.ToList();
+                    return RedirectToAction("Create", "Devolucion");
+                }
                 }
             }
-        }
 
 
 
@@ -315,7 +315,7 @@ namespace SysSoniaInventory.Controllers
 
 
 
-        private bool ModelDevolucionExists(int id)
+            private bool ModelDevolucionExists(int id)
         {
             return _context.modelDevolucion.Any(e => e.Id == id);
         }
