@@ -7,7 +7,13 @@
 <script src="~/js/chart.js"></script>
 
 <script src="~/js/jquery.js"></script>
-
+<style>
+    .textarea-create {
+        resize: none;
+        overflow-y: auto;
+        word-wrap: break-word;
+    }
+</style>
 <div class="col-12 grid-margin">
     <div class="row">
         <!-- Lista enumerada con fondo oscuro y texto blanco -->
@@ -219,13 +225,16 @@
                         </div>
                     </div>
 
-                    <!-- URL del Producto -->
-                    <div class="form-group row">
-                        <label class="col-sm-3 col-form-label" asp-for="Url">URL:</label>
-                        <div class="col-sm-9">
-                            <input type="text" class="form-control readonly-input" asp-for="Url" readonly />
+                
+                  
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label text-light" asp-for="Description">Descripción: </label>
+                            <div class="col-sm-9">
+                            <textarea type="text" maxlength="250" class="form-control textarea-create readonly-input" asp-for="Description"  readonly></textarea>
+                                <span asp-validation-for="Description" class="text-danger"></span>
+                            </div>
                         </div>
-                    </div>
+                  
                     <br />
                     <hr class="linea-info" />
                     <!-- Botones de acción al final, alineados a la derecha -->

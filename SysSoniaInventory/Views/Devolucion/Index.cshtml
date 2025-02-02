@@ -3,7 +3,24 @@
 @{
     ViewData["Title"] = "Lista de Devoluciones";
 }
+<style>
+    .pagination .page-link {
+        background-color: #333;
+        color: #fff;
+        border: 1px solid #444;
+    }
 
+    .pagination .page-item.active .page-link {
+        background-color: #555;
+        border-color: #666;
+    }
+
+    .pagination .page-item.disabled .page-link {
+        background-color: #222;
+        color: #777;
+        border-color: #333;
+    }
+</style>
 <div class="row">
     <div class="col-lg-6 grid-margin stretch-card">
         <div class="card">
@@ -18,32 +35,38 @@
             </div>
         </div>
     </div>
-
     <div class="col-lg-6 grid-margin stretch-card">
-        <div class="card">
-            <div class="card-body">
-                <h1 class="card-title">Filtrar Devoluciones</h1>
-                <form method="get" asp-action="Index" class="mb-3">
-                    <div class="row">
-                        <div class="col-md-4">
-                            <input type="text" name="searchUser" class="form-control" placeholder="Buscar por usuario"
-                                   value="@ViewBag.SearchUser" />
-                        </div>
-                        <div class="col-md-3">
-                            <input type="date" name="startDate" class="form-control"
-                                   value="@ViewBag.StartDate" />
-                        </div>
-                        <div class="col-md-3">
-                            <input type="date" name="endDate" class="form-control"
-                                   value="@ViewBag.EndDate" />
-                        </div>
-                        <div class="col-md-2">
-                            <button type="submit" class="btn btn-primary">Filtrar</button>
-                        </div>
-                    </div>
-                </form>
+    <div class="card">
+        <div class="card-body">
+            <form method="get" asp-action="Index">
+            <div class="d-flex justify-content-between align-items-center">
+                <h1 class="card-title mb-0">Filtrar Devoluciones</h1>
+                <div class="col-md-3 d-flex align-items-end">
+                            <button type="submit" class="btn btn-outline-success w-100">Filtrar</button>
+                </div>
             </div>
+
+           
+                <div class="row">
+                    <div class="col-md-4">
+                        <label for="searchUser" class="form-label">Buscar por usuario</label>
+                        <input type="text" id="searchUser" name="searchUser" class="form-control"
+                               placeholder="Buscar por usuario" value="@ViewBag.SearchUser" />
+                    </div>
+                    <div class="col-md-3">
+                        <label for="startDate" class="form-label">Fecha inicio</label>
+                        <input type="date" id="startDate" name="startDate" class="form-control"
+                               value="@ViewBag.StartDate" />
+                    </div>
+                    <div class="col-md-3">
+                        <label for="endDate" class="form-label">Fecha fin</label>
+                        <input type="date" id="endDate" name="endDate" class="form-control"
+                               value="@ViewBag.EndDate" />
+                    </div>
+                </div>
+            </form>
         </div>
+    </div>
     </div>
 
     <div class="col-md-12 mt-4">
@@ -85,14 +108,44 @@
                 </div>
                 <nav aria-label="Page navigation">
                     <ul class="pagination justify-content-center">
-                        @for (var i = 1; i <= ViewBag.TotalPages; i++)
+                        @{
+                            int totalPages = ViewBag.TotalPages;
+                            int currentPage = ViewBag.Page;
+                            int maxVisiblePages = 10;
+                            int startPage = Math.Max(1, currentPage - maxVisiblePages / 2);
+                            int endPage = Math.Min(totalPages, startPage + maxVisiblePages - 1);
+
+                            // Ajustar si estamos cerca del inicio o final
+                            if (endPage - startPage < maxVisiblePages - 1)
+                            {
+                                startPage = Math.Max(1, endPage - maxVisiblePages + 1);
+                            }
+                        }
+
+                        <!-- Flecha izquierda (deshabilitada si estamos en la primera página) -->
+                        <li class="page-item @(currentPage == 1 ? "disabled" : "")">
+                            <a class="page-link" href="@(currentPage > 1 ? $"?page={currentPage - 1}&searchUser={ViewBag.SearchUser}&startDate={ViewBag.StartDate}&endDate={ViewBag.EndDate}" : "#")" aria-label="Anterior">
+                                <span aria-hidden="true">«</span>
+                            </a>
+                        </li>
+
+                        <!-- Números de paginación -->
+                        @for (var i = startPage; i <= endPage; i++)
                         {
-                            <li class="page-item @(i == ViewBag.CurrentPage ? "active" : "")">
+                            <li class="page-item @(i == currentPage ? "active" : "")">
                                 <a class="page-link" href="?page=@i&searchUser=@ViewBag.SearchUser&startDate=@ViewBag.StartDate&endDate=@ViewBag.EndDate">@i</a>
                             </li>
                         }
+
+                        <!-- Flecha derecha (deshabilitada si estamos en la última página) -->
+                        <li class="page-item @(currentPage == totalPages ? "disabled" : "")">
+                            <a class="page-link" href="@(currentPage < totalPages ? $"?page={currentPage + 1}&searchUser={ViewBag.SearchUser}&startDate={ViewBag.StartDate}&endDate={ViewBag.EndDate}" : "#")" aria-label="Siguiente">
+                                <span aria-hidden="true">»</span>
+                            </a>
+                        </li>
                     </ul>
                 </nav>
+
             </div>
         </div>
     </div>

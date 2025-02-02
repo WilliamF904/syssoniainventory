@@ -29,36 +29,80 @@ namespace SysSoniaInventory.Controllers
 
         // GET: Product
         [HttpGet]
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string codigo, string name, int? stockMin, int? stockMax, byte? estatus, int page = 1)
         {
             // Verificar niveles de acceso
-            if (User.HasClaim("AccessTipe", "Nivel 4"))
-            { // Nivel 4 tiene acceso
-
-            }
-            else if (User.HasClaim("AccessTipe", "Nivel 3"))
+            if (!(User.HasClaim("AccessTipe", "Nivel 2") ||
+                  User.HasClaim("AccessTipe", "Nivel 3") ||
+                  User.HasClaim("AccessTipe", "Nivel 4") ||
+                  User.HasClaim("AccessTipe", "Nivel 5")))
             {
-                // Nivel 3 tiene acceso
-
-            }
-            else if (User.HasClaim("AccessTipe", "Nivel 5"))
-            { // Nivel 5 tiene acceso
-
-            }
-            else if (User.HasClaim("AccessTipe", "Nivel 2"))
-            { // Nivel 2 tiene acceso
-
-            }
-            else
-            {
-                // Redirigir con mensaje de error si el usuario no tiene acceso
                 TempData["Error"] = "No tienes acceso a esta sección. Requerido: Nivel 2 o superior.";
                 return RedirectToAction("Index", "Home");
             }
 
-            var dBContext = _context.modelProduct.Include(m => m.IdCategoryNavigation).Include(m => m.IdProveedorNavigation);
-            return View(await dBContext.OrderByDescending(r => r.Id).ToListAsync());
+            int pageSize = 5; // Número de productos por página
+
+            // Obtener la consulta de productos con las relaciones necesarias
+            var query = _context.modelProduct
+                .Include(m => m.IdCategoryNavigation)
+                .Include(m => m.IdProveedorNavigation)
+                .AsQueryable();
+
+            // Filtrar por Código si está presente
+            if (!string.IsNullOrEmpty(codigo))
+            {
+                query = query.Where(p => p.Codigo.Contains(codigo));
+            }
+
+            // Filtrar por Nombre si está presente
+            if (!string.IsNullOrEmpty(name))
+            {
+                query = query.Where(p => p.Name.Contains(name));
+            }
+
+            // Filtrar por Stock si se proporcionan valores mínimos o máximos
+            if (stockMin.HasValue && stockMax.HasValue)
+            {
+                query = query.Where(p => p.Stock >= stockMin.Value && p.Stock <= stockMax.Value);
+            }
+            else if (stockMin.HasValue)
+            {
+                query = query.Where(p => p.Stock >= stockMin.Value);
+            }
+            else if (stockMax.HasValue)
+            {
+                query = query.Where(p => p.Stock <= stockMax.Value);
+            }
+
+            // Filtrar por Estatus si está presente
+            if (estatus.HasValue)
+            {
+                query = query.Where(p => p.Estatus == estatus.Value);
+            }
+
+            // Contar el total de productos después de los filtros
+            int totalProductos = await query.CountAsync();
+
+            // Aplicar paginación
+            var productos = await query
+                .OrderByDescending(p => p.Id)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            // Pasar datos a la vista
+            ViewBag.Page = page;
+            ViewBag.TotalPages = (int)Math.Ceiling((double)totalProductos / pageSize);
+            ViewBag.Codigo = codigo;
+            ViewBag.Name = name;
+            ViewBag.StockMin = stockMin;
+            ViewBag.StockMax = stockMax;
+            ViewBag.Estatus = estatus;
+
+            return View(productos);
         }
+
 
 
         // Acción para buscar productos en tiempo real
@@ -252,7 +296,7 @@ namespace SysSoniaInventory.Controllers
         // POST: Product/Create 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,IdCategory,IdProveedor,IdMarca,Name,PurchasePrice,SalePrice,Stock,LowStock,Codigo,Url,Estatus")] ModelProduct modelProduct, string DescriptionCambio, IFormFile imagen)
+        public async Task<IActionResult> Create([Bind("Id,IdCategory,IdProveedor,IdMarca,Name,PurchasePrice,SalePrice,Stock,LowStock,Codigo,Url,Estatus,Description")] ModelProduct modelProduct, string DescriptionCambio, IFormFile imagen)
         {
             // Verificar niveles de acceso
             if (User.HasClaim("AccessTipe", "Nivel 4"))
@@ -282,8 +326,19 @@ namespace SysSoniaInventory.Controllers
             {
                 modelProduct.LowStock = 10;
             }
+            if (modelProduct.Stock == null)
+            {
+                modelProduct.Stock = 0;
+            }
+            if (modelProduct.Description == null)
+            {
+                modelProduct.Description = "";
+            }
+            ModelState.Remove("Description");
             ModelState.Remove("imagen");
             ModelState.Remove("LowStock");
+            ModelState.Remove("Stock"); 
+               
             if (ModelState.IsValid)
             {
                 try
@@ -340,6 +395,9 @@ namespace SysSoniaInventory.Controllers
                 }
             }
 
+            ViewData["IdCategory"] = new SelectList(_context.modelCategory, "Id", "Name");
+            ViewData["IdProveedor"] = new SelectList(_context.modelProveedor, "Id", "Name");
+            ViewData["IdMarca"] = new SelectList(_context.modelMarca, "Id", "Name");
             return View(modelProduct);
         }
 
@@ -393,7 +451,7 @@ namespace SysSoniaInventory.Controllers
         // POST: Product/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,IdCategory,IdProveedor,IdMarca,Name,PurchasePrice,SalePrice,Stock,LowStock,Codigo,Url,Estatus")] ModelProduct modelProduct, string DescriptionCambio, IFormFile imagen)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,IdCategory,IdProveedor,IdMarca,Name,PurchasePrice,SalePrice,Stock,LowStock,Codigo,Url,Estatus,Description")] ModelProduct modelProduct, string DescriptionCambio, IFormFile imagen)
         {
             // Verificar niveles de acceso
             if (User.HasClaim("AccessTipe", "Nivel 4"))
@@ -420,6 +478,11 @@ namespace SysSoniaInventory.Controllers
             {
                 modelProduct.LowStock = 10;
             }
+            if (modelProduct.Description == null)
+            {
+                modelProduct.Description = "";
+            }
+            ModelState.Remove("Description");
             ModelState.Remove("imagen");
             ModelState.Remove("LowStock");
             if (ModelState.IsValid)

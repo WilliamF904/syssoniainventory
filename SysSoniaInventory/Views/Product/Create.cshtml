@@ -3,7 +3,14 @@
 @{
     ViewData["Title"] = "Crear Producto";
 }
-
+<style>
+    .textarea-create {
+        resize: none;
+        
+        overflow-y: auto;
+        word-wrap: break-word;
+    }
+</style>
 <div class="col-12 grid-margin">
     <div class="card">
         <div class="card-body">
@@ -17,7 +24,9 @@
                         <div class="form-group row">
                             <label class="col-sm-3 col-form-label" asp-for="IdCategory">Categoría:</label>
                             <div class="col-sm-9">
-                                <select class="form-control text-light" asp-for="IdCategory" asp-items="ViewBag.IdCategory" required></select>
+                                <select class="form-control text-light" asp-for="IdCategory" asp-items="ViewBag.IdCategory" required>
+                                    <option value="">Seleccione una categoría</option>
+                                </select>
                                 <span asp-validation-for="IdCategory" class="text-danger"></span>
                             </div>
                         </div>
@@ -28,7 +37,7 @@
                             <label class="col-sm-3 col-form-label" asp-for="IdMarca">Marca:</label>
                             <div class="col-sm-9">
                                 <select class="form-control text-light" asp-for="IdMarca" asp-items="ViewBag.IdMarca" required>
-                                    <option value="">Seleccione una marca</option>
+                                    <option value="">Seleccione una marca</option> <!-- Aquí solo mostramos 'Seleccione una marca' -->
                                 </select>
                                 <span asp-validation-for="IdMarca" class="text-danger"></span>
                             </div>
@@ -39,7 +48,9 @@
                         <div class="form-group row">
                             <label class="col-sm-3 col-form-label" asp-for="IdProveedor">Proveedor:</label>
                             <div class="col-sm-9">
-                                <select class="form-control text-light" asp-for="IdProveedor" asp-items="ViewBag.IdProveedor" required></select>
+                                <select class="form-control text-light" asp-for="IdProveedor" asp-items="ViewBag.IdProveedor" required>
+                                    <option value="">Seleccione un proveedor</option> <!-- Aquí no cambia el texto del option -->
+                                </select>
                                 <span asp-validation-for="IdProveedor" class="text-danger"></span>
                             </div>
                         </div>
@@ -100,18 +111,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-6">
-                        <div class="form-group row">
-                            <label class="col-sm-3 col-form-label" asp-for="Estatus">Estatus:</label>
-                            <div class="col-sm-9">
-                                <select class="form-control text-light" asp-for="Estatus">
-                                    <option value="1" selected>Activo</option>
-                                    <option value="0">Inactivo</option>
-                                </select>
-                                <span asp-validation-for="Estatus" class="text-danger"></span>
-                            </div>
-                        </div>
-                    </div>
+                   
 
                     <!-- Fila 5: Stock y Reportar Stock Bajo -->
                     <div class="col-md-6">
@@ -132,8 +132,32 @@
                             </div>
                         </div>
                     </div>
+                        
+                <div class="col-md-6">
+                    <div class="form-group row">
+                        <label class="col-sm-3 col-form-label" asp-for="Estatus">Estatus:</label>
+                        <div class="col-sm-9">
+                            <select class="form-control text-light" asp-for="Estatus">
+                                <option value="1" selected>Activo</option>
+                                <option value="0">Inactivo</option>
+                            </select>
+                            <span asp-validation-for="Estatus" class="text-danger"></span>
+                        </div>
+                    </div>
                 </div>
-
+                <div class="col-md-6">
+                    <div class="form-group row">
+                        <label class="col-sm-3 col-form-label text-light" asp-for="Description">Descripción: </label>
+                        <div class="col-sm-9">
+                            <textarea type="text" maxlength="250" class="form-control textarea-create" asp-for="Description" placeholder="Ingrese una descripción (opcional) - Máx:250 caracteres"></textarea>
+                            <span asp-validation-for="Description" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+                </div>
+            
+                
+            
                 <hr class="linea-primary" />
                 <div class="d-flex justify-content-end">
                     <button type="button" class="btn btn-outline-primary font-weight-bold" data-toggle="modal" data-target="#descriptionModal"><i class="mdi mdi-file-check btn-icon-prepend"></i>Guardar</button>

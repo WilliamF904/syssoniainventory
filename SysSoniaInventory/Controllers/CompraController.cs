@@ -77,8 +77,8 @@ namespace SysSoniaInventory.Controllers
                 .ToListAsync();
 
             // Preparar datos para la vista
-            ViewBag.CurrentPage = page;
-            ViewBag.TotalPages = Math.Ceiling((double)comprasQuery.Count() / pageSize);
+            ViewBag.Page = page;
+            ViewBag.TotalPages = (int)Math.Ceiling((double)comprasQuery.Count() / pageSize);
             ViewBag.SearchUser = searchUser;
             ViewBag.StartDate = startDate?.ToString("yyyy-MM-dd");
             ViewBag.EndDate = endDate?.ToString("yyyy-MM-dd");

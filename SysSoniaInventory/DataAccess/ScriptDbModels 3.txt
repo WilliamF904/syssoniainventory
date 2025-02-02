@@ -146,6 +146,7 @@ CREATE TABLE ModelDetalleDevolucion (
     CantidadProduct INT NOT NULL,
     PriceReembolso DECIMAL(18,2) NOT NULL,
     PriceTotalReembolso DECIMAL(18,2) NOT NULL,
+    StockD BIT NOT NULL DEFAULT 0,
     CONSTRAINT FK_DetalleDevolucion_Devolucion FOREIGN KEY (IdDevolucion) REFERENCES ModelDevolucion(Id)
 );
 

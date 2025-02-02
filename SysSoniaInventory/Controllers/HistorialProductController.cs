@@ -21,28 +21,50 @@ namespace SysSoniaInventory.Controllers
             _context = context;
         }
 
-        // GET: HistorialProduct
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string razonCambio, int? idProducto, int page = 1)
         {
+            int pageSize = 5; // Número de elementos por página
+
             // Verificar niveles de acceso
-            if (User.HasClaim("AccessTipe", "Nivel 4"))
-            { // Nivel 4 tiene acceso
-
-            }
-            else if (User.HasClaim("AccessTipe", "Nivel 5"))
+            if (!(User.HasClaim("AccessTipe", "Nivel 4") || User.HasClaim("AccessTipe", "Nivel 5")))
             {
-                // Nivel 5 tiene acceso
-
-            }
-            else
-            {
-                // Redirigir con mensaje de error si el usuario no tiene acceso
                 TempData["Error"] = "No tienes acceso a esta sección. Requerido: Nivel 4.";
                 return RedirectToAction("Index", "Home");
             }
-          
-            return View(await _context.modelHistorialProduct.OrderByDescending(r => r.Id).ToListAsync());
+
+            var query = _context.modelHistorialProduct.AsQueryable();
+
+            // Aplicar filtro por RazonCambioAuto si está presente
+            if (!string.IsNullOrEmpty(razonCambio))
+            {
+                query = query.Where(h => h.RazonCambioAuto == razonCambio);
+            }
+
+            // Aplicar filtro por IdProduct si está presente
+            if (idProducto.HasValue)
+            {
+                query = query.Where(h => h.IdProduct == idProducto.Value);
+            }
+
+            // Contar el total de registros después de los filtros
+            int totalRegistros = await query.CountAsync();
+
+            // Aplicar paginación
+            var historial = await query
+                .OrderByDescending(h => h.Id)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            // Pasar datos a la vista
+            ViewBag.Page = page;
+            ViewBag.TotalPages = (int)Math.Ceiling((double)totalRegistros / pageSize);
+            ViewBag.RazonCambio = razonCambio;
+            ViewBag.IdProducto = idProducto;
+
+            return View(historial);
         }
+
 
         // GET: HistorialProduct/Details/5
         public async Task<IActionResult> Details(int? id)
