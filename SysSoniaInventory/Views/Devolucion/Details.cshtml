@@ -1,6 +1,12 @@
 ﻿@model SysSoniaInventory.Models.ModelDevolucion
 
 <h2>Detalles de la Devolución</h2>
+
+<a asp-controller="GeneratePdfDevolucionDetalles" asp-action="GeneratePdf"  asp-route-devolucionId="@Model.Id" class="btn btn-danger">
+    Descargar PDF
+</a>
+
+
 <div class="row">
 
     <!-- Información de la Devolución -->
@@ -20,6 +26,11 @@
             </div>
         </div>
     </div>
+
+
+    
+
+
 
     <!-- Detalles de los Productos Devueltos -->
     <div class="col-lg-9 stretch-card">
