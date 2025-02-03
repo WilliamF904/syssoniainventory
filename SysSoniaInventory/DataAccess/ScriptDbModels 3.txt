@@ -1,9 +1,9 @@
 ﻿-- Crear la base de datos
-CREATE DATABASE DbSoniaInventory3;
+CREATE DATABASE DbSoniaInventory;
 GO
 
 -- Usar la base de datos creada
-USE DbSoniaInventory3;
+USE DbSoniaInventory;
 GO
 
 -- Tabla ModelRol
@@ -72,6 +72,7 @@ CREATE TABLE ModelProduct (
     Codigo VARCHAR(25),
     Url VARCHAR(100),
     Estatus TINYINT NOT NULL,
+    Description VARCHAR(250),
     CONSTRAINT FK_Product_Category FOREIGN KEY (IdCategory) REFERENCES ModelCategory(Id),
    CONSTRAINT FK_Product_Marca FOREIGN KEY (IdMarca) REFERENCES ModelMarca(Id),
     CONSTRAINT FK_Product_Proveedor FOREIGN KEY (IdProveedor) REFERENCES ModelProveedor(Id)

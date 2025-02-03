@@ -43,7 +43,7 @@ namespace SysSoniaInventory.Models
        
         public byte Estatus { get; set; }
 
-        [NotMapped]
+        
         [StringLength(250), Unicode(false)]
         public string? Description { get; set; }
 

@@ -2,6 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using iText.IO.Image;
+using iText.Kernel.Colors;
+using iText.Kernel.Pdf;
+using iText.Layout;
+using iText.Layout.Borders;
+using iText.Layout.Element;
+using iText.Layout.Properties;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -133,6 +140,117 @@ namespace SysSoniaInventory.Controllers
 
             return View(usuarios);
         }
+
+        public async Task<IActionResult> DescargarUsuariosPorSucursal(int id)
+        {
+            // Verificar niveles de acceso
+            if (!User.HasClaim("AccessTipe", "Nivel 4") && !User.HasClaim("AccessTipe", "Nivel 5"))
+            {
+                TempData["Error"] = "No tienes acceso a esta sección. Requerido: Nivel 4 o 5.";
+                return RedirectToAction("Index", "Home");
+            }
+
+            // Verificar si la sucursal existe
+            var sucursal = await _context.modelSucursal.FindAsync(id);
+            if (sucursal == null)
+            {
+                TempData["Error"] = "Debe seleccionar un ID de sucursal válido.";
+                return RedirectToAction(nameof(Index));
+            }
+
+            // Obtener los usuarios asociados a la sucursal
+            var usuarios = await _context.modelUser
+                .Where(u => u.IdSucursal == id)
+                .ToListAsync();
+
+            if (!usuarios.Any())
+            {
+                TempData["Error"] = $"No se encontraron usuarios para la sucursal '{sucursal.Name}'.";
+                return RedirectToAction(nameof(UsuariosPorSucursal), new { id });
+            }
+
+            // Generar el PDF
+            using (var stream = new MemoryStream())
+            {
+                var writer = new PdfWriter(stream);
+                var pdf = new PdfDocument(writer);
+                var document = new Document(pdf);
+
+                // Cabecera con el logo y el título
+                var headerTable = new Table(new float[] { 1, 4 }).SetWidth(UnitValue.CreatePercentValue(100));
+                headerTable.SetBorder(Border.NO_BORDER);
+
+                // Logo
+                var logoCell = new Cell().SetBorder(Border.NO_BORDER).SetVerticalAlignment(VerticalAlignment.MIDDLE);
+                string imagePath = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "imgSystem", "LOGO.jpeg");
+                var logo = new Image(ImageDataFactory.Create(imagePath)).ScaleAbsolute(100, 100).SetMarginTop(-50);
+                logoCell.Add(logo);
+
+                // Título
+                var titleCell = new Cell().SetBorder(Border.NO_BORDER).SetTextAlignment(TextAlignment.CENTER);
+                titleCell.Add(new Paragraph($"Usuarios de la Sucursal: {sucursal.Name}")
+                    .SetFontSize(24)
+                    .SetFontColor(ColorConstants.DARK_GRAY)
+                    .SetBold()
+                    .SetMarginBottom(10));
+
+                headerTable.AddCell(logoCell);
+                headerTable.AddCell(titleCell);
+                document.Add(headerTable);
+
+                // Tabla de usuarios
+                var table = new Table(new float[] { 1, 3, 3, 4 }).SetWidth(UnitValue.CreatePercentValue(100));
+                var headerColor = new DeviceRgb(41, 128, 185);
+                foreach (var header in new[] { "ID", "Nombre", "Apellido", "Email" })
+                {
+                    table.AddHeaderCell(new Cell().Add(new Paragraph(header)
+                            .SetFontColor(ColorConstants.WHITE)
+                            .SetBold())
+                        .SetBackgroundColor(headerColor)
+                        .SetTextAlignment(TextAlignment.CENTER)
+                        .SetPadding(8));
+                }
+
+                // Filas alternadas
+                var alternateRowColor = new DeviceRgb(230, 240, 255);
+                bool isAlternate = false;
+                foreach (var usuario in usuarios)
+                {
+                    var rowColor = isAlternate ? alternateRowColor : ColorConstants.WHITE;
+
+                    table.AddCell(new Cell().Add(new Paragraph(usuario.Id.ToString()))
+                        .SetBackgroundColor(rowColor)
+                        .SetTextAlignment(TextAlignment.CENTER));
+
+                    table.AddCell(new Cell().Add(new Paragraph(usuario.Name))
+                        .SetBackgroundColor(rowColor));
+
+                    table.AddCell(new Cell().Add(new Paragraph(usuario.LastName))
+                        .SetBackgroundColor(rowColor));
+
+                    table.AddCell(new Cell().Add(new Paragraph(usuario.Email))
+                        .SetBackgroundColor(rowColor)
+                        .SetTextAlignment(TextAlignment.CENTER));
+
+                    isAlternate = !isAlternate;
+                }
+
+                document.Add(table);
+
+                // Pie de página
+                document.Add(new Paragraph("Muebles y Electrodomésticos Sonia")
+                    .SetFontSize(10)
+                    .SetFontColor(ColorConstants.GRAY)
+                    .SetTextAlignment(TextAlignment.CENTER)
+                    .SetMarginTop(20));
+
+                document.Close();
+
+                string fechaDescarga = DateTime.Now.ToString("yyyy-MM-dd");
+                return File(stream.ToArray(), "application/pdf", $"Usuarios_Sucursal_{sucursal.Name.Replace(" ", "_")}_{fechaDescarga}.pdf");
+            }
+        }
+
 
         // GET: Sucursal/Create
         public IActionResult Create()

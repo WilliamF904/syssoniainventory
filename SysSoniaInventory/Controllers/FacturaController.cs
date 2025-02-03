@@ -124,7 +124,7 @@ namespace SysSoniaInventory.Controllers
             ViewBag.NameUser = User.Identity?.Name;
 
             // Filtrar solo productos activos
-            ViewBag.Productos = _context.modelProduct.Where(p => p.Estatus == 1).ToList();
+            ViewBag.Productos = _context.modelProduct.Include(p => p.IdMarcanavigation).Where(p => p.Estatus == 1).ToList();
 
             return View();
         }

@@ -26,7 +26,16 @@
 <div class="col-md-12 mt-4">
     <div class="card">
         <div class="card-body">
-            <h3 class="card-title">Usuarios de la Sucursal @ViewBag.SucursalNombre</h3>
+           
+            <div class="d-flex justify-content-between align-items-center">
+                <h3 class="card-title">Usuarios de la Sucursal @ViewBag.SucursalNombre</h3>
+                <div class="col-md-3 d-flex align-items-end">
+                    <a asp-action="DescargarUsuariosPorSucursal" asp-route-id="@ViewBag.SucursalId" class="btn btn-outline-info mb-3">
+                        <i class="mdi mdi-download"></i> Descargar PDF
+                    </a>
+                </div>
+            </div>
+            <hr class="linea-blanca" />
             <div class="table-responsive">
                 <table class="table table-bordered table-hover table-striped">
                     <thead>

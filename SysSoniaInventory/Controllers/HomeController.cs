@@ -212,12 +212,13 @@ namespace SysSoniaInventory.Controllers
 
 
 
-
-        public IActionResult Privacy()
+        [AllowAnonymous]
+        public IActionResult Nosotros()
         {
             return View();
         }
 
+        [AllowAnonymous]
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error404()
         {
@@ -226,7 +227,7 @@ namespace SysSoniaInventory.Controllers
 
 
 
-
+        [AllowAnonymous]
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error500()
         {

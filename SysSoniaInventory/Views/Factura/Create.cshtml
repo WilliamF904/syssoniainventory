@@ -3,17 +3,52 @@
 @{
     ViewData["Title"] = "Crear Factura";
 }
+
 <link href="~/lib/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
 <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+<link rel="stylesheet" href="~/assets/vendors/mdi/css/materialdesignicons.min.css">
+<link rel="stylesheet" href="~/assets/vendors/css/vendor.bundle.base.css">
+<!-- endinject -->
+<!-- Plugin css for this page -->
+<link rel="stylesheet" href="~/assets/vendors/jvectormap/jquery-jvectormap.css">
+<link rel="stylesheet" href="~/assets/vendors/flag-icon-css/css/flag-icon.min.css">
+<link rel="stylesheet" href="~/assets/vendors/owl-carousel-2/owl.carousel.min.css">
+<link rel="stylesheet" href="~/assets/vendors/owl-carousel-2/owl.theme.default.min.css">
 
-
+<link rel="stylesheet" href="~/vendor/fontawesome-free/css/all.min.css">
+<link rel="stylesheet" href="~/css/site.css">
 <!-- End plugin css for this page -->
 <!-- inject:css -->
 <!-- endinject -->
 <!-- Layout styles -->
 <link rel="stylesheet" href="~/assets/css/style.css">
-<link rel="stylesheet" href="~/css/site.css">
 
+<style>
+    #ProductSelect {
+        height: auto !important; /* Evita que el navegador lo colapse */
+
+        overflow-y: auto; /* Permite desplazamiento si hay demasiados elementos */
+    }
+
+    .custom-lg-text {
+        font-size: 1rem; /* Ajusta el tamaño de la fuente según lo necesites */
+    }
+
+    .custom-select-option {
+        padding: 4px 6px; /* Añade espaciado entre las opciones */
+        list-style-type: disc; /* Muestra un punto (bullet) como en una lista */
+        border-top: 2px solid #495057; /* Línea en la parte superior */
+        border-left: none;
+        border-right: none;
+        border-bottom: none;
+    }
+
+    .modal-lgs {
+        max-width: 65%; /* Ajusta el porcentaje o píxeles según necesites */
+        width: auto;
+    }
+
+</style>
 <div class="container-fluid">
     <form asp-action="Create" method="post">
         <input type="hidden" asp-for="NameSucursal" id="NameSucursal" value="@ViewBag.NameSucursal" />
@@ -65,20 +100,16 @@
             <div class="col-md-8   stretch-card">
                 <div class="card dropdown-container">
                     <div class="card-body">
-                        <h4 class="font-weight-bold">Productos Disponibles:</h4>
-                        <div class="form-group">
-                            <select id="ProductSelect" class="form-control font-weight-bold form-control-lg text-light">
-                                <option value="" disabled selected>Seleccione un producto</option>
-                                @foreach (var product in ViewBag.Productos)
-
-                                {
-                                    <option value="@product.Id" data-name="@product.Name" data-price="@product.SalePrice" data-stock="@product.Stock" data-codigo="@product.Codigo">
-                                        @product.Name - Precio: $@product.SalePrice - @product.Codigo
-                                    </option>
-                                }
-                            </select>
-                            <hr class="linea-blanca" />
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h4 class="font-weight-bold mb-0">
+                                Productos Seleccionados:
+                            </h4>
+                            <button type="button" class="btn btn-outline-success" data-toggle="modal" data-target="#productModal2">
+                                Agregar Producto
+                            </button>
                         </div>
+                            <hr class="linea-blanca" />
+                        
                         <div class="table-responsive">
                             <table class="table table-bordered  table-striped table-hover">
                                 <thead class="bg-success">
@@ -117,13 +148,58 @@
     </form>
 </div>
 
+<!-- Modal -->
+<div id="productModal2" class="modal fade " tabindex="-1" aria-labelledby="productModalLabel2" aria-hidden="true">
+    <div class="modal-dialog modal-lgs" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-success">
+                <h5 class="modal-title" id="productModalLabel2">Selecciona un producto</h5>
+                <button type="button" class="btn btn-primary" id="selectProductBtn" style="visibility: hidden; pointer-events: none;">Seleccionar</button>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="ProductSearch" >Buscar por código:</label>
+                    <input type="text" id="ProductSearch" class="form-control form-control-lg text-light" placeholder="Ingrese código del producto...">
+                </div>
+
+                <div class="form-group">
+                    <label for="ProductSelect" >Selecciona un producto (Codigo - Precio de venta - Nombre):</label>
+                    <select id="ProductSelect" class="form-control form-control-lg  custom-lg-text text-light" size="4">
+                    
+                        <!-- Aquí irá la lista de productos, que puede ser renderizada dinámicamente -->
+                        @foreach (var product in ViewBag.Productos)
+                        {
+                            <option class="custom-select-option" onmouseover="this.style.backgroundColor='#007bff'"
+                                    onmouseout="this.style.backgroundColor=''; this.style.color='white'" value="@product.Id" data-name="@product.Name" data-price="@product.SalePrice" data-stock="@product.Stock" data-codigo="@product.Codigo" data-marca="@product.IdMarcanavigation?.Name">
+                                @product.Codigo - $@product.SalePrice - @product.Name
+                            </option>
+                        }
+                    </select>
+                 
+                </div>
+
+              
+            </div>
+            <div class="modal-footer justify-content-center">
+                <button type="button" class="btn btn-outline-secondary rounded-pill px-4" data-dismiss="modal">Cerrar</button>
+                
+            </div>
+        </div>
+    </div>
+</div>
+
 
 <div class="modal fade" id="productModal" tabindex="-1" aria-labelledby="productModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-dialog modal-lgs">
         <div class="modal-content rounded-4 shadow-lg">
             <div class="modal-header bg-primary text-white rounded-top-4">
                 <h5 class="modal-title fw-bold" id="productModalLabel">Añadir Producto</h5>
-                <button type="button" class="btn-close text-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
             </div>
             <div class="modal-body">
                 <form id="productForm">
@@ -161,150 +237,133 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        // Asumiendo que el modal tiene el ID 'myModal'
-        const modal = document.getElementById('productModal');
-
-        if (modal) {
-            // Detectar el cierre del modal por cualquier método
-            modal.addEventListener('hidden.bs.modal', function () {
-                resetSelect();
-            });
-        }
-    });
-
-    document.addEventListener('DOMContentLoaded', function () {
-        const productsSelect = document.getElementById('ProductSelect');
+        const productSearch = document.getElementById("ProductSearch");
+        const productSelect = document.getElementById("ProductSelect");
         const productTableBody = document.getElementById('ProductTableBody');
         const totalGeneral = document.getElementById('TotalGeneral');
         const hiddenInputsContainer = document.getElementById('HiddenInputsContainer');
-        let products = [];
-
-        // Modal y campos del formulario
-        const productModal = new bootstrap.Modal(document.getElementById('productModal'));
         const quantityInput = document.getElementById('quantityInput');
         const discountInput = document.getElementById('discountInput');
         const maxStockSpan = document.getElementById('maxStock');
         const saveProductBtn = document.getElementById('saveProductBtn');
+        const productDetails = document.getElementById('productDetails');
+        const productModal = new bootstrap.Modal(document.getElementById('productModal'));
+        const productModal2 = new bootstrap.Modal(document.getElementById('productModal2'));
+        const cancelProductBtn = document.getElementById('cancelProductBtn');
+        let products = [];
         let currentProduct = null;
 
-        // Función para restablecer la selección del campo select
-        function resetSelect() {
-            productsSelect.selectedIndex = 0;
-        }
+        productSearch.addEventListener("input", function () {
+            const searchText = productSearch.value.toLowerCase();
+            for (let option of productSelect.options) {
+                const code = option.getAttribute("data-codigo")?.toLowerCase() || "";
+                option.hidden = !(option.value === "" || code.includes(searchText));
+            }
+            productSelect.options[0].hidden = false;
+        });
+        productSearch.addEventListener("focus", function () {
+            productSelect.size = 4;
+        });
+        productSearch.addEventListener("blur", function () {
 
-        // Función para actualizar los campos ocultos
-        function updateHiddenInputs() {
-            hiddenInputsContainer.innerHTML = '';
-            products.forEach((product, index) => {
-                const baseName = `detalles[${index}]`;
-                hiddenInputsContainer.innerHTML += `
-                            <input type="hidden" name="${baseName}.IdProduct" value="${product.id}" />
-                            <input type="hidden" name="${baseName}.CodigoProducto" value="${product.codigo}" />
-                            <input type="hidden" name="${baseName}.CantidadProduct" value="${product.quantity}" />
-                            <input type="hidden" name="${baseName}.ValorDescuento" value="${product.discount}" />
-                            <input type="hidden" name="${baseName}.SalePriceUnitario" value="${product.price}" />
-                            <input type="hidden" name="${baseName}.PriceTotal" value="${product.subtotal}" />
-                            <input type="hidden" name="${baseName}.NameProducto" value="${product.name}" />
-                        `;
-            });
-        }
+        });
+        document.getElementById("selectProductBtn").addEventListener("click", function () {
+            const selectedOption = productSelect.options[productSelect.selectedIndex];
+            if (selectedOption.value) {
+                loadProductData(selectedOption);
+                productModal2.hide();
+                productModal.show();
+            } else {
+                alert("Por favor, selecciona un producto.");
+            }
+        });
 
-        // Función para calcular el total general
-        function updateTotal() {
-            const total = products.reduce((sum, product) => sum + product.subtotal, 0);
-            totalGeneral.textContent = `$${total.toFixed(2)}`;
-        }
-        // Obtener referencia al elemento donde se mostrarán los detalles del producto
-        const productDetails = document.getElementById('productDetails');
-        // Mostrar modal para ingresar datos
-        productsSelect.addEventListener('change', function () {
-            const selectedOption = productsSelect.options[productsSelect.selectedIndex];
+        productSelect.addEventListener('change', function () {
+            const selectedOption = productSelect.options[productSelect.selectedIndex];
+            loadProductData(selectedOption);
+        });
+
+        function loadProductData(selectedOption) {
             const productId = selectedOption.value;
             const productName = selectedOption.getAttribute('data-name');
             const productPrice = parseFloat(selectedOption.getAttribute('data-price'));
             const productStock = parseInt(selectedOption.getAttribute('data-stock'));
             const productCodigo = selectedOption.getAttribute('data-codigo');
+            const productMarca = selectedOption.getAttribute('data-marca');
 
             if (products.some(p => p.id === productId)) {
                 alert("Este producto ya está agregado.");
-                resetSelect();
                 return;
             }
 
-            // Configurar datos del modal
-            currentProduct = {
-                id: productId,
-                name: productName,
-                price: productPrice,
-                stock: productStock,
-                codigo: productCodigo
-            };
-            // Mostrar el nombre y el código en el modal
-            productDetails.textContent = `${currentProduct.name} (Código: ${currentProduct.codigo})`;
+            currentProduct = { id: productId, name: productName, price: productPrice, stock: productStock, codigo: productCodigo, marca: productMarca };
+            productDetails.textContent = `${currentProduct.name} (Código: ${currentProduct.codigo}) - Marca: ${currentProduct.marca}`;
             maxStockSpan.textContent = productStock;
             quantityInput.value = 1;
             discountInput.value = 0;
             productModal.show();
+        }
+
+        cancelProductBtn.addEventListener('click', function () {
+            productSelect.selectedIndex = 0;
+            productModal.hide();
         });
 
-         // Acción del botón "Cancelar"
-    cancelProductBtn.addEventListener('click', function () {
-            resetSelect();
-        productsSelect.selectedIndex = 0; // Restablecer selección
-        productModal.hide();
-    });
-
-        // Guardar producto al confirmar
         saveProductBtn.addEventListener('click', function () {
             const quantity = parseInt(quantityInput.value, 10);
             const discount = parseFloat(discountInput.value);
-
             if (isNaN(quantity) || quantity <= 0 || quantity > currentProduct.stock) {
                 alert("Cantidad inválida. Verifique los límites.");
                 return;
             }
-
             if (isNaN(discount) || discount < 0 || discount > 100) {
                 alert("Descuento inválido. Debe estar entre 0% y 100%.");
                 return;
             }
-
             const discountedPrice = currentProduct.price - (currentProduct.price * discount / 100);
             const subtotal = discountedPrice * quantity;
 
-            const product = {
-                id: currentProduct.id,
-                codigo: currentProduct.codigo,
-                name: currentProduct.name,
-                quantity,
-                price: currentProduct.price,
-                discount,
-                subtotal
-            };
+            const product = { id: currentProduct.id, codigo: currentProduct.codigo, name: currentProduct.name, quantity, price: currentProduct.price, discount, subtotal };
             products.push(product);
 
             const row = document.createElement('tr');
             row.innerHTML = `
-                          <td class="txt-whithe" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 150px;" title="${product.name}">${product.name}</td>
-
-                            <td class="txt-whithe">${quantity}</td>
-                            <td class="txt-whithe">$${product.price.toFixed(2)}</td>
-                            <td class="txt-whithe">${discount}%</td>
-                            <td class="txt-whithe">$${subtotal.toFixed(2)}</td>
-                        <td>
-                            <button class="btn btn-danger btn-sm" onclick="removeProduct('${product.id}', this)"> X </button>
-                        </td>
-                    `;
+                <td class="txt-whithe">${product.name}</td>
+                <td class="txt-whithe">${quantity}</td>
+                <td class="txt-whithe">$${product.price.toFixed(2)}</td>
+                <td class="txt-whithe">${discount}%</td>
+                <td class="txt-whithe">$${subtotal.toFixed(2)}</td>
+                <td><button class="btn btn-danger btn-sm" onclick="removeProduct('${product.id}', this)">X</button></td>
+            `;
             productTableBody.appendChild(row);
 
             updateHiddenInputs();
             updateTotal();
-            resetSelect();
+            productSelect.selectedIndex = 0;
             productModal.hide();
-
         });
 
-        // Eliminar un producto de la tabla
+        function updateHiddenInputs() {
+            hiddenInputsContainer.innerHTML = '';
+            products.forEach((product, index) => {
+                const baseName = `detalles[${index}]`;
+                hiddenInputsContainer.innerHTML += `
+                    <input type="hidden" name="${baseName}.IdProduct" value="${product.id}" />
+                    <input type="hidden" name="${baseName}.CodigoProducto" value="${product.codigo}" />
+                    <input type="hidden" name="${baseName}.CantidadProduct" value="${product.quantity}" />
+                    <input type="hidden" name="${baseName}.ValorDescuento" value="${product.discount}" />
+                    <input type="hidden" name="${baseName}.SalePriceUnitario" value="${product.price}" />
+                    <input type="hidden" name="${baseName}.PriceTotal" value="${product.subtotal}" />
+                    <input type="hidden" name="${baseName}.NameProducto" value="${product.name}" />
+                `;
+            });
+        }
+
+        function updateTotal() {
+            const total = products.reduce((sum, product) => sum + product.subtotal, 0);
+            totalGeneral.textContent = `$${total.toFixed(2)}`;
+        }
+
         window.removeProduct = function (productId, button) {
             products = products.filter(p => p.id !== productId);
             button.parentElement.parentElement.remove();
@@ -312,5 +371,6 @@
             updateTotal();
         };
     });
+
 
 </script>
