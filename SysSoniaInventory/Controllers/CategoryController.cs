@@ -89,6 +89,48 @@ namespace SysSoniaInventory.Controllers
             return View(modelCategory);
         }
 
+        public async Task<IActionResult> ProductosPorCategoria(int id, int page = 1)
+        {
+            // Verificar si la categoría existe
+            var categoria = await _context.modelCategory.FindAsync(id);
+            if (categoria == null)
+            {
+                TempData["Error"] = "Debe seleccionar un id de categoria valido.";
+                return RedirectToAction(nameof(Index));
+            }
+
+            int pageSize = 10;  // Número de productos por página
+
+            // Obtener la consulta de productos con las relaciones necesarias
+            var query = _context.modelProduct
+                .Include(p => p.IdCategoryNavigation)
+                .Where(p => p.IdCategory == id) // Filtrar por IdCategory
+                .AsQueryable();
+
+            // Contar el total de productos para la categoría
+            int totalProductos = await query.CountAsync();
+
+            // Aplicar paginación
+            var productos = await query
+                .OrderBy(p => p.Id)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+            // Verificar si no se encontraron productos
+            if (!productos.Any())
+            {
+                TempData["reporte"] = $"No se encontraron productos relacionados con la categoría '{categoria.Name}'.";
+            }
+
+            // Pasar datos a la vista
+            ViewBag.CategoriaId = id;
+            ViewBag.CategoriaNombre = categoria.Name; // Pasar el nombre de la categoría
+            ViewBag.Page = page;
+            ViewBag.TotalPages = (int)Math.Ceiling((double)totalProductos / pageSize); // Calcular el total de páginas
+
+            return View(productos);
+        }
+
         // GET: Category/Create
         public IActionResult Create()
         { // Verificar niveles de acceso

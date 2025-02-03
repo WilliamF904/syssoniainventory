@@ -113,6 +113,10 @@
                                         {
                                             <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-outline-danger">Eliminar</a>
                                         }
+                                        @if (User.HasClaim("AccessTipe", "Nivel 4") || User.HasClaim("AccessTipe", "Nivel 5"))
+                                        {
+                                            <a asp-action="ProductosPorProveedor" asp-route-id="@item.Id" class="btn btn-outline-success">Relacionados</a>
+                                        }
                                     </td>
                                 </tr>
                             }

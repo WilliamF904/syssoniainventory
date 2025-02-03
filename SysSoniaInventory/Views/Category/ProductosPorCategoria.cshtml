@@ -1,0 +1,96 @@
+﻿@model IEnumerable<SysSoniaInventory.Models.ModelProduct>
+
+@{
+    ViewBag.Title = "Productos de " + ViewBag.CategoriaNombre;
+}
+<style>
+    .pagination .page-link {
+        background-color: #333;
+        color: #fff;
+        border: 1px solid #444;
+    }
+
+    .pagination .page-item.active .page-link {
+        background-color: #555;
+        border-color: #666;
+    }
+
+    .pagination .page-item.disabled .page-link {
+        background-color: #222;
+        color: #777;
+        border-color: #333;
+    }
+</style>
+<div class="col-md-12 mt-4">
+    <div class="card">
+        <div class="card-body">
+            <h3 class="card-title">Productos de la Categoría @ViewBag.CategoriaNombre</h3>
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover table-striped" id="productTable">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nombre</th>
+                            <th>Código</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody class="text-white">
+                        @foreach (var producto in Model)
+                        {
+                            <tr>
+                                <td>@producto.Id</td>
+                                <td>@producto.Name</td>
+                                <td>@producto.Codigo</td>
+                                <td>
+                                    <!-- Botón para redirigir a la vista de detalles del producto -->
+                                    <a class="btn btn-outline-info" href="@Url.Action("Details", "Product", new { id = producto.Id })">Detalles</a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            <nav aria-label="Page navigation">
+                <ul class="pagination justify-content-center">
+                    @{
+                        int totalPages = ViewBag.TotalPages;
+                        int currentPage = ViewBag.Page;
+                        int maxVisiblePages = 10;
+                        int startPage = Math.Max(1, currentPage - maxVisiblePages / 2);
+                        int endPage = Math.Min(totalPages, startPage + maxVisiblePages - 1);
+                        int categoriaId = ViewBag.CategoriaId;
+
+                        // Ajustar si estamos cerca del inicio o final
+                        if (endPage - startPage < maxVisiblePages - 1)
+                        {
+                            startPage = Math.Max(1, endPage - maxVisiblePages + 1);
+                        }
+                    }
+
+                    <!-- Flecha izquierda (deshabilitada si estamos en la primera página) -->
+                    <li class="page-item @(currentPage == 1 ? "disabled" : "")">
+                        <a class="page-link" href="@(currentPage > 1 ? Url.Action("ProductosPorCategoria", new { id = categoriaId, page = currentPage - 1 }) : "#")" aria-label="Anterior">
+                            <span aria-hidden="true">«</span>
+                        </a>
+                    </li>
+
+                    <!-- Números de paginación -->
+                    @for (var i = startPage; i <= endPage; i++)
+                    {
+                        <li class="page-item @(i == currentPage ? "active" : "")">
+                            <a class="page-link" href="@Url.Action("ProductosPorCategoria", new { id = categoriaId, page = i })">@i</a>
+                        </li>
+                    }
+
+                    <!-- Flecha derecha (deshabilitada si estamos en la última página) -->
+                    <li class="page-item @(currentPage == totalPages ? "disabled" : "")">
+                        <a class="page-link" href="@(currentPage < totalPages ? Url.Action("ProductosPorCategoria", new { id = categoriaId, page = currentPage + 1 }) : "#")" aria-label="Siguiente">
+                            <span aria-hidden="true">»</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+</div>

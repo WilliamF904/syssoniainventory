@@ -87,6 +87,67 @@ namespace SysSoniaInventory.Controllers
             return View(modelProveedor);
         }
 
+        public async Task<IActionResult> ProductosPorProveedor(int id, int page = 1)
+        {  // Verificar niveles de acceso
+            if (User.HasClaim("AccessTipe", "Nivel 4"))
+            { // Nivel 4 tiene acceso
+
+            }
+            else if (User.HasClaim("AccessTipe", "Nivel 3"))
+            {
+                // Nivel 3 tiene acceso
+
+            }
+            else if (User.HasClaim("AccessTipe", "Nivel 5"))
+            { // Nivel 5 tiene acceso
+
+            }
+
+            else
+            {
+                // Redirigir con mensaje de error si el usuario no tiene acceso
+                TempData["Error"] = "No tienes acceso a esta sección. Requerido: Nivel 3 o superior.";
+                return RedirectToAction("Index", "Home");
+            }
+            // Verificar si el proveedor existe
+            var proveedor = await _context.modelProveedor.FindAsync(id);
+            if (proveedor == null)
+            {
+                TempData["Error"] = "Debe seleccionar un id de proveedor valido.";
+                return RedirectToAction(nameof(Index));
+            }
+
+            int pageSize = 10;  // Número de productos por página
+
+            // Obtener la consulta de productos con las relaciones necesarias
+            var query = _context.modelProduct
+                .Include(p => p.IdCategoryNavigation)
+                .Include(p => p.IdProveedorNavigation)
+                .Where(p => p.IdProveedor == id) // Filtrar por IdProveedor
+                .AsQueryable();
+
+            // Contar el total de productos para el proveedor
+            int totalProductos = await query.CountAsync();
+
+            // Aplicar paginación
+            var productos = await query
+                .OrderBy(p => p.Id)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+            if (!productos.Any())
+            {
+                TempData["reporte"] = $"No se encontraron productos relacionados con el proveedor '{proveedor.Name}'.";
+            }
+            // Pasar datos a la vista
+            ViewBag.ProveedorId = id;
+            ViewBag.ProveedorNombre = proveedor.Name; // Pasar el nombre del proveedor
+            ViewBag.Page = page;
+            ViewBag.TotalPages = (int)Math.Ceiling((double)totalProductos / pageSize); // Calcular el total de páginas
+
+            return View(productos);
+        }
+
         // GET: Proveedor/Create
         public IActionResult Create()
         {

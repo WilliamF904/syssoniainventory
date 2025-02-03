@@ -76,6 +76,64 @@ namespace SysSoniaInventory.Controllers
             return View(modelSucursal);
         }
 
+        public async Task<IActionResult> UsuariosPorSucursal(int id, int page = 1)
+        {
+            if (User.HasClaim("AccessTipe", "Nivel 4"))
+            { // Nivel 4 tiene acceso
+
+            }
+            else if (User.HasClaim("AccessTipe", "Nivel 5"))
+            { // Nivel 5 tiene acceso
+
+            }
+
+            else
+            {
+                // Redirigir con mensaje de error si el usuario no tiene acceso
+                TempData["Error"] = "No tienes acceso a esta sección. Requerido: Nivel 4.";
+                return RedirectToAction("Index", "Home");
+            }
+            // Verificar si la sucursal existe
+            var sucursal = await _context.modelSucursal.FindAsync(id);
+            if (sucursal == null)
+            {
+                TempData["Error"] = "Debe seleccionar un id de sucursal válida.";
+                return RedirectToAction(nameof(Index));
+            }
+
+            int pageSize = 10;  // Número de usuarios por página
+
+            // Obtener la consulta de usuarios con la relación a la sucursal
+            var query = _context.modelUser
+                .Include(u => u.IdSucursalNavigation)  // Incluir la relación con la sucursal
+                .Where(u => u.IdSucursal == id)  // Filtrar por IdSucursal
+                .AsQueryable();
+
+            // Contar el total de usuarios para la sucursal
+            int totalUsuarios = await query.CountAsync();
+
+            // Aplicar paginación
+            var usuarios = await query
+                .OrderBy(u => u.Id)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            // Verificar si no se encontraron usuarios
+            if (!usuarios.Any())
+            {
+                TempData["reporte"] = $"No se encontraron usuarios para la sucursal '{sucursal.Name}'.";
+            }
+
+            // Pasar datos a la vista
+            ViewBag.SucursalId = id;
+            ViewBag.SucursalNombre = sucursal.Name;  // Pasar el nombre de la sucursal
+            ViewBag.Page = page;
+            ViewBag.TotalPages = (int)Math.Ceiling((double)totalUsuarios / pageSize);  // Calcular el total de páginas
+
+            return View(usuarios);
+        }
+
         // GET: Sucursal/Create
         public IActionResult Create()
         {

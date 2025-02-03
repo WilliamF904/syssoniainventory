@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing.Printing;
 using System.Linq;
 using System.Threading.Tasks;
+using iText.Kernel.Geom;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -13,6 +15,7 @@ namespace SysSoniaInventory.Controllers
     public class MarcaController : Controller
     {
         private readonly DBContext _context;
+       
 
         public MarcaController(DBContext context)
         {
@@ -41,6 +44,46 @@ namespace SysSoniaInventory.Controllers
             }
 
             return View(modelMarca);
+        }
+        public async Task<IActionResult> ProductosPorMarca(int id, int page = 1)
+        {
+            // Verificar si la marca existe
+            var marca = await _context.modelMarca.FindAsync(id);
+            if (marca == null)
+            {
+                TempData["Error"] = "Debe seleccionar un id de marca valido.";
+                return RedirectToAction(nameof(Index));
+            }
+
+            int pageSize = 10;  // Número de productos por página
+
+            // Obtener la consulta de productos con las relaciones necesarias
+            var query = _context.modelProduct
+                .Include(p => p.IdCategoryNavigation)
+                .Include(p => p.IdProveedorNavigation)
+                .Where(p => p.IdMarca == id) // Filtrar por IdMarca
+                .AsQueryable();
+
+            // Contar el total de productos para la marca
+            int totalProductos = await query.CountAsync();
+
+            // Aplicar paginación
+            var productos = await query
+                .OrderBy(p => p.Id)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+            if (!productos.Any())
+            {
+                TempData["reporte"] = $"No se encontraron productos relacionados con la marca '{marca.Name}'.";
+            }
+            // Pasar datos a la vista
+            ViewBag.MarcaId = id;
+            ViewBag.MarcaNombre = marca.Name; // Pasar el nombre de la marca
+            ViewBag.Page = page;
+            ViewBag.TotalPages = (int)Math.Ceiling((double)totalProductos / pageSize); // Calcular el total de páginas
+
+            return View(productos);
         }
 
         // GET: Marca/Create

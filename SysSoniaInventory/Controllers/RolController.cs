@@ -82,6 +82,50 @@ namespace SysSoniaInventory.Controllers
             return View(modelRol);
         }
 
+        public async Task<IActionResult> UsuariosPorRol(int id, int page = 1)
+        {
+            // Verificar si el rol existe
+            var rol = await _context.modelRol.FindAsync(id);
+            if (rol == null)
+            {
+                TempData["Error"] = "Debe seleccionar un id de rol válido.";
+                return RedirectToAction(nameof(Index));
+            }
+
+            int pageSize = 10;  // Número de usuarios por página
+
+            // Obtener la consulta de usuarios con la relación al rol
+            var query = _context.modelUser
+                .Include(u => u.IdRolNavigation)  // Incluir la relación con el rol
+                .Where(u => u.IdRol == id)  // Filtrar por IdRol
+                .AsQueryable();
+
+            // Contar el total de usuarios para el rol
+            int totalUsuarios = await query.CountAsync();
+
+            // Aplicar paginación
+            var usuarios = await query
+                .OrderBy(u => u.Id)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            // Verificar si no se encontraron usuarios
+            if (!usuarios.Any())
+            {
+                TempData["reporte"] = $"No se encontraron usuarios para el rol '{rol.Name}'.";
+            }
+
+            // Pasar datos a la vista
+            ViewBag.RolId = id;
+            ViewBag.RolNombre = rol.Name;  // Pasar el nombre del rol
+            ViewBag.Page = page;
+            ViewBag.TotalPages = (int)Math.Ceiling((double)totalUsuarios / pageSize);  // Calcular el total de páginas
+
+            return View(usuarios);
+        }
+
+
         // GET: Rol/Create
         public IActionResult Create()
         { // Verificar niveles de acceso
