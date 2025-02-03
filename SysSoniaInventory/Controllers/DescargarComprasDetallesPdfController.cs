@@ -15,39 +15,20 @@ using System.IO;
 using System.Linq;
 
 [Authorize]
-public class PdfController : Controller
+public class PdfCompraDetallesController(DBContext context) : Controller
 {
-    private readonly DBContext _context;
-
-    public PdfController(DBContext context)
-    {
-        this._context = context;
-    }
-
-
+    private readonly DBContext _context = context;
 
     [HttpGet]
-    public IActionResult DescargarComprasPdf(DateOnly? startDate, DateOnly? endDate)
+    public IActionResult DescargarCompraPdf(int id)
     {
-        if (!User.HasClaim("AccessTipe", "Nivel 4") && !User.HasClaim("AccessTipe", "Nivel 5"))
-        {
-            TempData["Error"] = "No tienes acceso a esta sección. Requerido: Nivel 4 o 5.";
-            return RedirectToAction("Index", "Home");
-        }
-
-        var compras = _context.modelCompra
+        var compra = _context.modelCompra
             .Include(c => c.DetalleCompra)
-            .AsQueryable();
+            .FirstOrDefault(c => c.Id == id);
 
-        if (startDate.HasValue && endDate.HasValue)
+        if (compra == null)
         {
-            compras = compras.Where(c => c.Date >= startDate && c.Date <= endDate);
-        }
-
-        var comprasList = compras.ToList();
-        if (!comprasList.Any())
-        {
-            TempData["Error"] = "No se encontraron compras en el rango de fechas especificado.";
+            TempData["Error"] = "No se encontró la compra especificada.";
             return RedirectToAction("Index");
         }
 
@@ -76,27 +57,30 @@ public class PdfController : Controller
             }
 
 
-
-            // Determinar título dinámico
-            var title = startDate.HasValue && endDate.HasValue
-                ? $"Compras del {startDate} al {endDate}"
-                : "Todas las Compras";
             // Celda del título
-            Cell titleCell = new Cell().Add(new Paragraph(title)
+            Cell titleCell = new Cell().Add(new Paragraph("Detalles de la Compra")
                 .SetFontSize(20)
                 .SetFontColor(ColorConstants.DARK_GRAY)
                 .SetBold()
                 .SetTextAlignment(TextAlignment.LEFT))
                 .SetBorder(Border.NO_BORDER)
                 .SetVerticalAlignment(VerticalAlignment.MIDDLE);
-
             headerTable.AddCell(titleCell);
             document.Add(headerTable);
 
-            var table = new Table(new float[] { 1, 2, 2, 2, 2, 2, 2 }).SetWidth(UnitValue.CreatePercentValue(100));
+            document.Add(new Paragraph($"Sucursal: {compra.NameSucursal}\n" +
+                                       $"Usuario: {compra.NameUser}\n" +
+                                       $"Proveedor: {compra.NameProveedor ?? "-"}\n" +
+                                       $"Factura: {compra.CodigoFactura ?? "-"}\n" +
+                                       $"Fecha: {compra.Date.ToString("dd-MM-yyyy")}\n" +
+                                       $"Descripción: {compra.Description ?? "-"}")
+                .SetFontSize(12)
+                .SetMarginBottom(15));
+
+            var table = new Table(new float[] { 2, 2, 2, 1, 2, 2, 1 }).SetWidth(UnitValue.CreatePercentValue(100));
             var headerColor = new DeviceRgb(41, 128, 185);
 
-            foreach (var header in new[] { "ID", "Sucursal", "Usuario", "Proveedor", "Código Factura", "Fecha", "Total" })
+            foreach (var header in new[] { "Producto", "Marca", "Código", "Cant.", "Precio Compra", "Total", "Actualizado en stock" })
             {
                 table.AddHeaderCell(new Cell().Add(new Paragraph(header)
                         .SetFontColor(ColorConstants.WHITE)
@@ -108,17 +92,19 @@ public class PdfController : Controller
 
             var alternateRowColor = new DeviceRgb(230, 240, 255);
             bool isAlternate = false;
-            foreach (var compra in comprasList)
+            foreach (var detalle in compra.DetalleCompra)
             {
                 var rowColor = isAlternate ? alternateRowColor : ColorConstants.WHITE;
-                table.AddCell(new Cell().Add(new Paragraph(compra.Id.ToString())).SetBackgroundColor(rowColor));
-                table.AddCell(new Cell().Add(new Paragraph(compra.NameSucursal)).SetBackgroundColor(rowColor));
-                table.AddCell(new Cell().Add(new Paragraph(compra.NameUser)).SetBackgroundColor(rowColor));
-                table.AddCell(new Cell().Add(new Paragraph(compra.NameProveedor ?? "-")).SetBackgroundColor(rowColor));
-                table.AddCell(new Cell().Add(new Paragraph(compra.CodigoFactura ?? "-")).SetBackgroundColor(rowColor));
-                table.AddCell(new Cell().Add(new Paragraph(compra.Date.ToShortDateString())).SetBackgroundColor(rowColor));
-                table.AddCell(new Cell().Add(new Paragraph($"{compra.DetalleCompra.Sum(d => d.PriceTotal):C}"))
+                table.AddCell(new Cell().Add(new Paragraph(detalle.NameProducto)).SetBackgroundColor(rowColor));
+                table.AddCell(new Cell().Add(new Paragraph(detalle.MarcaProducto)).SetBackgroundColor(rowColor));
+                table.AddCell(new Cell().Add(new Paragraph(detalle.CodigoProducto)).SetBackgroundColor(rowColor));
+                table.AddCell(new Cell().Add(new Paragraph(detalle.CantidadProduct.ToString())).SetBackgroundColor(rowColor));
+                table.AddCell(new Cell().Add(new Paragraph($"{detalle.PriceCompraUnitario:C}"))
                     .SetBackgroundColor(rowColor).SetTextAlignment(TextAlignment.RIGHT));
+                table.AddCell(new Cell().Add(new Paragraph($"{detalle.PriceTotal:C}"))
+                    .SetBackgroundColor(rowColor).SetTextAlignment(TextAlignment.RIGHT));
+                table.AddCell(new Cell().Add(new Paragraph(detalle.UpdatePrice ? "Sí" : "No"))
+                    .SetBackgroundColor(rowColor).SetTextAlignment(TextAlignment.CENTER));
                 isAlternate = !isAlternate;
             }
 
@@ -133,7 +119,7 @@ public class PdfController : Controller
             document.Close();
 
             string fechaDescarga = DateTime.Now.ToString("yyyy-MM-dd");
-            return File(stream.ToArray(), "application/pdf", $"{title.Replace(" ", "_")}_{fechaDescarga}.pdf");
+            return File(stream.ToArray(), "application/pdf", $"Compra_{compra.Id}_{fechaDescarga}.pdf");
         }
     }
 }
