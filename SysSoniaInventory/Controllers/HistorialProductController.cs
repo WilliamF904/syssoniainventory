@@ -96,7 +96,27 @@ namespace SysSoniaInventory.Controllers
             {
                 return NotFound();
             }
+            // Obtener el nombre del producto relacionado con el historial
+            var product = await _context.modelProduct
+                .FirstOrDefaultAsync(p => p.Id == modelHistorialProduct.IdProduct);
 
+            // Si el producto existe, asignar su nombre; si no, asignar "Producto eliminado"
+            ViewBag.ProductName = product?.Name ?? "Producto eliminado";
+
+            // Obtener el siguiente y anterior historial (si existen)
+            var nextHistorial = await _context.modelHistorialProduct
+                .Where(m => m.Id > id)  // Buscar el siguiente registro (id superior)
+                .OrderBy(m => m.Id)     // Ordenar por ID ascendente
+                .FirstOrDefaultAsync();
+
+            var previousHistorial = await _context.modelHistorialProduct
+                .Where(m => m.Id < id)  // Buscar el registro anterior (id inferior)
+                .OrderByDescending(m => m.Id) // Ordenar por ID descendente para obtener el anterior
+                .FirstOrDefaultAsync();
+
+            // Pasar los registros anteriores y siguientes a la vista
+            ViewBag.NextId = nextHistorial?.Id;
+            ViewBag.PreviousId = previousHistorial?.Id;
             return View(modelHistorialProduct);
         }
 
