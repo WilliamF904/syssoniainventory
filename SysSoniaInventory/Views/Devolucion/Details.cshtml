@@ -1,13 +1,19 @@
 ﻿@model SysSoniaInventory.Models.ModelDevolucion
 
-<h2>Detalles de la Devolución</h2>
 
-<a asp-controller="GeneratePdfDevolucionDetalles" asp-action="GeneratePdf"  asp-route-devolucionId="@Model.Id" class="btn btn-danger">
-    Descargar PDF
-</a>
+
+
 
 
 <div class="row">
+    <div class=" col-lg-12 d-flex justify-content-between align-items-center">
+        <h2>Detalles de la Devolución</h2>
+        <div class="col-md-3 d-flex align-items-end">
+            <a asp-controller="Devolucion" asp-action="DescargarDetallesDevolucionPdf" asp-route-id="@Model.Id" class="btn btn-outline-danger ">
+                <i class="mdi mdi-download"></i>    Descargar PDF
+            </a>
+        </div>
+    </div>
 
     <!-- Información de la Devolución -->
     <div class="col-lg-3 stretch-card">
@@ -53,7 +59,7 @@
                     <tbody class="txt-white">
                         @foreach (var detalle in Model.DetalleDevolucion)
                         {
-                            <tr>
+                            <tr class="txt-whithe">
                                 <td class="text-light" title="@detalle.CodigoProducto">
                                     @(detalle.NameProduct.Length > 30 ? detalle.NameProduct.Substring(0, 30) + "..." : detalle.NameProduct)
                                 </td>
@@ -74,8 +80,8 @@
                             </tr>
                         }
                         <tr>
-                            <td colspan="4"><strong>Total General:</strong></td>
-                            <td colspan="2" id="totalGeneral"></td>
+                            <td colspan="4" class="txt-whithe"><strong>Total General:</strong></td>
+                            <td colspan="2" class="txt-whithe" id="totalGeneral"></td>
                         </tr>
                     </tbody>
                 </table>

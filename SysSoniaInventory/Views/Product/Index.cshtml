@@ -40,32 +40,43 @@
                     }
                     @if (User.HasClaim("AccessTipe", "Nivel 4") || User.HasClaim("AccessTipe", "Nivel 5"))
                     {
-                        <!-- Contenedor del Botón Descargar PDF -->
-                        <div class="dropdown-container">
-                            <!-- Botón principal para abrir el menú -->
-                            <button id="dropdownButton" class="dropdown-button btn btn-outline-secondary">
+                        <div class="dropdown">
+                            <button class="btn btn-outline-danger dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <i class="mdi mdi-download"></i> Descargar PDF
                             </button>
 
-                            <!-- Menú desplegable -->
-                            <!-- Menú desplegable -->
-                            <ul id="dropdownMenu" class="dropdown-menu">
-                                <li>
-                                    <a asp-action="GeneratePdfAll" asp-controller="GeneratePdfProductos" class="btn btn-primary">
-                                        <i class="mdi mdi-download"></i> Descargar Todos los Productos
-                                    </a>
-                                    <a asp-action="GeneratePdfActivos" asp-controller="GeneratePdfProductos" class="btn btn-primary">
-                                        <i class="mdi mdi-download"></i> Descargar Productos Activos
-                                    </a>
-                                    <a asp-action="GeneratePdfInactivos" asp-controller="GeneratePdfProductos" class="btn btn-primary">
-                                        <i class="mdi mdi-download"></i> Descargar Productos Inactivos
-                                    </a>
-                                </li>
-                            </ul>
+                            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
 
+
+                                <!-- Descargar todas las compras -->
+                                <div class="form-group">
+
+                                    <a asp-action="GeneratePdf" class="btn btn-block mt-2  btn-outline-danger font-weight-bold">
+                                        <i class="mdi mdi-download"></i> Todos los Productos
+                                    </a>
+                                </div>
+
+                                <!-- Descargar todas las compras -->
+                                <div class="form-group">
+
+                                    <a asp-action="GeneratePdf" asp-route-active="true" class="btn btn-block mt-2  btn-outline-danger font-weight-bold">
+                                        <i class="mdi mdi-download"></i>  Productos Activos
+                                    </a>
+                                </div>
+                                <!-- Descargar todas las compras -->
+                                <div class="form-group">
+
+                                    <a asp-action="GeneratePdf" asp-route-active="false" class="btn btn-block mt-2  btn-outline-danger font-weight-bold">
+                                        <i class="mdi mdi-download"></i> Productos Inactivos
+                                    </a>
+                                </div>
+                            </div>
                         </div>
-                    }
 
+
+
+                    }
+                    
                 </div>
             </div>
         </div>
@@ -100,11 +111,11 @@
                               <input type="text" id="name" name="name" class="form-control" placeholder="Nombre" value="@ViewBag.Name" />
                           </div>-->
                 <div class="col-md-3">
-                    <label for="stockMin" class="form-label">Stock Mínimo</label>
+                    <label for="stockMin" class="form-label">Stock Mín</label>
                     <input type="number" id="stockMin" name="stockMin" class="form-control" placeholder="Mínimo" value="@ViewBag.StockMin" />
                 </div>
                 <div class="col-md-3">
-                    <label for="stockMax" class="form-label">Stock Máximo</label>
+                    <label for="stockMax" class="form-label">Stock Máx</label>
                     <input type="number" id="stockMax" name="stockMax" class="form-control" placeholder="Máximo" value="@ViewBag.StockMax" />
                 </div>
                 <div class="col-md-3">
@@ -233,149 +244,6 @@
 
 
 
-
-
-
-
-
-
-
-
-<!-- Scripts y estilos heredados -->
-<style>
-    .form-group label {
-        width: 150px;
-        text-align: right;
-    }
-
-    .form-group input,
-    .form-group select {
-        flex-grow: 1;
-    }
-
-    .d-flex {
-        display: flex;
-    }
-
-    .separator {
-        width: 2px;
-        height: 30px;
-        background-color: #ddd;
-    }
-
-    .dropdown-container {
-        position: relative;
-    }
-
-        .dropdown-container .dropdown-menu {
-            position: absolute;
-            top: 100%;
-            left: 0;
-            display: none;
-            list-style: none;
-            padding: 10px;
-            margin: 0;
-            background-color: #f8f9fa;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-            width: 250px;
-            opacity: 0;
-            transform: translateY(-10px);
-            transition: opacity 0.3s ease, transform 0.3s ease;
-            z-index: 1000;
-        }
-
-            .dropdown-container .dropdown-menu.show {
-                display: block;
-                opacity: 1;
-                transform: translateY(0);
-            }
-</style>
-
-
-<!-- Estilos Actualizados maneja los estilos del filtrado de usuarios-->
-
-<style>
-    .form-group label {
-        width: 150px; /* Ancho fijo para etiquetas */
-        text-align: right; /* Alineación del texto */
-    }
-
-    .form-group input,
-    .form-group select {
-        flex-grow: 1; /* Los inputs ocuparán el resto del espacio disponible */
-    }
-
-</style>
-
-
-<!-- Estilos Actualizados maneja los estilos del imput descargar pdf entre otros-->
-<style>
-    .d-flex {
-        display: flex;
-    }
-
-    .separator {
-        width: 2px;
-        height: 30px;
-        background-color: #ddd; /* Color de la línea decorativa */
-    }
-
-
-    .dropdown-container {
-        position: relative; /* Asegura que el menú se alinee respecto al contenedor */
-    }
-
-        .dropdown-container .dropdown-menu {
-            position: absolute;
-            top: 100%; /* Despliega justo debajo del botón */
-            left: 0;
-            display: none;
-            list-style: none;
-            padding: 10px;
-            margin: 0;
-            background-color: #f8f9fa;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-            width: 250px;
-            opacity: 0;
-            transform: translateY(-10px);
-            transition: opacity 0.3s ease, transform 0.3s ease;
-            z-index: 1000;
-        }
-
-            .dropdown-container .dropdown-menu.show {
-                display: block;
-                opacity: 1;
-                transform: translateY(0);
-            }
-</style>
-
-
-<!-- Script para manejar el menú desplegable -->
-<!-- Script para manejar el menú desplegable -->
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
-        const dropdownButton = document.getElementById("dropdownButton");
-        const dropdownMenu = document.getElementById("dropdownMenu");
-
-        // Alternar visibilidad y clase de animación
-        dropdownButton.addEventListener("click", function (event) {
-            event.stopPropagation(); // Evitar propagación
-            dropdownMenu.classList.toggle("show");
-        });
-
-        // Cerrar el menú si se hace clic fuera
-        document.addEventListener("click", function (event) {
-            if (!dropdownMenu.contains(event.target)) {
-                dropdownMenu.classList.remove("show");
-            }
-        });
-    });
-
-</script>
 
 
 

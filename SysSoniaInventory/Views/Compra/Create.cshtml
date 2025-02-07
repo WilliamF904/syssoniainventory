@@ -355,8 +355,8 @@
             const quantity = parseInt(quantityInput.value, 10);
             const purchasePrice = parseFloat(purchasePriceInput.value);
             const updatePrice = document.getElementById('updatePriceSelect').value === 'true';
-            if (isNaN(quantity) || quantity <= 0 || quantity > currentProduct.stock) {
-                alert("Cantidad inválida. Verifique los límites.");
+            if (isNaN(quantity) || quantity <= 0) {
+                alert("Cantidad inválida. La cantidad de productos debe ser mayor a 0.");
                 return;
             }
             if (isNaN(purchasePrice) || purchasePrice <= 0) {

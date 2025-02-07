@@ -3,7 +3,24 @@
 @{
     ViewData["Title"] = "Index";
 }
+<style>
+    .pagination .page-link {
+        background-color: #333;
+        color: #fff;
+        border: 1px solid #444;
+    }
 
+    .pagination .page-item.active .page-link {
+        background-color: #555;
+        border-color: #666;
+    }
+
+    .pagination .page-item.disabled .page-link {
+        background-color: #222;
+        color: #777;
+        border-color: #333;
+    }
+</style>
 
 <div class="row">
 
@@ -26,32 +43,41 @@
                     }
                     @if (User.HasClaim("AccessTipe", "Nivel 4") || User.HasClaim("AccessTipe", "Nivel 5"))
                     {
-                        <!-- Contenedor del Botón Descargar PDF -->
-                        <div class="dropdown-container">
-                            <!-- Botón principal para abrir el menú -->
-                            <button id="dropdownButton" class="dropdown-button btn btn-outline-secondary">
+                        <div class="dropdown">
+                            <button class="btn btn-outline-danger dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <i class="mdi mdi-download"></i> Descargar PDF
                             </button>
 
-                            <!-- Menú desplegable -->
-                            <ul id="dropdownMenu" class="dropdown-menu">
-                                <li>
-                                    <a asp-action="GeneratePdf" asp-route-active="true">
-                                        <i class="mdi mdi-download"></i> Descargar Usuarios Activos
+                            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+
+                            
+                                    <!-- Descargar todas las compras -->
+                                    <div class="form-group">
+                                     
+                                    <a asp-action="GeneratePdf" class="btn btn-block mt-2  btn-outline-danger font-weight-bold">
+                                        <i class="mdi mdi-download"></i> Todos los Usuarios
                                     </a>
-                                </li>
-                                <li>
-                                    <a asp-action="GeneratePdf" asp-route-active="false">
-                                        <i class="mdi mdi-download"></i> Descargar Usuarios Inactivos
+                                    </div>
+                                   
+                                 <!-- Descargar todas las compras -->
+                                    <div class="form-group">
+                                      
+                                    <a asp-action="GeneratePdf" asp-route-active="true" class="btn btn-block mt-2  btn-outline-danger font-weight-bold">
+                                        <i class="mdi mdi-download"></i>  Usuarios Activos
                                     </a>
-                                </li>
-                                <li>
-                                    <a asp-action="GeneratePdf">
-                                        <i class="mdi mdi-download"></i> Descargar Todos los Usuarios
+                                    </div>
+                                <!-- Descargar todas las compras -->
+                                <div class="form-group">
+                                  
+                                    <a asp-action="GeneratePdf" asp-route-active="false" class="btn btn-block mt-2  btn-outline-danger font-weight-bold">
+                                        <i class="mdi mdi-download"></i> Usuarios Inactivos
                                     </a>
-                                </li>
-                            </ul>
+                                </div>
+                            </div>
                         </div>
+
+
+
                     }
 
                 </div>
@@ -66,16 +92,68 @@
         <!-- Contenedor específico para el dropdown -->
         <div class="card dropdown-container">
             <div class="card-body">
-                <h1 class="card-title">Filtrado de usuarios</h1>
-
-                <!-- Campos de filtrado -->
-                <form>
-                    <div class="form-group d-flex align-items-center" style="width: auto;>
-                        <label for="filterText" class="mr-2"></label>
-                        <input type="text" id="filterText" class="form-control" placeholder="Filtrar por nombre, apellido, email, etc." style="width: auto;">
+                <form method="get" asp-action="Index">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h1 class="card-title mb-0">Filtrar Usuarios</h1>
+                        <div class="col-md-3 d-flex align-items-end">
+                            <button type="submit" class="btn btn-outline-success w-100">
+                                <i class="mdi mdi-magnify btn-icon-prepend"></i>Filtrar
+                            </button>
+                        </div>
                     </div>
 
+                    <div class="row">
+                        <!-- Filtro por Nombre -->
+                        <div class="col-md-4">
+                            <label for="searchName" class="form-label">Nombre</label>
+                            <input type="text" id="searchName" name="searchName" class="form-control" placeholder="Buscar por nombre" value="@ViewBag.SearchName" />
+                        </div>
+
+                        <!-- Filtro por Apellido -->
+                        <div class="col-md-4">
+                            <label for="searchLastName" class="form-label">Apellido</label>
+                            <input type="text" id="searchLastName" name="searchLastName" class="form-control" placeholder="Buscar por apellido" value="@ViewBag.SearchLastName" />
+                        </div>
+                        <!-- Filtro por Estatus -->
+                        <div class="col-md-4">
+                            <label for="searchEstatus" class="form-label">Estatus</label>
+                            <select id="searchEstatus" name="searchEstatus" class="form-control" style="width: auto;">
+                                <option value="">Todos</option>
+                                <option value="1" selected="@(ViewBag.SearchEstatus == 1)">Activo</option>
+                                <option value="0" selected="@(ViewBag.SearchEstatus == 2)">Inactivo</option>
+                            </select>
+
+                        </div>
+
+
+                    </div>
+
+                    <div class="row mt-3">
+                        <!-- Filtro por Email -->
+                        <div class="col-md-6">
+                            <label for="searchEmail" class="form-label">Correo Electrónico</label>
+                            <input type="text" id="searchEmail" name="searchEmail" class="form-control" placeholder="Buscar por correo electrónico" value="@ViewBag.SearchEmail" />
+                        </div>
+                        <!-- Filtro por Rol -->
+                        <div class="col-md-6">
+                            <label for="searchIdRol" class="form-label">Rol</label>
+
+
+                            <select id="searchIdRol" name="searchIdRol" class="form-control" style="width: auto;">
+                                <option value="">Todos los roles</option>
+                                @foreach (var rol in ViewData["IdRol"] as SelectList)
+                                {
+                                    <option value="@rol.Value" selected="@(ViewBag.SearchIdRol?.ToString() == rol.Value)">
+                                        @rol.Text
+                                    </option>
+                                }
+                            </select>
+
+
+                        </div>
+                    </div>
                 </form>
+
             </div>
 
         </div>
@@ -87,9 +165,7 @@
     <div class="col-md-12">
         <div class="card">
             <div class="card-body">
-                <h4 class="card-title">Tabla de usuarios</h4>
-
-
+           
                 <div class="table-responsive">
                     <table class="table table-bordered table-hover table-striped" id="userTable">
                         <thead>
@@ -132,7 +208,41 @@
                         </tbody>
                     </table>
                 </div>
-                <div id="paginationControls" class="mt-3"></div>
+                <nav aria-label="Page navigation">
+                    <ul class="pagination justify-content-center">
+                        @{
+                            int totalPages = ViewBag.TotalPages;
+                            int currentPage = ViewBag.CurrentPage;
+                            int maxVisiblePages = 5;
+                            int startPage = Math.Max(1, currentPage - maxVisiblePages / 2);
+                            int endPage = Math.Min(totalPages, startPage + maxVisiblePages - 1);
+                        }
+
+                        <!-- Flecha izquierda -->
+                        <li class="page-item @(currentPage == 1 ? "disabled" : "")">
+                            <a class="page-link" href="@(currentPage > 1 ? $"?page={currentPage - 1}&searchName={ViewBag.SearchName}&searchLastName={ViewBag.SearchLastName}&searchEmail={ViewBag.SearchEmail}&searchEstatus={(ViewBag.SearchEstatus != null ? ViewBag.SearchEstatus.ToString() : "")}&searchIdRol={(ViewBag.SearchIdRol != null ? ViewBag.SearchIdRol.ToString() : "")}" : "#")" aria-label="Anterior">
+                                <span aria-hidden="true">«</span>
+                            </a>
+                        </li>
+
+                        <!-- Números de paginación -->
+                        @for (var i = startPage; i <= endPage; i++)
+                        {
+                            <li class="page-item @(i == currentPage ? "active" : "")">
+                                <a class="page-link" href="?page=@i&searchName=@ViewBag.SearchName&searchLastName=@ViewBag.SearchLastName&searchEmail=@ViewBag.SearchEmail&searchEstatus=@(ViewBag.SearchEstatus != null ? ViewBag.SearchEstatus.ToString() : "")&searchIdRol=@(ViewBag.SearchIdRol != null ? ViewBag.SearchIdRol.ToString() : "")">@i</a>
+                            </li>
+                        }
+
+                        <!-- Flecha derecha -->
+                        <li class="page-item @(currentPage == totalPages ? "disabled" : "")">
+                            <a class="page-link" href="@(currentPage < totalPages ? $"?page={currentPage + 1}&searchName={ViewBag.SearchName}&searchLastName={ViewBag.SearchLastName}&searchEmail={ViewBag.SearchEmail}&searchEstatus={(ViewBag.SearchEstatus != null ? ViewBag.SearchEstatus.ToString() : "")}&searchIdRol={(ViewBag.SearchIdRol != null ? ViewBag.SearchIdRol.ToString() : "")}" : "#")" aria-label="Siguiente">
+                                <span aria-hidden="true">»</span>
+                            </a>
+                        </li>
+
+                    </ul>
+                </nav>
+
             </div>
         </div>
     </div>
@@ -143,20 +253,6 @@
 
 
 
-<!-- Estilos Actualizados maneja los estilos del filtrado de usuarios-->
-
-<style>
-    .form-group label {
-        width: 150px; /* Ancho fijo para etiquetas */
-        text-align: right; /* Alineación del texto */
-    }
-
-    .form-group input,
-    .form-group select {
-        flex-grow: 1; /* Los inputs ocuparán el resto del espacio disponible */
-    }
-
-</style>
 
 <!-- Estilos Actualizados maneja los estilos del imput descargar pdf entre otros-->
 <style>
@@ -227,159 +323,4 @@
     });
 
 </script>
-<!-- Script para el filtrado de usuarios -->
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const filterText = document.getElementById('filterText');
-        const filterRole = document.getElementById('filterRole');
-        const sortOrder = document.getElementById('sortOrder');
-        const userTable = document.getElementById('userTable');
-        const rows = Array.from(userTable.getElementsByTagName('tbody')[0].getElementsByTagName('tr'));
-        const paginationControls = document.getElementById('paginationControls');
-        const rowsPerPage = 6;
-        let currentPage = 1; // Página actual
-        let filteredRows = rows; // Filas actualmente filtradas
 
-        // Filtrar y ordenar filas
-        function filterTable() {
-            const filterValue = filterText.value.toLowerCase(); // Texto de búsqueda
-            const roleValue = filterRole.value;                // Filtro de estatus
-            const orderValue = sortOrder.value;                // Ordenar alfabéticamente
-
-            // Aplicar filtrado por texto
-            filteredRows = rows.filter(row => {
-                const cells = Array.from(row.getElementsByTagName('td'));
-                const matchesText = !filterValue || cells.some(cell => cell.textContent.toLowerCase().includes(filterValue));
-
-                // Modificación aquí: Filtrar por activo/inactivo correctamente
-                const statusCell = row.getElementsByTagName('td')[4].textContent.trim(); // Columna de estatus
-                let matchesRole = true; // Valor predeterminado para incluir todos
-                if (roleValue === "Activo") {
-                    matchesRole = statusCell === "1";
-                } else if (roleValue === "Inactivo") {
-                    matchesRole = statusCell === "0";
-                }
-
-                return matchesText && matchesRole;
-            });
-
-            // Aplicar ordenamiento
-            if (orderValue) {
-                filteredRows.sort((a, b) => {
-                    const nameA = a.getElementsByTagName('td')[0].textContent.toLowerCase();
-                    const nameB = b.getElementsByTagName('td')[0].textContent.toLowerCase();
-                    return orderValue === 'asc' ? nameA.localeCompare(nameB) : nameB.localeCompare(nameA);
-                });
-            }
-
-            // Reiniciar a la primera página
-            currentPage = 1;
-            displayRows();
-            setupPagination();
-        }
-
-        // Mostrar filas paginadas
-        function displayRows() {
-            const start = (currentPage - 1) * rowsPerPage;
-            const end = start + rowsPerPage;
-
-            // Ocultar todas las filas y mostrar solo las de la página actual
-            rows.forEach(row => (row.style.display = 'none'));
-            filteredRows.slice(start, end).forEach(row => (row.style.display = ''));
-        }
-
-        // Configurar controles de paginación
-        function setupPagination() {
-            const totalPages = Math.ceil(filteredRows.length / rowsPerPage);
-            paginationControls.innerHTML = ''; // Limpiar controles de paginación
-
-            for (let i = 1; i <= totalPages; i++) {
-                const button = document.createElement('button');
-                button.textContent = i;
-                button.className = 'pagination-button';
-                if (i === currentPage) {
-                    button.classList.add('active');
-                }
-
-                button.addEventListener('click', () => {
-                    currentPage = i;
-                    displayRows();
-                    setupPagination();
-                });
-
-                paginationControls.appendChild(button);
-            }
-        }
-
-        // Vincular eventos de filtrado
-        filterText.addEventListener('input', filterTable);
-        filterRole.addEventListener('change', filterTable);
-        sortOrder.addEventListener('change', filterTable);
-
-        // Inicializar tabla
-        displayRows();
-        setupPagination();
-    });
-</script>
-
-
-
-
-
-
-<script>
-    // Implementar barra de búsqueda
-    const searchBar = document.getElementById('searchBar');
-    const userTable = document.getElementById('userTable');
-    const rows = Array.from(userTable.getElementsByTagName('tbody')[0].getElementsByTagName('tr'));
-
-    searchBar.addEventListener('keyup', function () {
-        const filter = searchBar.value.toLowerCase();
-        rows.forEach(row => {
-            const cells = row.getElementsByTagName('td');
-            let match = Array.from(cells).some(cell => cell.textContent.toLowerCase().includes(filter));
-            row.style.display = match ? '' : 'none';
-        });
-    });
-
-    // Implementar paginación
-    const rowsPerPage = 6;
-    let currentPage = 1;
-
-    function displayRows() {
-        const start = (currentPage - 1) * rowsPerPage;
-        const end = start + rowsPerPage;
-
-        rows.forEach((row, index) => {
-            row.style.display = index >= start && index < end ? '' : 'none';
-        });
-    }
-
-    function setupPagination() {
-        const totalPages = Math.ceil(rows.length / rowsPerPage);
-        const paginationControls = document.getElementById('paginationControls');
-        paginationControls.innerHTML = '';
-
-        for (let i = 1; i <= totalPages; i++) {
-            const button = document.createElement('button');
-            button.textContent = i;
-            button.className = 'pagination-button';
-            if (i === currentPage) {
-                button.classList.add('active');
-            }
-
-            button.addEventListener('click', () => {
-                currentPage = i;
-                displayRows();
-                setupPagination();
-            });
-
-            paginationControls.appendChild(button);
-        }
-    }
-
-    document.addEventListener('DOMContentLoaded', () => {
-        displayRows();
-        setupPagination();
-    });
-</script>

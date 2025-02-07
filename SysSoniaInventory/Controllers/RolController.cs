@@ -28,28 +28,59 @@ namespace SysSoniaInventory.Controllers
             _context = context;
         }
 
-       
         // GET: Rol/Index
         [HttpGet]
-        public IActionResult Index()
+        public async Task<IActionResult> Index(string searchName, string searchType, int page = 1)
         {
             // Verificar niveles de acceso
             if (User.HasClaim("AccessTipe", "Nivel 4"))
-            { // Nivel 4 tiene acceso
-
-            } // Verificar niveles de acceso
-            else if (User.HasClaim("AccessTipe", "Nivel 5"))
-            { // Nivel 5 tiene acceso
-
+            {
+                // Nivel 4 tiene acceso
             }
-
+            else if (User.HasClaim("AccessTipe", "Nivel 5"))
+            {
+                // Nivel 5 tiene acceso
+            }
             else
             {
                 // Redirigir con mensaje de error si el usuario no tiene acceso
                 TempData["Error"] = "No tienes acceso a esta sección. Requerido: Nivel 4.";
                 return RedirectToAction("Index", "Home");
             }
-            var roles = _context.modelRol.OrderByDescending(r => r.Id).ToList();
+
+            int pageSize = 5; // Cantidad de roles por página
+            var query = _context.modelRol.AsQueryable();
+
+            // Excluir registros con AccessTipe "Nivel 5"
+            query = query.Where(r => r.AccessTipe != "Nivel 5");
+
+            // Aplicar filtros si se proporcionan
+            if (!string.IsNullOrEmpty(searchName))
+            {
+                query = query.Where(r => r.Name.Contains(searchName));
+            }
+
+            if (!string.IsNullOrEmpty(searchType))
+            {
+                query = query.Where(r => r.AccessTipe.Contains(searchType));
+            }
+
+            // Obtener total de registros antes de paginar
+            int totalRoles = await query.CountAsync();
+
+            // Ordenar y paginar resultados
+            var roles = await query
+                .OrderByDescending(r => r.Id)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            // Datos para la vista
+            ViewBag.CurrentPage = page;
+            ViewBag.TotalPages = (int)Math.Ceiling((double)query.Count() / pageSize);
+            ViewBag.SearchName = searchName;
+            ViewBag.SearchType = searchType;
+
             return View(roles);
         }
 
@@ -131,117 +162,7 @@ namespace SysSoniaInventory.Controllers
 
             return View(usuarios);
         }
-        public async Task<IActionResult> DescargarUsuariosPorRol(int id)
-        {
-            // Verificar niveles de acceso
-            if (!User.HasClaim("AccessTipe", "Nivel 4") && !User.HasClaim("AccessTipe", "Nivel 5"))
-            {
-                TempData["Error"] = "No tienes acceso a esta sección. Requerido: Nivel 4 o 5.";
-                return RedirectToAction("Index", "Home");
-            }
-
-            // Verificar si el rol existe
-            var rol = await _context.modelRol.FindAsync(id);
-            if (rol == null)
-            {
-                TempData["Error"] = "Debe seleccionar un ID de rol válido.";
-                return RedirectToAction(nameof(Index));
-            }
-
-            // Obtener los usuarios asociados al rol
-            var usuarios = await _context.modelUser
-                .Where(u => u.IdRol == id)
-                .ToListAsync();
-
-            if (!usuarios.Any())
-            {
-                TempData["Error"] = $"No se encontraron usuarios para el rol '{rol.Name}'.";
-                return RedirectToAction(nameof(UsuariosPorRol), new { id });
-            }
-
-            // Generar el PDF
-            using (var stream = new MemoryStream())
-            {
-                var writer = new PdfWriter(stream);
-                var pdf = new PdfDocument(writer);
-                var document = new Document(pdf);
-
-                // Cabecera con el logo y el título
-                var headerTable = new Table(new float[] { 1, 4 }).SetWidth(UnitValue.CreatePercentValue(100));
-                headerTable.SetBorder(Border.NO_BORDER);
-
-                // Logo
-                var logoCell = new Cell().SetBorder(Border.NO_BORDER).SetVerticalAlignment(VerticalAlignment.MIDDLE);
-                string imagePath = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "imgSystem", "LOGO.jpeg");
-                var logo = new Image(ImageDataFactory.Create(imagePath)).ScaleAbsolute(100, 100).SetMarginTop(-50);
-                logoCell.Add(logo);
-
-                // Título
-                var titleCell = new Cell().SetBorder(Border.NO_BORDER).SetTextAlignment(TextAlignment.CENTER);
-                titleCell.Add(new Paragraph($"Usuarios del Rol: {rol.Name}")
-                    .SetFontSize(24)
-                    .SetFontColor(ColorConstants.DARK_GRAY)
-                    .SetBold()
-                    .SetMarginBottom(10));
-
-                headerTable.AddCell(logoCell);
-                headerTable.AddCell(titleCell);
-                document.Add(headerTable);
-
-                // Tabla de usuarios
-                var table = new Table(new float[] { 1, 3, 3, 4 }).SetWidth(UnitValue.CreatePercentValue(100));
-                var headerColor = new DeviceRgb(41, 128, 185);
-                foreach (var header in new[] { "ID", "Nombre", "Apellido", "Email" })
-                {
-                    table.AddHeaderCell(new Cell().Add(new Paragraph(header)
-                            .SetFontColor(ColorConstants.WHITE)
-                            .SetBold())
-                        .SetBackgroundColor(headerColor)
-                        .SetTextAlignment(TextAlignment.CENTER)
-                        .SetPadding(8));
-                }
-
-                // Filas alternadas
-                var alternateRowColor = new DeviceRgb(230, 240, 255);
-                bool isAlternate = false;
-                foreach (var usuario in usuarios)
-                {
-                    var rowColor = isAlternate ? alternateRowColor : ColorConstants.WHITE;
-
-                    table.AddCell(new Cell().Add(new Paragraph(usuario.Id.ToString()))
-                        .SetBackgroundColor(rowColor)
-                        .SetTextAlignment(TextAlignment.CENTER));
-
-                    table.AddCell(new Cell().Add(new Paragraph(usuario.Name))
-                        .SetBackgroundColor(rowColor));
-
-                    table.AddCell(new Cell().Add(new Paragraph(usuario.LastName))
-                        .SetBackgroundColor(rowColor));
-
-                    table.AddCell(new Cell().Add(new Paragraph(usuario.Email))
-                        .SetBackgroundColor(rowColor)
-                        .SetTextAlignment(TextAlignment.CENTER));
-
-                    isAlternate = !isAlternate;
-                }
-
-                document.Add(table);
-
-                // Pie de página
-                document.Add(new Paragraph("Muebles y Electrodomésticos Sonia")
-                    .SetFontSize(10)
-                    .SetFontColor(ColorConstants.GRAY)
-                    .SetTextAlignment(TextAlignment.CENTER)
-                    .SetMarginTop(20));
-
-                document.Close();
-
-                string fechaDescarga = DateTime.Now.ToString("yyyy-MM-dd");
-                return File(stream.ToArray(), "application/pdf", $"Usuarios_Rol_{rol.Name.Replace(" ", "_")}_{fechaDescarga}.pdf");
-            }
-        }
-
-
+      
         // GET: Rol/Create
         public IActionResult Create()
         { // Verificar niveles de acceso
@@ -458,6 +379,220 @@ namespace SysSoniaInventory.Controllers
             }
 
             return RedirectToAction(nameof(Index));
+        }
+
+        // Método para generar PDF  
+        public IActionResult GeneratePdf(bool? active = null)
+        {
+            // Verificar niveles de acceso  
+            if (!User.HasClaim("AccessTipe", "Nivel 4") && !User.HasClaim("AccessTipe", "Nivel 5"))
+            {
+                TempData["Error"] = "No tienes acceso a esta sección. Requerido: Nivel 4 o 5.";
+                return RedirectToAction("Index", "Home");
+            }
+
+            // Obtener datos de roles (filtrar por estado si se especifica)  
+            var roles = _context.modelRol.AsQueryable();
+
+            if (active.HasValue)
+            {
+                roles = roles.Where(r => r.User.Any(u => u.Estatus == (active.Value ? 1 : 0)));
+            }
+
+            var roleList = roles.ToList();
+
+            // Generar PDF  
+            using (var stream = new MemoryStream())
+            {
+                var writer = new PdfWriter(stream);
+                var pdf = new PdfDocument(writer);
+                var document = new Document(pdf);
+
+                // Agregar logo y título en la misma línea
+                string imagePath = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "imgSystem", "LOGO.jpeg");
+                Table headerTable = new Table(new float[] { 1, 3 }).UseAllAvailableWidth();
+
+                if (System.IO.File.Exists(imagePath))
+                {
+                    var logo = new Image(ImageDataFactory.Create(imagePath)).ScaleAbsolute(80, 80);
+                    Cell logoCell = new Cell().Add(logo)
+                        .SetBorder(Border.NO_BORDER)
+                        .SetTextAlignment(TextAlignment.LEFT);
+                    headerTable.AddCell(logoCell);
+                }
+                else
+                {
+                    // Celda vacía si no hay logo
+                    headerTable.AddCell(new Cell().SetBorder(Border.NO_BORDER));
+                }
+
+
+                // Celda del título
+                Cell titleCell = new Cell().Add(new Paragraph("Todos los Roles")
+                    .SetFontSize(20)
+                    .SetFontColor(ColorConstants.DARK_GRAY)
+                    .SetBold()
+                    .SetTextAlignment(TextAlignment.LEFT))
+                    .SetBorder(Border.NO_BORDER)
+                    .SetVerticalAlignment(VerticalAlignment.MIDDLE);
+                headerTable.AddCell(titleCell);
+                document.Add(headerTable);
+
+                // Crear tabla  
+                var table = new Table(new float[] { 1, 2, 2 }).SetWidth(UnitValue.CreatePercentValue(100));
+                table.SetMarginTop(10);
+
+                // Encabezados estilizados  
+                var headerColor = new DeviceRgb(52, 152, 219); // Azul intenso  
+                foreach (var header in new[] { "ID", "Nombre", "Tipo de Acceso" })
+                {
+                    table.AddHeaderCell(new Cell().Add(new Paragraph(header)
+                            .SetFontColor(ColorConstants.WHITE)
+                            .SetBold())
+                        .SetBackgroundColor(headerColor)
+                        .SetTextAlignment(TextAlignment.CENTER)
+                        .SetPadding(8));
+                }
+
+                // Filas alternadas  
+                var alternateRowColor = new DeviceRgb(235, 245, 255); // Azul claro  
+                bool isAlternate = false;
+                foreach (var role in roleList)
+                {
+                    var rowColor = isAlternate ? alternateRowColor : ColorConstants.WHITE;
+                    table.AddCell(new Cell().Add(new Paragraph(role.Id.ToString()))
+                        .SetBackgroundColor(rowColor).SetTextAlignment(TextAlignment.CENTER));
+                    table.AddCell(new Cell().Add(new Paragraph(role.Name))
+                        .SetBackgroundColor(rowColor).SetTextAlignment(TextAlignment.CENTER));
+                    table.AddCell(new Cell().Add(new Paragraph(role.AccessTipe))
+                        .SetBackgroundColor(rowColor).SetTextAlignment(TextAlignment.CENTER));
+                    isAlternate = !isAlternate;
+                }
+
+                document.Add(table);
+
+                // Pie de página  
+                document.Add(new Paragraph("Muebles y Electrodomésticos Sonia")
+                    .SetFontSize(10)
+                    .SetFontColor(ColorConstants.GRAY)
+                    .SetTextAlignment(TextAlignment.CENTER)
+                    .SetMarginTop(20));
+
+                document.Close();
+                string fechaDescarga = DateTime.Now.ToString("yyyy-MM-dd");
+                // Retornar archivo PDF  
+                return File(stream.ToArray(), "application/pdf", $"Roles_{fechaDescarga}.pdf");
+            }
+        }
+
+        public async Task<IActionResult> DescargarUsuariosPorRol(int id)
+        {
+            // Verificar niveles de acceso
+            if (!User.HasClaim("AccessTipe", "Nivel 4") && !User.HasClaim("AccessTipe", "Nivel 5"))
+            {
+                TempData["Error"] = "No tienes acceso a esta sección. Requerido: Nivel 4 o 5.";
+                return RedirectToAction("Index", "Home");
+            }
+
+            // Verificar si el rol existe
+            var rol = await _context.modelRol.FindAsync(id);
+            if (rol == null)
+            {
+                TempData["Error"] = "Debe seleccionar un ID de rol válido.";
+                return RedirectToAction(nameof(Index));
+            }
+
+            // Obtener los usuarios asociados al rol
+            var usuarios = await _context.modelUser
+                .Where(u => u.IdRol == id)
+                .ToListAsync();
+
+            if (!usuarios.Any())
+            {
+                TempData["Error"] = $"No se encontraron usuarios para el rol '{rol.Name}'.";
+                return RedirectToAction(nameof(UsuariosPorRol), new { id });
+            }
+
+            // Generar el PDF
+            using (var stream = new MemoryStream())
+            {
+                var writer = new PdfWriter(stream);
+                var pdf = new PdfDocument(writer);
+                var document = new Document(pdf);
+
+                // Cabecera con el logo y el título
+                var headerTable = new Table(new float[] { 1, 4 }).SetWidth(UnitValue.CreatePercentValue(100));
+                headerTable.SetBorder(Border.NO_BORDER);
+
+                // Logo
+                var logoCell = new Cell().SetBorder(Border.NO_BORDER).SetVerticalAlignment(VerticalAlignment.MIDDLE);
+                string imagePath = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "imgSystem", "LOGO.jpeg");
+                var logo = new Image(ImageDataFactory.Create(imagePath)).ScaleAbsolute(100, 100).SetMarginTop(-50);
+                logoCell.Add(logo);
+
+                // Título
+                var titleCell = new Cell().SetBorder(Border.NO_BORDER).SetTextAlignment(TextAlignment.CENTER);
+                titleCell.Add(new Paragraph($"Usuarios del Rol: {rol.Name}")
+                    .SetFontSize(24)
+                    .SetFontColor(ColorConstants.DARK_GRAY)
+                    .SetBold()
+                    .SetMarginBottom(10));
+
+                headerTable.AddCell(logoCell);
+                headerTable.AddCell(titleCell);
+                document.Add(headerTable);
+
+                // Tabla de usuarios
+                var table = new Table(new float[] { 1, 3, 3, 4 }).SetWidth(UnitValue.CreatePercentValue(100));
+                var headerColor = new DeviceRgb(41, 128, 185);
+                foreach (var header in new[] { "ID", "Nombre", "Apellido", "Email" })
+                {
+                    table.AddHeaderCell(new Cell().Add(new Paragraph(header)
+                            .SetFontColor(ColorConstants.WHITE)
+                            .SetBold())
+                        .SetBackgroundColor(headerColor)
+                        .SetTextAlignment(TextAlignment.CENTER)
+                        .SetPadding(8));
+                }
+
+                // Filas alternadas
+                var alternateRowColor = new DeviceRgb(230, 240, 255);
+                bool isAlternate = false;
+                foreach (var usuario in usuarios)
+                {
+                    var rowColor = isAlternate ? alternateRowColor : ColorConstants.WHITE;
+
+                    table.AddCell(new Cell().Add(new Paragraph(usuario.Id.ToString()))
+                        .SetBackgroundColor(rowColor)
+                        .SetTextAlignment(TextAlignment.CENTER));
+
+                    table.AddCell(new Cell().Add(new Paragraph(usuario.Name))
+                        .SetBackgroundColor(rowColor).SetTextAlignment(TextAlignment.CENTER));
+
+                    table.AddCell(new Cell().Add(new Paragraph(usuario.LastName))
+                        .SetBackgroundColor(rowColor).SetTextAlignment(TextAlignment.CENTER));
+
+                    table.AddCell(new Cell().Add(new Paragraph(usuario.Email))
+                        .SetBackgroundColor(rowColor)
+                        .SetTextAlignment(TextAlignment.CENTER));
+
+                    isAlternate = !isAlternate;
+                }
+
+                document.Add(table);
+
+                // Pie de página
+                document.Add(new Paragraph("Muebles y Electrodomésticos Sonia")
+                    .SetFontSize(10)
+                    .SetFontColor(ColorConstants.GRAY)
+                    .SetTextAlignment(TextAlignment.CENTER)
+                    .SetMarginTop(20));
+
+                document.Close();
+
+                string fechaDescarga = DateTime.Now.ToString("yyyy-MM-dd");
+                return File(stream.ToArray(), "application/pdf", $"Usuarios_Rol_{rol.Name.Replace(" ", "_")}_{fechaDescarga}.pdf");
+            }
         }
 
 

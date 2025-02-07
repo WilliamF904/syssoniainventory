@@ -12,6 +12,13 @@ using Microsoft.EntityFrameworkCore;
 using SysSoniaInventory.DataAccess;
 using SysSoniaInventory.Models;
 using SysSoniaInventory.Task;
+using iText.IO.Image;
+using iText.Kernel.Colors;
+using iText.Kernel.Pdf;
+using iText.Layout.Element;
+using iText.Layout.Properties;
+using iText.Layout;
+using iText.Layout.Borders;
 
 namespace SysSoniaInventory.Controllers
 {
@@ -32,26 +39,20 @@ namespace SysSoniaInventory.Controllers
             }
         }
         // GET: User
-      
 
-
-
-
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string searchName, string searchLastName, string searchEmail, int? searchEstatus, int? searchIdRol, int page = 1)
         {
+            // Verificar niveles de acceso
             if (User.HasClaim("AccessTipe", "Nivel 5"))
             { // Nivel 5 tiene acceso
-
             }
             else if (User.HasClaim("AccessTipe", "Nivel 4"))
             {
                 // Nivel 4 tiene acceso
-
             }
             else if (User.HasClaim("AccessTipe", "Nivel 3"))
             {
                 // Nivel 3 tiene acceso
-
             }
             else
             {
@@ -87,25 +88,68 @@ namespace SysSoniaInventory.Controllers
 
             int nivelUsuario = nivelesAcceso[userAccessTipe];
 
-            // Obtener todos los registros necesarios desde la base de datos
-            var allUsers = await _context.modelUser
+            var query = _context.modelUser
                 .Include(m => m.IdRolNavigation)
                 .Include(m => m.IdSucursalNavigation)
-                .OrderByDescending(r => r.Id).ToListAsync();
+                .AsQueryable();
 
-            // Eliminar registros con nivel de acceso superior
-            allUsers.RemoveAll(m => nivelesAcceso[m.IdRolNavigation.AccessTipe] >= nivelUsuario && nivelUsuario != 4);
-
-            // Permitir que los usuarios de nivel 4 vean información de otros usuarios de nivel 4
-            if (nivelUsuario == 4)
+            // Aplicar filtros si se proporcionan
+            if (!string.IsNullOrEmpty(searchName))
             {
-                allUsers.RemoveAll(m => nivelesAcceso[m.IdRolNavigation.AccessTipe] > nivelUsuario);
+                query = query.Where(r => r.Name.Contains(searchName));
+            }
+            if (!string.IsNullOrEmpty(searchLastName))
+            {
+                query = query.Where(r => r.LastName.Contains(searchLastName));
+            }
+            if (!string.IsNullOrEmpty(searchEmail))
+            {
+                query = query.Where(r => r.Email.Contains(searchEmail));
+            }
+            if (searchEstatus.HasValue)
+            {
+                query = query.Where(r => r.Estatus == searchEstatus);
+            }
+            if (searchIdRol.HasValue)
+            {
+                query = query.Where(r => r.IdRol == searchIdRol);
             }
 
-            return View(allUsers);
+            // Obtener total de registros antes de paginar
+            int totalUsers = await query.CountAsync();
+
+            // Obtener todos los usuarios sin el filtro de niveles
+            var users = await query
+                .OrderByDescending(r => r.Id)
+                .Skip((page - 1) * 5)
+                .Take(5)
+                .ToListAsync();
+
+            // Filtrar los usuarios por niveles de acceso en memoria
+            users = users.Where(m => nivelesAcceso[m.IdRolNavigation.AccessTipe] < nivelUsuario ||
+                (nivelUsuario == 4 && nivelesAcceso[m.IdRolNavigation.AccessTipe] <= nivelUsuario)).ToList();
+
+            // Obtener el primer usuario para obtener el IdRol, puedes ajustar si necesitas otro criterio
+            int? selectedIdRol = users.FirstOrDefault()?.IdRol;
+
+            ViewData["IdRol"] = new SelectList(
+                _context.modelRol.Select(r => new { r.Id, Text = r.Name + " - " + r.AccessTipe }),
+                "Id",
+                "Text",
+                selectedIdRol // Asignamos el IdRol del primer usuario
+            );
+
+            // Datos para la vista
+            ViewBag.CurrentPage = page;
+            ViewBag.TotalPages = (int)Math.Ceiling((double)totalUsers / 5);
+            ViewBag.SearchName = searchName;
+            ViewBag.SearchLastName = searchLastName;
+            ViewBag.SearchEmail = searchEmail;
+            ViewBag.SearchEstatus = searchEstatus;
+        
+
+            return View(users);
         }
-
-
 
         public async Task<IActionResult> Details(int? id)
         {
@@ -184,16 +228,11 @@ namespace SysSoniaInventory.Controllers
             }
 
             // Configurar las listas de selección para la vista
-            ViewData["IdRol"] = new SelectList(_context.modelRol, "Id", "Name", modelUser.IdRol);
+            ViewData["IdRol"] = new SelectList(_context.modelRol.Select(r => new { r.Id, Text = r.Name + " - " + r.AccessTipe }), "Id", "Text", modelUser.IdRol);
             ViewData["IdSucursal"] = new SelectList(_context.modelSucursal, "Id", "Name", modelUser.IdSucursal);
 
             return View(modelUser);
         }
-
-
-
-
-
 
 
 
@@ -218,7 +257,8 @@ namespace SysSoniaInventory.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
-            ViewData["IdRol"] = new SelectList(_context.modelRol, "Id", "Name");
+            ViewData["IdRol"] = new SelectList(_context.modelRol.Select(r => new {r.Id,Text = r.Name + " - " + r.AccessTipe}),"Id","Text");
+
             ViewData["IdSucursal"] = new SelectList(_context.modelSucursal, "Id", "Name");
             return View();
         }
@@ -286,14 +326,6 @@ namespace SysSoniaInventory.Controllers
 
 
 
-
-
-
-
-
-
-
-
         // GET: User/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
@@ -329,7 +361,7 @@ namespace SysSoniaInventory.Controllers
                 TempData["Error"] = "No puedes editar a un usuario de nivel superior al tuyo.";
                 return RedirectToAction("Index", "Home");
             }
-                ViewData["IdRol"] = new SelectList(_context.modelRol, "Id", "Name", modelUser.IdRol);
+            ViewData["IdRol"] = new SelectList(_context.modelRol.Select(r => new { r.Id, Text = r.Name + " - " + r.AccessTipe }), "Id", "Text", modelUser.IdRol);
             ViewData["IdSucursal"] = new SelectList(_context.modelSucursal, "Id", "Name", modelUser.IdSucursal);
             return View(modelUser);
         }
@@ -541,7 +573,7 @@ namespace SysSoniaInventory.Controllers
             }
 
             // Configurar datos para la vista
-            ViewData["IdRol"] = new SelectList(_context.modelRol, "Id", "Name", user.IdRol);
+            ViewData["IdRol"] = new SelectList(_context.modelRol.Select(r => new { r.Id, Text = r.Name + " - " + r.AccessTipe }), "Id", "Text", user.IdRol);
             ViewData["IdSucursal"] = new SelectList(_context.modelSucursal, "Id", "Name", user.IdSucursal);
          
             return View(user);
@@ -707,7 +739,8 @@ namespace SysSoniaInventory.Controllers
                 TempData["Error"] = "No puedes editar a un usuario de nivel superior al tuyo.";
                 return RedirectToAction("Index", "Home");
             }
-            ViewData["IdRol"] = new SelectList(_context.modelRol, "Id", "Name", modelUser.IdRol);
+
+            ViewData["IdRol"] = new SelectList(_context.modelRol.Select(r => new { r.Id, Text = r.Name + " - " + r.AccessTipe }), "Id", "Text", modelUser.IdRol);
             ViewData["IdSucursal"] = new SelectList(_context.modelSucursal, "Id", "Name", modelUser.IdSucursal);
             return View(modelUser);
         }
@@ -920,7 +953,7 @@ namespace SysSoniaInventory.Controllers
                 TempData["Error"] = "Usuario no encontrado.";
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["IdRol"] = new SelectList(_context.modelRol, "Id", "Name", modelUser.IdRol);
+            ViewData["IdRol"] = new SelectList(_context.modelRol.Select(r => new { r.Id, Text = r.Name + " - " + r.AccessTipe }), "Id", "Text", modelUser.IdRol);
             ViewData["IdSucursal"] = new SelectList(_context.modelSucursal, "Id", "Name", modelUser.IdSucursal);
             return View(modelUser);
         }
@@ -994,9 +1027,116 @@ namespace SysSoniaInventory.Controllers
         }
 
 
-    
 
 
+        // Método para generar PDF
+        public IActionResult GeneratePdf(bool? active = null)
+        {
+            // Verificar niveles de acceso
+            if (!User.HasClaim("AccessTipe", "Nivel 4") && !User.HasClaim("AccessTipe", "Nivel 5"))
+            {
+                TempData["Error"] = "No tienes acceso a esta sección. Requerido: Nivel 4 o 5.";
+                return RedirectToAction("Index", "Home");
+            }
+
+            // Obtener datos de usuarios (filtrar por estado si se especifica)
+            var users = _context.modelUser.AsQueryable();
+            if (active.HasValue)
+            {
+                users = users.Where(u => u.Estatus == (active.Value ? 1 : 0));
+            }
+
+            var userList = users.ToList();
+
+            // Generar PDF
+            using (var stream = new MemoryStream())
+            {
+                var writer = new PdfWriter(stream);
+                var pdf = new PdfDocument(writer);
+                var document = new Document(pdf);
+
+                // Agregar logo y título en la misma línea
+                string imagePath = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "imgSystem", "LOGO.jpeg");
+                Table headerTable = new Table(new float[] { 1, 3 }).UseAllAvailableWidth();
+
+                if (System.IO.File.Exists(imagePath))
+                {
+                    var logo = new Image(ImageDataFactory.Create(imagePath)).ScaleAbsolute(80, 80);
+                    Cell logoCell = new Cell().Add(logo)
+                        .SetBorder(Border.NO_BORDER)
+                        .SetTextAlignment(TextAlignment.LEFT);
+                    headerTable.AddCell(logoCell);
+                }
+                else
+                {
+                    // Celda vacía si no hay logo
+                    headerTable.AddCell(new Cell().SetBorder(Border.NO_BORDER));
+                }
+
+                string title = active.HasValue ? (active.Value ? "Usuarios Activos" : "Usuarios Inactivos") : "Todos los Usuarios";
+                // Celda del título
+                Cell titleCell = new Cell().Add(new Paragraph(title)
+                    .SetFontSize(20)
+                    .SetFontColor(ColorConstants.DARK_GRAY)
+                    .SetBold()
+                    .SetTextAlignment(TextAlignment.LEFT))
+                    .SetBorder(Border.NO_BORDER)
+                    .SetVerticalAlignment(VerticalAlignment.MIDDLE);
+                headerTable.AddCell(titleCell);
+                document.Add(headerTable);
+
+                // Crear tabla
+                var table = new Table(new float[] { 1, 2, 2, 3, 1 }).SetWidth(UnitValue.CreatePercentValue(100));
+                table.SetMarginTop(10);
+
+
+
+                // Encabezados estilizados
+                var headerColor = new DeviceRgb(52, 152, 219); // Azul intenso
+                foreach (var header in new[] { "ID", "Nombre", "Apellido", "Email", "Estado" })
+                {
+                    table.AddHeaderCell(new Cell().Add(new Paragraph(header)
+                            .SetFontColor(ColorConstants.WHITE)
+                            .SetBold())
+                        .SetBackgroundColor(headerColor)
+                        .SetTextAlignment(TextAlignment.CENTER)
+                        .SetPadding(8));
+                }
+
+                // Filas alternadas
+                var alternateRowColor = new DeviceRgb(235, 245, 255); // Azul claro
+                bool isAlternate = false;
+                foreach (var user in userList)
+                {
+                    var rowColor = isAlternate ? alternateRowColor : ColorConstants.WHITE;
+                    table.AddCell(new Cell().Add(new Paragraph(user.Id.ToString()))
+                        .SetBackgroundColor(rowColor).SetTextAlignment(TextAlignment.CENTER));
+                    table.AddCell(new Cell().Add(new Paragraph(user.Name))
+                        .SetBackgroundColor(rowColor).SetTextAlignment(TextAlignment.CENTER));
+                    table.AddCell(new Cell().Add(new Paragraph(user.LastName))
+                        .SetBackgroundColor(rowColor).SetTextAlignment(TextAlignment.CENTER));
+                    table.AddCell(new Cell().Add(new Paragraph(user.Email))
+                        .SetBackgroundColor(rowColor).SetTextAlignment(TextAlignment.CENTER));
+                    table.AddCell(new Cell().Add(new Paragraph(user.Estatus == 1 ? "Activo" : "Inactivo"))
+                        .SetBackgroundColor(rowColor).SetTextAlignment(TextAlignment.CENTER));
+                    isAlternate = !isAlternate;
+                }
+
+                document.Add(table);
+
+                // Pie de página
+                document.Add(new Paragraph("Muebles y Electrodomésticos Sonia")
+                    .SetFontSize(10)
+                    .SetFontColor(ColorConstants.GRAY)
+                    .SetTextAlignment(TextAlignment.CENTER)
+                    .SetMarginTop(20));
+
+                document.Close();
+                string fechaDescarga = DateTime.Now.ToString("yyyy-MM-dd");
+                // Retornar archivo PDF
+                return File(stream.ToArray(), "application/pdf", $"Usuarios_{fechaDescarga}.pdf");
+            }
+        }
 
 
         private bool ModelUserExists(int id)

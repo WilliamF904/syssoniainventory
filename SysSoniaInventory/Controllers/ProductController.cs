@@ -12,6 +12,13 @@ using SysSoniaInventory.Task;
 using System.IO;
 using iText.Commons.Actions.Contexts;
 using SysSoniaInventory.ViewModels;
+using iText.IO.Image;
+using iText.Kernel.Colors;
+using iText.Kernel.Pdf;
+using iText.Layout.Borders;
+using iText.Layout.Element;
+using iText.Layout.Properties;
+using iText.Layout;
 
 
 namespace SysSoniaInventory.Controllers
@@ -904,6 +911,98 @@ namespace SysSoniaInventory.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        public IActionResult GeneratePdf(bool? active = null)
+        {
+            // Verificar niveles de acceso
+            if (!User.HasClaim("AccessTipe", "Nivel 4") && !User.HasClaim("AccessTipe", "Nivel 5"))
+            {
+                TempData["Error"] = "No tienes acceso a esta sección. Requerido: Nivel 4 o 5.";
+                return RedirectToAction("Index", "Home");
+            }
+
+            // Obtener datos de productos (filtrar por estado si se especifica)
+            var products = _context.modelProduct.AsQueryable();
+            if (active.HasValue)
+            {
+                products = products.Where(p => p.Estatus == (active.Value ? 1 : 0));
+            }
+
+            var productList = products.ToList();
+
+            using (var stream = new MemoryStream())
+            {
+                var writer = new PdfWriter(stream);
+                var pdf = new PdfDocument(writer);
+                var document = new Document(pdf);
+
+                // Agregar logo y título
+                string imagePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "imgSystem", "LOGO.jpeg");
+                Table headerTable = new Table(new float[] { 1, 3 }).UseAllAvailableWidth();
+
+                if (System.IO.File.Exists(imagePath))
+                {
+                    var logo = new Image(ImageDataFactory.Create(imagePath)).ScaleAbsolute(80, 80);
+                    headerTable.AddCell(new Cell().Add(logo).SetBorder(Border.NO_BORDER).SetTextAlignment(TextAlignment.LEFT));
+                }
+                else
+                {
+                    headerTable.AddCell(new Cell().SetBorder(Border.NO_BORDER));
+                }
+
+                string title = active.HasValue ? (active.Value ? "Productos Activos" : "Productos Inactivos") : "Todos los Productos";
+                headerTable.AddCell(new Cell().Add(new Paragraph(title)
+                        .SetFontSize(20)
+                        .SetFontColor(ColorConstants.DARK_GRAY)
+                        .SetBold()
+                        .SetTextAlignment(TextAlignment.LEFT))
+                    .SetBorder(Border.NO_BORDER)
+                    .SetVerticalAlignment(VerticalAlignment.MIDDLE));
+                document.Add(headerTable);
+
+                // Crear tabla
+                var table = new Table(new float[] { 2, 2, 2, 2, 2, 1 }).SetWidth(UnitValue.CreatePercentValue(100));
+                table.SetMarginTop(10);
+
+                // Encabezados
+                var headerColor = new DeviceRgb(52, 152, 219);
+                foreach (var header in new[] { "Nombre", "Código", "Precio Compra", "Precio Venta", "Stock", "Estado" })
+                {
+                    table.AddHeaderCell(new Cell().Add(new Paragraph(header).SetFontColor(ColorConstants.WHITE).SetBold())
+                        .SetBackgroundColor(headerColor)
+                        .SetTextAlignment(TextAlignment.CENTER)
+                        .SetPadding(8));
+                }
+
+                // Filas alternadas
+                var alternateRowColor = new DeviceRgb(235, 245, 255);
+                bool isAlternate = false;
+                foreach (var product in productList)
+                {
+                    var rowColor = isAlternate ? alternateRowColor : ColorConstants.WHITE;
+                    table.AddCell(new Cell().Add(new Paragraph(product.Name)).SetBackgroundColor(rowColor).SetTextAlignment(TextAlignment.CENTER));
+                    table.AddCell(new Cell().Add(new Paragraph(product.Codigo ?? "N/A")).SetBackgroundColor(rowColor).SetTextAlignment(TextAlignment.CENTER));
+                    table.AddCell(new Cell().Add(new Paragraph(product.PurchasePrice.ToString("C"))).SetBackgroundColor(rowColor).SetTextAlignment(TextAlignment.CENTER));
+                    table.AddCell(new Cell().Add(new Paragraph(product.SalePrice.ToString("C"))).SetBackgroundColor(rowColor).SetTextAlignment(TextAlignment.CENTER));
+                    table.AddCell(new Cell().Add(new Paragraph(product.Stock.ToString())).SetBackgroundColor(rowColor).SetTextAlignment(TextAlignment.CENTER));
+                    table.AddCell(new Cell().Add(new Paragraph(product.Estatus == 1 ? "Activo" : "Inactivo"))
+                        .SetBackgroundColor(rowColor).SetTextAlignment(TextAlignment.CENTER));
+                    isAlternate = !isAlternate;
+                }
+
+                document.Add(table);
+
+                // Pie de página
+                document.Add(new Paragraph("Muebles y Electrodomésticos Sonia")
+                    .SetFontSize(10)
+                    .SetFontColor(ColorConstants.GRAY)
+                    .SetTextAlignment(TextAlignment.CENTER)
+                    .SetMarginTop(20));
+
+                document.Close();
+                string fechaDescarga = DateTime.Now.ToString("yyyy-MM-dd");
+                return File(stream.ToArray(), "application/pdf", $"Productos_{fechaDescarga}.pdf");
+            }
+        }
 
         private bool ModelProductExists(int id)
         {

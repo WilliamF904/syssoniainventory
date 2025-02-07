@@ -33,31 +33,80 @@ namespace SysSoniaInventory.Controllers
         [HttpPost]
         public async Task<IActionResult> Login(string email, string password)
         {
-           
-            var encryptedPassword = SecurityHelper.EncryptSHA256(password, _secretKey);
+            // Verificar si el usuario está bloqueado
+            if (Request.Cookies["LockoutEnd"] != null && DateTime.TryParse(Request.Cookies["LockoutEnd"], out DateTime lockoutEnd))
+            {
+                if (DateTime.UtcNow < lockoutEnd)
+                {
+                    TempData["Error"] = $"Demasiados intentos fallidos. Inténtalo después de {TimeZoneInfo.ConvertTimeFromUtc(lockoutEnd, TimeZoneInfo.Local)}.";
+                    return View();
+                }
+            }
 
-            // Verificar credenciales
+            var encryptedPassword = SecurityHelper.EncryptSHA256(password, _secretKey);
             var user = _context.modelUser
                 .Include(u => u.IdRolNavigation)
                 .Include(u => u.IdSucursalNavigation)
-                .FirstOrDefault(u => u.Email == email && u.Password == encryptedPassword);
+                .FirstOrDefault(u => u.Email == email);
 
-            if (user == null)
+            // Obtener intentos fallidos desde la cookie de forma segura
+            int failedAttempts = Request.Cookies["FailedLoginAttempts"] != null &&
+                                 int.TryParse(Request.Cookies["FailedLoginAttempts"], out int attempts)
+                                 ? attempts
+                                 : 0;
+
+            // Si el usuario no existe o la contraseña es incorrecta
+            if (user == null || user.Password != encryptedPassword)
             {
-                TempData["Error"] = "Usuario o contraseña invalida.";
+                failedAttempts++;
+
+                // Aumentar el tiempo de bloqueo progresivamente
+                int bloqueoMinutos = failedAttempts switch
+                {
+                    >= 6 => 60,  // 1 hora
+                    >= 5 => 20,  // 20 minutos
+                    >= 4 => 10,  // 10 minutos
+                    >= 3 => 5,   // 5 minutos
+                    _ => 0
+                };
+
+                if (bloqueoMinutos > 0)
+                {
+                    DateTime lockoutTimeUtc = DateTime.UtcNow.AddMinutes(bloqueoMinutos);
+                    Response.Cookies.Append("LockoutEnd", lockoutTimeUtc.ToString("o"), new CookieOptions { Expires = lockoutTimeUtc });
+
+                    TempData["Error"] = $"Demasiados intentos fallidos. Inténtalo después de {TimeZoneInfo.ConvertTimeFromUtc(lockoutTimeUtc, TimeZoneInfo.Local)}.";
+                }
+                else
+                {
+                    Response.Cookies.Append("FailedLoginAttempts", failedAttempts.ToString(), new CookieOptions { Expires = DateTime.UtcNow.AddMinutes(30) });
+                    TempData["Error"] = "Usuario o contraseña incorrectos.";
+                }
+
                 return View();
             }
 
+            // Si el usuario está inactivo
+            if (user.Estatus == 0)
+            {
+                TempData["Error"] = "Tu cuenta está inactiva.";
+                return View();
+            }
+
+            // Si el login es exitoso, eliminar cookies de intentos fallidos y bloqueo
+            Response.Cookies.Delete("FailedLoginAttempts");
+            Response.Cookies.Delete("LockoutEnd");
+
             // Crear claims para el usuario
             var claims = new List<Claim>
-            {
-                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()), // Guardar el ID del usuario   
-                new Claim(ClaimTypes.Name, $"{user.Name} {user.LastName}"),
-                new Claim(ClaimTypes.Role, user.IdRolNavigation.Name),
-                new Claim("AccessTipe", user.IdRolNavigation.AccessTipe),
-                new Claim("Sucursal", user.IdSucursalNavigation.Name),
-                new Claim("SucursalAddress", user.IdSucursalNavigation.Address ?? string.Empty)
-            };
+    {
+        new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()), // Guardar el ID del usuario   
+        new Claim(ClaimTypes.Name, $"{user.Name} {user.LastName}"),
+        new Claim(ClaimTypes.Role, user.IdRolNavigation.Name),
+        new Claim("AccessTipe", user.IdRolNavigation.AccessTipe),
+        new Claim("Sucursal", user.IdSucursalNavigation.Name),
+        new Claim("SucursalAddress", user.IdSucursalNavigation.Address ?? string.Empty)
+    };
 
             var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
             var authProperties = new AuthenticationProperties();

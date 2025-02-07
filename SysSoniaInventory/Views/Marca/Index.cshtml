@@ -3,7 +3,24 @@
 @{
     ViewData["Title"] = "Lista de Marcas";
 }
+<style>
+    .pagination .page-link {
+        background-color: #333;
+        color: #fff;
+        border: 1px solid #444;
+    }
 
+    .pagination .page-item.active .page-link {
+        background-color: #555;
+        border-color: #666;
+    }
+
+    .pagination .page-item.disabled .page-link {
+        background-color: #222;
+        color: #777;
+        border-color: #333;
+    }
+</style>
 <div class="row">
     <!-- Card para la lista de marcas -->
     <div class="col-lg-6 grid-margin stretch-card">
@@ -18,19 +35,10 @@
                         </a>
 
                         <div class="separator mx-3"></div>
-
-                        <div class="dropdown-container">
-                            <button id="dropdownButton" class="dropdown-button btn btn-outline-secondary">
-                                <i class="mdi mdi-download"></i> Descargar PDF
-                            </button>
-                            <ul id="dropdownMenu" class="dropdown-menu">
-                                <li>
-                                    <a asp-controller="Brand" asp-action="GeneratePdfMarca">
-                                        <i class="mdi mdi-download"></i> Descargar Todas las Marcas
-                                    </a>
-                                </li>
-                            </ul>
-                        </div>
+                        <a asp-controller="Marca" asp-action="GeneratePdfMarca" class="btn btn-outline-danger ml-2">
+                            <i class="mdi mdi-download"></i> Descargar PDF
+                        </a>
+                       
                     }
                 </div>
             </div>
@@ -41,10 +49,20 @@
     <div class="col-lg-6 grid-margin stretch-card">
         <div class="card">
             <div class="card-body">
-                <h1 class="card-title">Filtrado de Marcas</h1>
-                <form>
-                    <div class="form-group">
-                        <input type="text" id="filterText" class="form-control" placeholder="Filtrar por nombre">
+                <form method="get" asp-action="Index">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h1 class="card-title mb-0">Filtrar Categorias</h1>
+                        <div class="col-md-3 d-flex align-items-end">
+                            <button type="submit" class="btn btn-outline-success w-100">  <i class="mdi mdi-magnify btn-icon-prepend"></i>Filtrar</button>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <label for="searchName" class="form-label">Nombre</label>
+                            <input type="text" id="searchName" name="searchName" class="form-control" placeholder="Buscar por nombre" value="@ViewBag.SearchName" />
+                        </div>
+
                     </div>
                 </form>
             </div>
@@ -89,9 +107,41 @@
                             }
                         </tbody>
                     </table>
-
-                    <div id="paginationControls" class="mt-3 d-flex justify-content-center"></div>
                 </div>
+                <nav aria-label="Page navigation">
+                    <ul class="pagination justify-content-center">
+                        @{
+                            int totalPages = ViewBag.TotalPages;
+                            int currentPage = ViewBag.CurrentPage;
+                            int maxVisiblePages = 5;
+                            int startPage = Math.Max(1, currentPage - maxVisiblePages / 2);
+                            int endPage = Math.Min(totalPages, startPage + maxVisiblePages - 1);
+                        }
+
+                        <!-- Flecha izquierda -->
+                        <li class="page-item @(currentPage == 1 ? "disabled" : "")">
+                            <a class="page-link" href="@(currentPage > 1 ? $"?page={currentPage - 1}&searchName={ViewBag.SearchName}" : "#")" aria-label="Anterior">
+                                <span aria-hidden="true">«</span>
+                            </a>
+                        </li>
+
+                        <!-- Números de paginación -->
+                        @for (var i = startPage; i <= endPage; i++)
+                        {
+                            <li class="page-item @(i == currentPage ? "active" : "")">
+                                <a class="page-link" href="?page=@i&searchName=@ViewBag.SearchName">@i</a>
+                            </li>
+                        }
+
+                        <!-- Flecha derecha -->
+                        <li class="page-item @(currentPage == totalPages ? "disabled" : "")">
+                            <a class="page-link" href="@(currentPage < totalPages ? $"?page={currentPage + 1}&searchName={ViewBag.SearchName}" : "#")" aria-label="Siguiente">
+                                <span aria-hidden="true">»</span>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+
             </div>
         </div>
     </div>
@@ -148,48 +198,6 @@
             }
         });
 
-        const filterText = document.getElementById('filterText');
-        const table = document.getElementById('marcaTable');
-        const rows = Array.from(table.getElementsByTagName('tbody')[0].getElementsByTagName('tr'));
-        const rowsPerPage = 6;
-        let currentPage = 1;
-        let filteredRows = rows;
-
-        function filterTable() {
-            const filterValue = filterText.value.toLowerCase();
-            filteredRows = rows.filter(row => row.textContent.toLowerCase().includes(filterValue));
-            currentPage = 1;
-            displayRows();
-            setupPagination();
-        }
-
-        function displayRows() {
-            const start = (currentPage - 1) * rowsPerPage;
-            const end = start + rowsPerPage;
-            rows.forEach(row => row.style.display = 'none');
-            filteredRows.slice(start, end).forEach(row => row.style.display = '');
-        }
-
-        function setupPagination() {
-            const paginationControls = document.getElementById('paginationControls');
-            paginationControls.innerHTML = '';
-            const totalPages = Math.ceil(filteredRows.length / rowsPerPage);
-            for (let i = 1; i <= totalPages; i++) {
-                const button = document.createElement('button');
-                button.textContent = i;
-                button.className = 'pagination-button btn btn-outline-secondary';
-                if (i === currentPage) button.classList.add('active');
-                button.addEventListener('click', () => {
-                    currentPage = i;
-                    displayRows();
-                    setupPagination();
-                });
-                paginationControls.appendChild(button);
-            }
-        }
-
-        filterText.addEventListener('input', filterTable);
-        displayRows();
-        setupPagination();
+        
     });
 </script>
